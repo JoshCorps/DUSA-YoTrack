@@ -57,11 +57,3 @@ Only do if we have extra time
 Notification for new data 
 notify on site (countdown)
 user interaction (black out day, no data, prompt upload page) 
-
-
-
-
-
-
-
-
