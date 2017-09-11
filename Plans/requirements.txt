@@ -1,54 +1,56 @@
+Logging in
+    - Authenticate accounts logged in
+        - Send back to login page if rejected
+        - Proceed to dashbood if accepted
+    - Create master account
+        - Create approval page for verifying new users
+    - Login page front end
+    - Registration page back end
+    - Database integration-
+        - User model
+        - Account creation queries
+        - Account logging in queries
+        
+Import Data
+    - Upload spreadsheet
+    - Parse spreadsheet and transform into suitable structure for database
+    
+Dashboard
+    - Calender View
+        - [Back End] Retrieve data and pass to front-end
+        - [Front End] Design
+            - HTML/CSS/JS+AJAX (+ React?) + colour coded
+        - Link days to respective Daily View page
+    - Daily View
+        - [Back End] Retrieve data and pass to front-end
+        - [Front End] Design
+            - HTML/CSS/JS+AJAX (+ React?) + colour coded
+    - Comparison View
+        - [Back End] Retrieve data and pass to front-end
+        - [Front End] Design
+            - HTML/CSS/JS+AJAX (+ React?) + colour coded
+    - Prediction View
+        - [Back End] Retrieve data and pass to front-end
+        - [Front End] Design
+            - HTML/CSS/JS+AJAX (+ React?) + colour coded
+    - Export Data View
+        - [Back End] Retrieve data
+        - [Back End] Generate PDF or Image, etc
+        - [Back End] Serve file as download to user
+    - Filtering
+        - Filter queries
+        - [Front End] Design UI for users to filter items (inspiration: advanced search on Google)
+    - Formatting
+        
+
 Questions:
 
 Login details? Do we need to authenticate a user? Or is it a walk in web app for any user?
-
 Data prediction?
-
 Mobile responsive? Does it need to scale?
-
-
-
-
 Going for colours, flashy look, calendar etc.
-
 compared previous weeks
-
 data parameters (data/time)
-
-
-
-
-Login authentication
-Create master account. 
-Login page (flash notifications)
-Registration page (restricted to duse email)
-Approval page 
-Database 
-
-
-
-Import data from spreadsheet 
-Upload form to upload spreasheet
-Sever pass data and trasnform to something useable 
-
-
-Calender view (colour coded) 
-Filter and format 
-database queries 
-design (ajax) 
-
-
-
-Day View
-As above 
-comparison view*
-
-
-
-Sort/searching function
-google advance search 
-model from this
-
 
 Data prediction* leave until after
 Only do if we have extra time
