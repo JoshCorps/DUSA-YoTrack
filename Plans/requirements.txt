@@ -1,0 +1,67 @@
+Questions:
+
+Login details? Do we need to authenticate a user? Or is it a walk in web app for any user?
+
+Data prediction?
+
+Mobile responsive? Does it need to scale?
+
+
+
+
+Going for colours, flashy look, calendar etc.
+
+compared previous weeks
+
+data parameters (data/time)
+
+
+
+
+Login authentication
+Create master account. 
+Login page (flash notifications)
+Registration page (restricted to duse email)
+Approval page 
+Database 
+
+
+
+Import data from spreadsheet 
+Upload form to upload spreasheet
+Sever pass data and trasnform to something useable 
+
+
+Calender view (colour coded) 
+Filter and format 
+database queries 
+design (ajax) 
+
+
+
+Day View
+As above 
+comparison view*
+
+
+
+Sort/searching function
+google advance search 
+model from this
+
+
+Data prediction* leave until after
+Only do if we have extra time
+
+
+Notification for new data 
+notify on site (countdown)
+user interaction (black out day, no data, prompt upload page) 
+
+
+
+
+
+
+
+
