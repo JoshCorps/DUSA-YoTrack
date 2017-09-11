@@ -1,9 +1,101 @@
+Story #1)
+    Users can log in
+    Priority: High?
+    Complexity: Low (1)
+    Tests:
+        - Validate users exist
+        - Validate passwords are correct
+    
+Story #2)
+    Users can create an account with standard permissions
+    Priority: High?
+    Complexity: Low (1)
+    Tests:
+        - Check if users exist in database
+        - Test flash notifications
+    
+Story #3)
+    A master user can resolve account creation attempts
+    Priority: High?
+    Complexity: Medium (3)
+    Tests:
+        - Check that approved accounts can log in
+        - Check that denied accounts cannot log in
+        - Check that denied accounts can attempt to create a new account
+    
+Story #4)
+    A master user can upload a spreadsheet of data
+    Priority: High
+    Complexity: Low (2)
+    Tests:
+        - Check that data is parsed correctly
+        - Check that data is inserted into the database correctly
+        - Reject improperly formatted data
+        
+Story #5)
+    A master user can undo an upload of a set of data
+    Priority: Medium
+    Complexity: Low (1)
+
+Story #5)
+    Users can view data formatted with a calender
+    Priority: High
+    Complexity: Medium (4)
+    Tests:
+    
+Story #6)
+    Users can view data formatted by day
+    Priority: High
+    Complexity: Medium (4)
+    Tests:
+    
+Story #7)
+    Users can compare two sets of data
+    Priority: Medium
+    Complexity: High (6)
+    Tests:
+    
+Story #8)
+    Users can view a prediction of projected data
+    Priority: Low
+    Complexity: Low (2)
+    Tests:
+    
+Story #9)
+    Users can export a set of data to downloadable formats
+    Priority: Low?
+    Complexity: Low?
+    Tests:
+    
+Story #10)
+    Users can filter data into a smaller subset of data by date
+    Priority: High
+    Complexity: Medium (3)
+    Tests:
+
+Story #11)
+    Users can filter data into a smaller subset of data by retailer
+    Priority: High
+    Complexity: Medium (3)
+    Tests:
+    
+Story #12)
+    Users can filter data into a smaller subset of data by transaction type
+    Priority: Medium
+    Complexity: Medium (3)
+    Tests:
+    
+Velocity for story #4: estimated 3 hours
+
+
 Logging in
     - Authenticate accounts logged in
         - Send back to login page if rejected
         - Proceed to dashbood if accepted
     - Create master account
         - Create approval page for verifying new users
+            - Send notification to user if their account was accepted/denied
+            
     - Login page front end
     - Registration page back end
     - Database integration-
@@ -60,5 +152,3 @@ Notification for new data
 notify on site (countdown)
 user interaction (black out day, no data, prompt upload page) 
 
-
-Ronan push test
