@@ -11,7 +11,7 @@ Story #2)
     Priority: High?
     Complexity: Low (1)
     Tests:
-        - Check if users exist in database
+        - Check if users already exists in database
         - Test flash notifications
     
 Story #3)

@@ -24,13 +24,19 @@ class User {
     }, callback);
   }
   
-  setPassword(password) {
+  setPassword(password, update) {
+    // if there's nothing there, make it true by default
+    update = update || true;
+    
     // set a new random salt
     this.salt = randomID(16);
     // hash password + salt
     this.password = sha512(password + this.salt).toString('hex');
     
-    this.update();
+    // if we're inserting a new user, we don't want to call this.
+    if (update) {
+      this.update();
+    }
   }
   
   checkPassword(inputPassword) {
@@ -38,7 +44,7 @@ class User {
     let hashedPassword = sha512(inputPassword + this.salt).toString('hex');
     
     // check if they match
-    if (hashedPassword == this.password) {
+    if (hashedPassword === this.password) {
       return true;
     } else {
       return false;
@@ -56,7 +62,7 @@ class User {
  
   static getUnapprovedUsers(db, callback) {
     //get list of unapproved users from db
-    db.users.find({isApproved: false}, (err, userData) => {
+    db.users.find({'isApprved': false}, (err, userData) => {
       if (err) {
         callback(err);
         return;
@@ -77,6 +83,7 @@ class User {
         $in: emails
       }
     };
+    
     db.users.deleteMany(query, (err, deleted) => {
       if (err) {
         callback(err);
@@ -91,7 +98,7 @@ class User {
         $in: emails
       }
     };
-    db.users.update(query, {"isApproved": true}, (err, res) => {
+    db.users.update(query, {'isApproved': true}, (err, res) => {
       if (err) {
         callback(err);
       }
