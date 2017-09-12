@@ -1,0 +1,16 @@
+if users == null
+    p No accounts to approve
+else
+    form(action='/approve_accounts' method='POST')
+    
+        - for (var i = 0; i < users.length; i++)
+            - var user = users[i]
+            
+            li= user.email
+            
+            input(type='radio', checked, name='users[#{i}][isApproved]' value=true) Approve
+            input(type='radio', dhecked, name='users[#{i}][isApproved]' value=false) Decline
+            input(type='hidden', name='users[#{i}][email]', value='#{users[i].email}')
+            
+        input(type='hidden', name='noa', value='#{users.length}')
+        button(type='submit', value='Approve/Decline Accounts')
