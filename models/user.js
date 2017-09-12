@@ -1,6 +1,5 @@
-module.exports = User;
-
-//let db = require('./models/db.js')();
+let sha512 = require('sha512');
+let randomID = require("random-id");
 
 class User {
   constructor(user) {
@@ -13,23 +12,49 @@ class User {
       this.isApproved = user.isApproved || false;
   }
   
+  update(db, data, callback) {
+    // sync changes to database
+    db.users.update({'email': this.email}, { 
+      'firstName': data.firstName,
+      'lastName': data.lastName,
+      'password': data.password,
+      'salt': data.salt,
+      'accountType': data.accountType,
+      'isApproved': data.isApproved
+    }, callback);
+  }
+  
   setPassword(password) {
+    // set a new random salt
+    this.salt = randomID(16);
+    // hash password + salt
+    this.password = sha512(password + this.salt).toString('hex');
     
+    this.update();
   }
   
   checkPassword(inputPassword) {
+    // hash input + salt
+    let hashedPassword = sha512(inputPassword + this.salt).toString('hex');
     
+    // check if they match
+    if (hashedPassword == this.password) {
+      return true;
+    } else {
+      return false;
+    }
   }
   
-  static create(db, callback) {
-    
+  static create(db, data, callback) {
+    let user = new User(data);
+    db.users.insert(data, callback());
   }
   
-  static getUser(db, callback) {
-      
+  static getUserByEmail(db, email, callback) {
+    
   }
  
-  static getUnapproved(db, callback) {
+  static getUnapprovedUsers(db, callback) {
     //get list of unapproved users from db
     db.users.find({isApproved: false}, (err, userData) => {
       if (err) {
@@ -46,10 +71,32 @@ class User {
     });
   }
   
-  static deleteUsers(emails) {
-    for (let i = 0; i < emails.length; i++) {
-      //db.users.remove();
-    }
+  static deleteUsersByEmails(db, emails, callback) {
+    var query = {
+      'email':{
+        $in: emails
+      }
+    };
+    db.users.deleteMany(query, (err, deleted) => {
+      if (err) {
+        callback(err);
+      }
+      callback(null, deleted.result.n);
+    });
   }
   
-};
+  static approveUsers(db, emails, callback) {
+    var query = {
+      'email':{
+        $in: emails
+      }
+    };
+    db.users.update(query, {"isApproved": true}, (err, res) => {
+      if (err) {
+        callback(err);
+      }
+    });
+  }
+}
+
+module.exports = User;
