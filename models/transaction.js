@@ -1,7 +1,9 @@
+let excel = require('excel');
+const uuidv1 = require('uuid/v1');
+
 class Transaction {
     
     constructor() {
-        
         this.dateTime = undefined;
         this.retailerRef = undefined;
         this.outletRef = undefined;
@@ -13,7 +15,6 @@ class Transaction {
         this.discountAmount = undefined; 
         this.totalAmount = undefined; 
         this.uploadID = undefined;
-        
     }
 
     static create (db, callback) {
@@ -27,14 +28,3 @@ class Transaction {
 };
 
 module.exports = Transaction;
-
-//move this to the controller when we have one
-static convertExcelToTransaction(filename)
-{
-    let excel = require('excel');
-    excel.parseXlsx(__dirname + '/spreadsheets/' + flename + '.xlsx', function(err, data) {
-  if(err) throw err;
-    // data is an array of arrays
-});
-    
-}

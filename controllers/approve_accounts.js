@@ -3,18 +3,16 @@
 let express = require('express');
 let router = express.Router();
 let User = require('../models/user.js');
-let bodyParser = require('body-parser');
-
-express.use(bodyParser.urlencoded({extended: true}));
+let db = require('../models/db.js')();
 
 router.get('/', (req, res) => {
-  User.getUnapprovedUsers((err, users) => {
+    User.getUnapprovedUsers(db, (err, users) => {
       if(err) {
           // handle error somehow
       }
-      
+      console.log('Hi');
       res.render('approve_accounts', {
-          users: users
+            accounts: users
       });
   });
 });

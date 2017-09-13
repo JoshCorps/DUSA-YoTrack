@@ -1,0 +1,11 @@
+extend page 
+block content 
+    table (border="1")
+        tr
+            td(DateTime)
+            td(Outlet Ref)
+        for item in results
+        {
+        tr
+            td(item.dateTime)
+        }

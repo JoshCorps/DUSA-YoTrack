@@ -7,6 +7,7 @@ let router = express.Router();
 router.use('/login', require('./login'));
 router.use('/register', require('./register'));
 router.use('/approve_accounts', require('./approve_accounts'));
+router.use('/upload_transactions', require('./upload_transactions'));
 
 // serve index page
 router.use('/', (req, res) => {
@@ -32,3 +33,4 @@ router.use((error, req, res, next) => {
 });
 
 module.exports = router;
+

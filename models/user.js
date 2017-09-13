@@ -25,9 +25,6 @@ class User {
   }
   
   setPassword(password, update) {
-    // if there's nothing there, make it true by default
-    update = update || true;
-    
     // set a new random salt
     this.salt = randomID(16);
     // hash password + salt
@@ -52,26 +49,44 @@ class User {
   }
   
   static create(db, data, callback) {
-    let user = new User(data);
-    db.users.insert(data, callback());
+    let user;
+    if (data instanceof User) {
+      user = data;
+    } else {
+      user = new User(data);
+    }
+    db.users.insert(user, callback());
   }
   
   static getUserByEmail(db, email, callback) {
-    
-  }
- 
-  static getUnapprovedUsers(db, callback) {
-    //get list of unapproved users from db
-    db.users.find({'isApprved': false}, (err, userData) => {
+    db.users.findOne({'email': email}, (err, data) => {
       if (err) {
         callback(err);
         return;
       }
-      var users;
+      if (data) {
+        let user = new User(data);
+        callback(null, user)
+      } else {
+        callback(null, null);
+      }
+    });
+  }
+ 
+  static getUnapprovedUsers(db, callback) {
+    //get list of unapproved users from db
+    db.users.find({'isApproved': false}, (err, userData) => {
+      if (err) {
+        callback(err);
+        return;
+      }
+      var users = [];
       // loop through array and return user array
-      for (let i=0; i<userData.length; i++) {
-        var user = new User(userData[i]);
-        users.push(user);
+      if(userData) {
+        for (let i=0; i<userData.length; i++) {
+          var user = new User(userData[i]);
+          users.push(user);
+        }
       }
       callback(null, users);
     });

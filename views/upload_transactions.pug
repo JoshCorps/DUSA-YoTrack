@@ -1,0 +1,8 @@
+extend page 
+block content 
+
+    form(action="", method="POST", enctype="multipart/form-data")
+        h1 Upload Transactions
+        p Spreadsheet:
+        input(type="file", name="spreadsheet", accept=".xlsx")
+        input(type="submit", value="Upload Transactions")

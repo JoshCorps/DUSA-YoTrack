@@ -8,15 +8,15 @@ Story #1)
     
 Story #2)
     Users can create an account with standard permissions
-    Priority: High?
+    Priority: High
     Complexity: Low (1)
     Tests:
-        - Check if users already exists in database
+        - Check if users exist in database
         - Test flash notifications
     
 Story #3)
     A master user can resolve account creation attempts
-    Priority: High?
+    Priority: High
     Complexity: Medium (3)
     Tests:
         - Check that approved accounts can log in
@@ -36,54 +36,64 @@ Story #5)
     A master user can undo an upload of a set of data
     Priority: Medium
     Complexity: Low (1)
+    Tests:
+        - Check that the chosen spreadsheet is removed
 
-Story #5)
+Story #6)
     Users can view data formatted with a calender
     Priority: High
     Complexity: Medium (4)
     Tests:
+        - The uploaded spreadsheet is formatted in a calendar view
     
-Story #6)
+Story #7)
     Users can view data formatted by day
     Priority: High
     Complexity: Medium (4)
     Tests:
+        - The uploaded spreadsheet is formatted in a calendar view and the user can select a day view
     
-Story #7)
+Story #8)
     Users can compare two sets of data
     Priority: Medium
     Complexity: High (6)
     Tests:
+        - TBC.
     
-Story #8)
+Story #9)
     Users can view a prediction of projected data
     Priority: Low
     Complexity: Low (2)
     Tests:
-    
-Story #9)
-    Users can export a set of data to downloadable formats
-    Priority: Low?
-    Complexity: Low?
-    Tests:
+        - TBC
     
 Story #10)
+    Users can export a set of data to downloadable formats
+    Priority: Low
+    Complexity: Low
+    Tests:
+        - TBC
+        
+Story #11)
     Users can filter data into a smaller subset of data by date
     Priority: High
     Complexity: Medium (3)
     Tests:
+        - TBC
 
-Story #11)
+Story #12)
     Users can filter data into a smaller subset of data by retailer
     Priority: High
     Complexity: Medium (3)
     Tests:
+        - TBC
     
-Story #12)
+Story #13)
     Users can filter data into a smaller subset of data by transaction type
     Priority: Medium
     Complexity: Medium (3)
     Tests:
+        - TBC
     
 Velocity for story #4: estimated 3 hours
 
@@ -152,3 +162,16 @@ Notification for new data
 notify on site (countdown)
 user interaction (black out day, no data, prompt upload page) 
 
+
+
+DAY 2 5pm Meeting notes:
+
+Ronan: Login in progress. Login page loading, not posting requests. Aim to be have login functioning by 13th 5pm with some styling complete. 
+
+Carim: Database set up. Code review and breakpoint to be completed tonight or tomorrow. Calender design to start tomorrow. 
+
+Can: Back end code in progress however, loading sheet is not functioning yet. Aim for back end to be completed tomorrow, some styling also.
+
+Josh: Page loading, data is handled, but not going into database. Aim for back end to be completed tomorrow, some styling also.
+
+Viivi: Back end code in progress however, loading sheet is not functioning yet. Aim for back end to be completed tomorrow, some styling also.
