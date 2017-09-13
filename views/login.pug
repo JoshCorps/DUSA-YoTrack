@@ -1,7 +1,68 @@
-extend page 
-block content 
+doctype html
+html(lang="en", dir="ltr")
+    head
+        title YOYO Transaction Interface - #{title}
+        meta(title="YOYO Transaction Interface")
+        
+        meta(name="description", content="")
+        meta(name="keywords", content="")
+        meta(name="author", content="")
+        meta(name="copyright", content="")
+        
+        meta(charset="utf-8")
+        meta(http-equiv="x-ua-compatible", content="ie-edge")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0")
+        
+        meta(name="theme-color", content="#263238")
+        meta(name="msapplication-navbutton-color", content="#263238")
+        meta(name="apple-mobile-web-app-status-bar-style", content="#263238")
 
-    form(action='/login', method='POST')
-      input(type='text', placeholder='email', name='email')
-      input(type='password', placeholder='password', name='password')
-      input(type='submit', value='submit')
+        link(rel="stylesheet", href="css/font-awesome/css/font-awesome.min.css")
+        link(rel="stylesheet", href="css/skeleton.min.css")
+        link(rel="stylesheet", href="css/normalize.min.css")
+        link(rel="stylesheet", href="css/login.css")
+    
+    div(class="login-wrapper")
+      div(class="logo")
+      if (messages)
+        if (messages.error)
+          p= messages.error
+      //-
+        if (messages)
+          - for (message in error)
+            p(class=message.type)= message.message
+      div(class="login-box flex")
+        form(action='/login', method='POST')
+          div(class="item-wrapper")
+            h1 Log In
+            div(class="row login-field")
+              div(class="twelve columns")
+                input(type='text',  class="u-full-width", placeholder='Enter your Email Address', name='email')
+            div(class="row login-field")
+              div(class="twelve columns")
+                input(type='password',  class="u-full-width", placeholder='Enter your Password', name='password')
+            div(class="row")
+              div(class="twelve columns")
+                input(type='submit',  class="u-full-width button-primary", value='Log In')
+        div(class="gap")
+        form(action='/register', method='POST')
+          div(class="item-wrapper")
+            h1 Create an Account
+            div(class="row login-field")
+              div(class="twelve columns")
+                input(type='text',  class="u-full-width", placeholder='Enter your First Name', name='firstName')
+            div(class="row login-field")
+              div(class="twelve columns")
+                input(type='text',  class="u-full-width", placeholder='Enter your Last Name', name='lastName')
+            div(class="row login-field")
+              div(class="twelve columns")
+                input(type='text',  class="u-full-width", placeholder='Enter your Email Address', name='email')
+            div(class="row login-field")
+              div(class="twelve columns")
+                input(type='password',  class="u-full-width", placeholder='Enter your Password', name='password')
+            div(class="row login-field")
+              div(class="twelve columns")
+                input(type='password',  class="u-full-width", placeholder='Confirm your Password', name='repeatPassword')
+            div(class="row")
+              div(class="twelve columns")
+                input(type='submit',  class="u-full-width button-primary", value='Create an Account')

@@ -1,17 +1,19 @@
+extend page 
+block content 
 
-if  (accounts.length != 0)
-    
-    form(action="/approve_accounts" method="post")
-        - for (var i = 0; i < accounts.length; i++)
-            - var user = accounts[i]
-            li= user.email
-            input(type='radio', checked, name='users['+i+'][isApproved]' value='true')
-            | Approve
-            input(type='radio', checked, name='users['+i+'][isApproved]' value='false')
-            | Decline
-            input(type="hidden", name='users['+i+'][email]', value=user.email)
-    
-        input(type='submit', value='Approve/Decline Accounts')
-    
-else
-    p No accounts to approve
+    if  (accounts.length != 0)
+        
+        form(action="/approve_accounts" method="post")
+            - for (var i = 0; i < accounts.length; i++)
+                - var user = accounts[i]
+                li= user.email
+                input(type='radio', checked, name='users['+i+'][isApproved]' value='true')
+                | Approve
+                input(type='radio', checked, name='users['+i+'][isApproved]' value='false')
+                | Decline
+                input(type="hidden", name='users['+i+'][email]', value=user.email)
+        
+            input(type='submit', value='Approve/Decline Accounts')
+        
+    else
+        p No accounts to approve

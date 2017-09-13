@@ -1,6 +1,3 @@
-let excel = require('excel');
-const uuidv1 = require('uuid/v1');
-
 class Transaction {
     
     constructor() {
@@ -16,13 +13,29 @@ class Transaction {
         this.totalAmount = undefined; 
         this.uploadID = undefined;
     }
-
-    static create (db, callback) {
     
+    static create(db, transaction, callback) {
+        let trans;
+        if (transaction instanceof Transaction) {
+            trans = transaction;
+        }
+        else {
+            trans = new Transaction(transaction);
+        }
+        db.transactions.insert(trans, callback());
     }
 
-  static insertTransaction(transactions, db, callback) {
-    db.insertMany(transactions);
+  static insertTransactions(db, transactions, callback) {
+     console.log("inserting to db");
+    var invalidCount = 0;
+    for (var i = transactions.length - 1; i >= 0; i--) {
+        if (!(transactions[i] instanceof Transaction)) {
+            transactions.splice(i, 1);
+        }
+    }
+    console.log("Encountered and deleted " + invalidCount + " invalid transactions before inserting to the database.");
+    db.transactions.insertMany(transactions, callback());
+    console.log(transactions);
   }
   
 };

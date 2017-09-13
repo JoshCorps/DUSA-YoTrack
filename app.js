@@ -15,13 +15,8 @@ let morgan = require('morgan');
 let bodyParser = require("body-parser");
 let minify = require('express-minify');
 let compression = require('compression');
-let sessionMiddleware = require('express-session')({
-	secret: 'some-super-secret-random-string-should-probably-go-here',
-	resave: true,
-	saveUninitialized: true
-}); 
+let session = require('express-session');
 let fileUpload = require('express-fileupload');
-
 // set app parameters
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
@@ -33,7 +28,12 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(compression());
 app.use(minify());
-app.use(sessionMiddleware);
+app.use(session({
+	secret: 'some-super-secret-random-string-should-probably-go-here',
+	resave: true,
+	saveUninitialized: true,
+	cookie: { maxAge: 60000 }
+})); 
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(fileUpload());
