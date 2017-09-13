@@ -21,26 +21,30 @@ router.post('/', (req, res) => {
     //    res.status(500).send(err);
   });
   
-    var transactions = [];
-    convertExcelToTransactions('file.xlsx', transactions);
-    
-    Transaction.create(db, transactions[10], (err, success) => {
-        console.log('reached');
-        if (err) {
-            console.log("failed");
-        }
-        else {
-            console.log("passed");
-        }
-        res.redirect('/');
-        return;
+    let transactions = [];
+    convertExcelToTransactions('file.xlsx', transactions, function(transactions) {
+        
+            console.log("inserting transactions...");
+            Transaction.insertTransactions(db, transactions, (err, success) => {
+                console.log('reached');
+                if (err) {
+                    console.log("failed");
+                }
+                else {
+                    console.log("passed");
+                }
+                res.redirect('/');
+                return;
+            });
+        
     });
+
 
       //res.render('upload_transactions_receive', {transactions});
 });
 
 //use this method to get an array of transaction objects out of an uploaded excel spreadsheet
-function convertExcelToTransactions(filename, transactions)
+function convertExcelToTransactions(filename, transactions, callback)
 {
     const uuidv1 = require('uuid/v1');
     var parseXlsx = require('excel');
@@ -80,7 +84,9 @@ function convertExcelToTransactions(filename, transactions)
     removeElementsWithUndefinedProperties(transactions);
       console.log("transaction count after processing: " + transactions.length);
       //console.log(transactions[0]);
-      //console.log(transactions[10]);
+      console.log(transactions[10]);
+      
+      callback(transactions);
 }
     );
 }

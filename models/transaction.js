@@ -34,8 +34,12 @@ class Transaction {
         }
     }
     console.log("Encountered and deleted " + invalidCount + " invalid transactions before inserting to the database.");
-    db.transactions.insertMany(transactions, callback());
-    console.log(transactions);
+    console.log("About to insert " + transactions.length + " transactions.");
+    //db.transactions.insertMany(transactions, callback()); //this line requires a newer version of either mongoDB or the bridge.
+    for (var i = 0; i < transactions.length - 1; i++) {
+        Transaction.create(db, transactions[i], () => {});
+    }
+    Transaction.create(db, transactions[i], callback);  //no callbacks for any inserts except the last - would ideally use insertmany instead.
   }
   
 };
