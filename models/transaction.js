@@ -26,7 +26,6 @@ class Transaction {
     }
 
   static insertTransactions(db, transactions, callback) {
-     console.log("inserting to db");
     var invalidCount = 0;
     for (var i = transactions.length - 1; i >= 0; i--) {
         if (!(transactions[i] instanceof Transaction)) {
@@ -39,7 +38,7 @@ class Transaction {
     for (var i = 0; i < transactions.length - 1; i++) {
         Transaction.create(db, transactions[i], () => {});
     }
-    Transaction.create(db, transactions[i], callback);  //no callbacks for any inserts except the last - would ideally use insertmany instead.
+    Transaction.create(db, transactions[i], callback); //no callbacks for any inserts except the last - would ideally use insertMany instead.
   }
   
 };
