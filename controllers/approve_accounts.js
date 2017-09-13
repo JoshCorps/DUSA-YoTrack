@@ -10,7 +10,6 @@ router.get('/', (req, res) => {
       if(err) {
           // handle error somehow
       }
-      console.log('Hi');
       res.render('approve_accounts', {
             accounts: users
       });
@@ -18,20 +17,29 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-    var approved, declined;
+    var approved = [];
+    var declined = [];
     var users = Array.prototype.slice.call(req.body.users);
     for(let i=0; i<users.length; i++) {
-        if (users[i].isApproved) {
+        if (users[i].isApproved == 'true') {
             approved.push(users[i].email);
         } else {
             declined.push(users[i].email);
         }
     }
     if (approved.length != 0) {
-        User.approveUsers(approved);
+        User.approveUsers(db, approved, (err) => {
+            if(err) {
+                // handle error
+            }
+        });
     }
     if (declined.length != 0) {
-        User.deleteUsersByEmails(declined);
+        User.deleteUsersByEmails(db, declined, (err) => {
+            if(err) {
+                // handle error
+            }
+        });
     }
 });
 

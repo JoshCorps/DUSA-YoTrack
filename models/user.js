@@ -99,7 +99,7 @@ class User {
       }
     };
     
-    db.users.deleteMany(query, (err, deleted) => {
+    db.users.remove(query, (err, deleted) => {
       if (err) {
         callback(err);
       }
@@ -113,6 +113,7 @@ class User {
         $in: emails
       }
     };
+    console.log(query);
     db.users.update(query, {'isApproved': true}, (err, res) => {
       if (err) {
         callback(err);
