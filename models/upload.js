@@ -1,8 +1,8 @@
 class Upload {
     
     constructor() {
-        this.time = undefined;
-        this.transactions = undefined;
+        this.date = undefined;
+        this.transactionIDs = undefined;
     }
     
     static create(db, upload, callback) {
@@ -13,8 +13,26 @@ class Upload {
         else {
             up = new Upload(upload);
         }
-        db.transactions.insert(up, callback());
+        db.uploads.insert(up, callback());
     }
-}
+    
+    static getAllUploads(db, callback) {
+        db.uploads.find((err, data) => {
+           if (err) {
+               callback(err, null);
+               return;
+           }
+           callback(null, data);
+        });
+    }
+    
+    static deleteUploads(db, upload_ids, callback) {
+        db.uploads.remove({'_id': {$in: upload_ids}}, (err) => {
+           if (err) {
+               callback(err);
+           } 
+        });
+    }
+};
 
 module.exports = Upload;

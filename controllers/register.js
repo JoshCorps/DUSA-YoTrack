@@ -22,13 +22,15 @@ router.post('/', (request, response) => {
         } else {
             emailUnique = true;
         }
+        
+        if (!emailUnique)
+        {
+            request.flash('error', "Email already in use");
+            response.redirect('/login');
+            return;
+        }
     });
-    // if (!emailUnique)
-    // {
-    //     request.flash('error', "Email already in use");
-    //     response.redirect('/login');
-    //     return;
-    // }
+
     if (email === '')
     {
         request.flash('error', "Email cannot be empty");

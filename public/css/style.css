@@ -1,3 +1,5 @@
+/* MAIN TEMPLATE STUFF */
+
 *, *:before, *:after {
     box-sizing: border-box;
 }
@@ -12,7 +14,7 @@ html, body {
 
 body {
     overflow-x: hidden;
-    background: rgb(235, 235, 235);
+    background: rgb(235, 238, 250);
 }
 
 header {
@@ -25,7 +27,7 @@ header nav {
     position: relative;
     padding: 13px 0;
     z-index: 99;
-    box-shadow: 1px 1px 1px rgba(195, 195, 195, 0.8);
+    box-shadow: 1px 1px 2px rgba(195, 195, 195, 0.8);
 }
 
 header nav .wrapper {
@@ -115,7 +117,7 @@ main aside {
     min-height: 100%;
     display: block;
     z-index: 99;
-    box-shadow: 1px 1px 1px rgba(195, 195, 195, 0.8);
+    box-shadow: 1px 1px 2px rgba(195, 195, 195, 0.8);
 }
 
 main aside nav ul {
@@ -134,12 +136,17 @@ main aside nav ul li a {
     width: 6em;
     height: 6em;
     border-bottom: 1px solid rgb(195, 195, 195);
-    color: rgb(195, 195, 195);
     text-decoration: none;
     text-align: center;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    color: rgb(155, 155, 155);
+}
+
+main aside nav ul li a:hover {
+    background: #ff67c7;
+    color: #fff !important;
 }
 
 main aside nav ul li a p {
@@ -150,7 +157,6 @@ main aside nav ul li a p {
 
 main aside nav ul li a i {
     font-size: 2.5em !important;
-    color: rgb(155, 155, 155);
     margin: 0;
     padding: 0;
     padding-bottom: 5px;
@@ -166,11 +172,20 @@ main aside nav ul li a span {
     line-height: 1em;
 }
 
-
 main article {
     width: 100%;
-    padding: 1em 2em;
 }
+
+.block {
+    background: white;
+    margin: 2em;
+    padding: 3em;
+    box-shadow: 1px 1px 2px rgba(195, 195, 195, 0.8);
+    border-radius: 5px;
+    border: 1px solid rgba(195, 195, 195, 0.8);
+}
+
+/* CALENDAR VIEW */
 
 .calendar {
     color: white;
@@ -195,11 +210,12 @@ main article {
 	width: 14.28571428571429%;
 	border: 1px solid rgb(195, 195, 195);
 	min-height: 120px;
-	margin: 0.1em;
-	padding: 0.3em;
+	margin: 0.3em;
+	padding: 0.6em 0.3em;
 	border-radius: 10px;
     display: flex;
     flex-direction: column;
+    color: #000;
 }
 
 .calendar-item-back {
@@ -234,11 +250,23 @@ main article {
     line-height: 2em;
     text-shadow: 0 0 1px rgba(0, 0, 0, 0.8);
     font-weight: 700;
+    color: #fff;
 }
 
-.calendar-no-data {
+.calendar .no-day {
+    background: repeating-linear-gradient(
+      45deg,
+      rgb(195, 195, 195),
+      rgb(195, 195, 195) 10px,
+      #fff 10px,
+      #fff 20px
+    );
+}
+
+.calendar .no-data {
     background: black;
     border: 1px solid black;
+    color: #fff;
 }
 
 /* HELPERS */

@@ -4,6 +4,7 @@ let router = express.Router();
 //models
 let db = require('../models/db.js')();
 let Transaction = require('../models/transaction');
+let Upload = require('../models/upload');
 let moment = require('moment');
 
 router.get('/', (request, response) => {
@@ -27,7 +28,13 @@ router.post('/', (req, res) => {
         //res.redirect('/');
     });
     
-    var workbookNumber = req.body.workbookNumber;
+    var workbookNumber = parseInt(req.body.workbookNumber);
+    if (isNaN(workbookNumber))
+    {
+        console.log("The workbook number supllied was not a number.");
+        workbookNumber = 0;
+    }
+    
     console.log("workbookNumber: " + workbookNumber);
     
     /*
@@ -51,9 +58,8 @@ router.post('/', (req, res) => {
     */
     
     var transactions = [];
-    
     convertExcelToTransactions(fileName, workbookNumber, transactions, insertTransactions); //callback necessary to ensure array is processed before being sent to the DB
-
+    
     res.redirect('/');
     return;
 
@@ -62,15 +68,23 @@ router.post('/', (req, res) => {
 
 function insertTransactions(transactions)
 {
-        Transaction.insertTransactions(db, transactions, (err, success) => {
-        console.log('reached');
-        if (err) {
-            console.log("failed");
-        }
-        else {
-            console.log("passed");
-        }
+    if (transactions.length > 0)
+    {
+        
+        Transaction.insertTransactions(db, transactions, (transactionIDs) => {
+            console.log("inserted transactions, inserting upload");
+            var upload = new Upload();
+            upload.date = new Date();
+            upload.transactionIDs = transactionIDs;
+            Upload.create(db, upload, afterUploadCreated);
     });
+        
+    }
+}
+
+function afterUploadCreated(){
+    //nothing for now
+    console.log("Upload created.");
 }
 
 //use this method to get an array of transaction objects out of an uploaded excel spreadsheet

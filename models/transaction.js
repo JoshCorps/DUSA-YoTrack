@@ -34,8 +34,17 @@ class Transaction {
     }
     console.log("Encountered and deleted " + invalidCount + " invalid transactions before inserting to the database.");
     console.log("About to insert " + transactions.length + " transactions.");
-    db.transactions.insert(transactions, (err, id) => {
-        console.log(id);
+    db.transactions.insert(transactions, (err, objs) => {
+        if (err)
+        {
+            //TODO: Handle error
+            console.log("Could not insert data.");
+        }
+        var transactionIDs = [];
+        for (var i = 0; i < objs.length; i++) {
+            transactionIDs.push(objs[i]._id);
+        }
+        callback(transactionIDs);
     });
     
     console.log("Inserted" + transactions.length + " transactions.");

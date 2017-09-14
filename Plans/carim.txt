@@ -1,0 +1,7 @@
+Insights: a replacement for comparisons, instead of actually trying to figure out a way to show data visually, just work out differences between a range
+and present that to the user, for example
+
+ * Sales in PLACE1 are down 40% over the past week
+ * Sales of items under £1 are popular at PLACE2
+ 
+ etcetcetc

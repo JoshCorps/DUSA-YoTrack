@@ -26,7 +26,7 @@ router.use('/register', require('./register'));
 router.use('/logout', require('./logout'));
 router.use('/approve_accounts', require('./approve_accounts'));
 router.use('/upload_transactions', require('./upload_transactions'));
-router.use('/uploads', require('./uploads'));
+router.use('/upload_history', require('./upload_history'));
 
 // serve index page
 router.use('/', (req, res) => {
