@@ -41,6 +41,6 @@ class Transaction {
     Transaction.create(db, transactions[i], callback); //no callbacks for any inserts except the last - would ideally use insertMany instead.
   }
   
-};
+}
 
 module.exports = Transaction;

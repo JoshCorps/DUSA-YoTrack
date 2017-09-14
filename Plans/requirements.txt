@@ -1,3 +1,5 @@
+TODO: ADD PACKAGES TO PACKAGE.JSON!
+
 Story #1)
     Users can log in
     Priority: High?

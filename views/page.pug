@@ -17,14 +17,27 @@ html(lang="en", dir="ltr")
         meta(name="msapplication-navbutton-color", content="#263238")
         meta(name="apple-mobile-web-app-status-bar-style", content="#263238")
 
+        link(rel="stylesheet", href="https://fonts.googleapis.com/css?family=Poppins:400,700")
         link(rel="stylesheet", href="css/font-awesome/css/font-awesome.min.css")
         link(rel="stylesheet", href="css/skeleton.min.css")
         link(rel="stylesheet", href="css/normalize.min.css")
         link(rel="stylesheet", href="css/style.css")
-    
+
     body
-        nav
-            header
+        header
+            nav
+                div(class="container flex justify-content-space-between")
+                    div(class="left")
+                        h1(class="title") 
+                            span(class="pink") Yo!
+                            | track dashboard
+                    div(class="right")
+                        ul
+                            li
+                                a(href="#", class="logout") 
+                                    | Log out 
+                                    i(class="fa fa-sign-out", aria-hidden="true")
+                
         
         block content
     

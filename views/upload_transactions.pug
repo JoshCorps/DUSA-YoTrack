@@ -1,8 +1,17 @@
-extend page 
+extend page
+
+    link(rel="stylesheet", href="css/upload.css")
+
 block content 
 
-    form(action="", method="POST", enctype="multipart/form-data")
-        h1 Upload Transactions
-        p Spreadsheet:
-        input(type="file", name="spreadsheet", accept=".xlsx")
-        input(type="submit", value="Upload Transactions")
+    div(class="upload-wrapper flex")
+        div(class="upload-box")
+            form(action="", method="POST", enctype="multipart/form-data")
+                h1 Upload Transactions
+                p Select a spreadsheet to upload (Only the .xlsx format is accepted)
+                input(type="file", name="spreadsheet", accept=".xlsx")
+                p
+                p Specify the number of the workbook containing the full list of transactions:
+                input(type="number", min="1", value="1", name="workbookNumber")
+                p
+                input(type="submit", value="Upload Transactions")

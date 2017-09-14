@@ -1,6 +1,8 @@
 let express = require('express');
 let router = express.Router();
-
+const readChunk = require('read-chunk');
+const fileType = require('file-type');
+    
 //models
 let db = require('../models/db.js')();
 let Transaction = require('../models/transaction');
@@ -16,14 +18,28 @@ router.post('/', (req, res) => {
         res.status(400).send('No files were uploaded.');
 
     let spreadsheet = req.files.spreadsheet;
+    
+    var fileName = 'file.xlsx';
 
-    spreadsheet.mv('/home/ubuntu/workspace/spreadsheets/' + 'file.xlsx', function(err) {
+    spreadsheet.mv('/home/ubuntu/workspace/spreadsheets/' + fileName, function(err) {
         //if (err)
         //    res.status(500).send(err);
     });
+    
+    var workbookNumber = req.query.workbookNumber;
 
+    const buffer = readChunk.sync('/home/ubuntu/workspace/spreadsheets/' + fileName, 0, 4100);
+     
+    var ftype = fileType(buffer);
+    var isFileValid = (ftype.ext === "xlsx" && ftype.mime === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    
+    if (!isFileValid){
+        request.flash('error', "Invalid spreadsheet file format/content!");
+        res.redirect('/');
+    }
+    
     var transactions = [];
-    convertExcelToTransactions('file.xlsx', transactions, insertTransactions); //changes made to the transactions array are NOT maintained without the callback to insertTransactions (not sure why yet - perhaps to do with scoping?), watch out when refactoring
+    convertExcelToTransactions('/home/ubuntu/workspace/spreadsheets/'+'file.xlsx', workbookNumber, transactions, insertTransactions); //callback necessary to ensure array is processed before being sent to the DB
 
     res.redirect('/');
     return;
@@ -45,10 +61,10 @@ function insertTransactions(transactions)
 }
 
 //use this method to get an array of transaction objects out of an uploaded excel spreadsheet
-function convertExcelToTransactions(filename, transactions, callback) {
+function convertExcelToTransactions(filename, workbookNumber, transactions, callback) {
     const uuidv1 = require('uuid/v1');
     var parseXlsx = require('excel');
-    parseXlsx('/home/ubuntu/workspace/spreadsheets/' + filename, '2', function(err, data) {
+    parseXlsx('/home/ubuntu/workspace/spreadsheets/' + filename, workbookNumber, function(err, data) {
         if (err) throw err;
 
         // data is an array of arrays
@@ -74,9 +90,9 @@ function convertExcelToTransactions(filename, transactions, callback) {
         addField(data, transactions, "outletName", "Outlet Name");
         addField(data, transactions, "newUserID", "New user id");
         addField(data, transactions, "transactionType", "Transaction Type");
-        addField(data, transactions, "cashSpent", "Cash Spent");
-        addField(data, transactions, "discountAmount", "Discount Amount");
-        addField(data, transactions, "totalAmount", "Total Amount");
+        addField(data, transactions, "cashSpent", "Cash Spent", formatMoney);
+        addField(data, transactions, "discountAmount", "Discount Amount", formatMoney);
+        addField(data, transactions, "totalAmount", "Total Amount", formatMoney);
         for (var i = 0; i < transactions.length; i++) {
             transactions[i].uploadID = uuidv1(); //timestamp as uploadID
         }
@@ -86,6 +102,13 @@ function convertExcelToTransactions(filename, transactions, callback) {
         
         callback(transactions);
     });
+}
+
+function formatMoney(str){
+    //store as number of 1p coins, i.e. £1.62 is stored as 162p
+    var money = Number(str.replace(/[^0-9\.-]+/g,"")); //remove all chars except digits, dots and minus signs
+    money = Math.round((parseFloat(str)*100));
+    return money;
 }
 
 function formatDate(str){

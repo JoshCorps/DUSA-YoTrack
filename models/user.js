@@ -92,6 +92,20 @@ class User {
     });
   }
   
+  static isMasterAccount(db, email, callback) {
+    db.users.findOne({'email': email}, (err, user) => {
+      if (err) {
+        callback(err);
+        return;
+      }
+      if (user.accountType == 'master') {
+        callback(null, true);
+      } else {
+        callback(null, false);
+      }
+    });
+  }
+  
   static deleteUsersByEmails(db, emails, callback) {
     var query = {
       'email':{
@@ -114,7 +128,7 @@ class User {
       }
     };
     console.log(query);
-    db.users.update(query, {'isApproved': true}, (err, res) => {
+    db.users.update(query, {$set: {'isApproved': true}}, (err, res) => {
       if (err) {
         callback(err);
       }

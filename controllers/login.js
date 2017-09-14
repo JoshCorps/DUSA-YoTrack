@@ -63,10 +63,10 @@ router.get('/', (request, response) => {
 })
 
 router.post('/',
-  passport.authenticate('local', { failureRedirect: '/loginno' }),
+  passport.authenticate('local', { failureRedirect: '/login' }),
   function(req, res) {
      console.log('Is redirecting');
-    res.redirect('/loginyes');
+    res.redirect('/');
   });
   
 module.exports = router;

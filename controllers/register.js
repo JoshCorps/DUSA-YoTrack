@@ -9,7 +9,6 @@ let db = require('../models/db.js')();
 let User = require('../models/user.js');
 
 router.post('/', (request, response) => {
-    request.session.m = "test"
     console.log('is posted');
     let firstName = request.body.firstName;
     let lastName = request.body.lastName;
@@ -17,27 +16,36 @@ router.post('/', (request, response) => {
     let password = request.body.password;
     let repeatPassword = request.body.repeatPassword;
 
-    User.getUserByEmail(db, email, (err) => {
-        console.log(err)
-        if (err !== null) {
+    User.getUserByEmail(db, email, (err, user) => {
+        console.log("user = " + user);
+        if (user !== null) {
             request.flash('error', "Email already in use");
         response.redirect('/login');
         return;
-            console.log("Email already in use");
-        }
-        else {
+        } else {
             console.log("email unique");
         }
     });
-
+    
+    if (email === '')
+    {
+        request.flash('error', "Email cannot be empty");
+        response.redirect('/login');
+        return;
+    }
+    if (password === '' || repeatPassword === '')
+    {
+        request.flash('error', "Passwords cannot be empty");
+        response.redirect('/login');
+        return;
+    }
+    
     if (password !== repeatPassword) {
-        console.log("Passwords do not match");
         request.flash('error', "Passwords do not match");
         response.redirect('/login');
         return;
     }
     if (!email.endsWith("@dusa.co.uk") && !email.endsWith("@dundee.ac.uk")) {
-        console.log("Invalid email address");
         request.flash('error', "Invalid email address");
         response.redirect('/login');
         return;
@@ -45,11 +53,9 @@ router.post('/', (request, response) => {
     if (password.length < 8) //add more reqs
     {
         request.flash('error', "Password requirements not met");
-        console.log("Password requirements not met");
         response.redirect('/login');
         return;
     }
-
 
     var user = new User({
         'firstName': firstName,
@@ -62,7 +68,6 @@ router.post('/', (request, response) => {
     console.log(user);
 
     User.create(db, user, (err, success) => {
-        console.log('reached');
         if (err) {
             console.log("failed");
         }
