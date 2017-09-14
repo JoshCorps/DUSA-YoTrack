@@ -23,14 +23,15 @@ html(lang="en", dir="ltr")
         link(rel="stylesheet", href="css/normalize.min.css")
         link(rel="stylesheet", href="css/style.css")
 
-    body
+    body(class="flex flex-column")
         header
             nav
-                div(class="container flex justify-content-space-between")
-                    div(class="left")
+                div(class="wrapper flex justify-content-space-between align-items-center")
+                    div(class="left flex-grow")
                         h1(class="title") 
                             span(class="pink") Yo!
-                            | track dashboard
+                            | track 
+                            span(class="light") dashboard
                     div(class="right")
                         ul
                             li
@@ -38,8 +39,40 @@ html(lang="en", dir="ltr")
                                     | Log out 
                                     i(class="fa fa-sign-out", aria-hidden="true")
                 
-        
-        block content
-    
-        footer
+        main(class="flex flex-grow")
+            aside
+                nav
+                    ul
+                        li 
+                            a(href="#")
+                                p
+                                    i(class="fa fa-calendar", aria-hidden="true")
+                                    span Calendar View
+                        li 
+                            a(href="#")
+                                p
+                                    i(class="fa fa-sun-o", aria-hidden="true")
+                                    span Daily View
+                        li 
+                            a(href="#")
+                                p
+                                    i(class="fa fa-search", aria-hidden="true")
+                                    span Search
+                        li 
+                            a(href="#")
+                                p
+                                    i(class="fa fa-upload", aria-hidden="true")
+                                    span Upload Data
+                        li 
+                            a(href="#")
+                                p
+                                    i(class="fa fa-history", aria-hidden="true")
+                                    span Upload History
+                        li 
+                            a(href="#")
+                                p
+                                    i(class="fa fa-thumbs-o-up", aria-hidden="true")
+                                    span Account Approval
+            article
+                block content
             

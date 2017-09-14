@@ -43,11 +43,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // load controllers
 app.use(require('./controllers'));
-
-//add conversion function for money
-Number.prototype.ToPounds = function ToPounds() {
-    return this/100;
-};
    
 // start up express server
 let port = process.env.PORT || 3000;

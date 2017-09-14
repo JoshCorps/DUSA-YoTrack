@@ -9,24 +9,26 @@ let db = require('../models/db.js')();
 let User = require('../models/user.js');
 
 router.post('/', (request, response) => {
-    console.log('is posted');
     let firstName = request.body.firstName;
     let lastName = request.body.lastName;
     let email = request.body.email;
     let password = request.body.password;
     let repeatPassword = request.body.repeatPassword;
-
+    var emailUnique = false;
+    
     User.getUserByEmail(db, email, (err, user) => {
-        console.log("user = " + user);
         if (user !== null) {
-            request.flash('error', "Email already in use");
-        response.redirect('/login');
-        return;
+            emailUnique = false;
         } else {
-            console.log("email unique");
+            emailUnique = true;
         }
     });
-    
+    // if (!emailUnique)
+    // {
+    //     request.flash('error', "Email already in use");
+    //     response.redirect('/login');
+    //     return;
+    // }
     if (email === '')
     {
         request.flash('error', "Email cannot be empty");

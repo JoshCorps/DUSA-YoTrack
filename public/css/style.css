@@ -24,11 +24,17 @@ header nav {
     color: #fff;
     position: relative;
     padding: 13px 0;
+    z-index: 99;
+    box-shadow: 1px 1px 1px rgba(195, 195, 195, 0.8);
 }
 
-header nav .container {
-    padding: 0 30px;
+header nav .wrapper {
+    padding: 0 20px;
     width: 100%;
+}
+
+header nav .right {
+    
 }
 
 header nav ul {
@@ -46,6 +52,7 @@ header nav ul li a {
     text-decoration: none;
     letter-spacing: 1px;
     padding: 7px 12px;
+    margin: 0 2.5px;
     line-height: 2.5em;
 }
 
@@ -63,12 +70,16 @@ header nav .title {
     line-height: 1em;
 }
 
-header nav .title span {
+header nav .title .pink {
     color: #ff67c7;
 }
 
+header nav .title .light {
+    font-weight: 400;
+}
+
 header nav .logout {
-    border: 1px solid #e74c3c;
+    border: 1px solid transparent;  /*#e74c3c;*/
     border-radius: 8px;
     text-transform: uppercase;
     font-weight: 700;
@@ -78,6 +89,87 @@ header nav .logout:hover {
     border: 1px solid #e74c3c;
     background: #e74c3c;
     border-radius: 8px;
+}
+
+header nav .upload {
+    border: 1px solid #3498db;
+    background: #3498db;
+    border-radius: 8px;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+header nav .upload:hover {
+    border: 1px solid #2980b9;
+    background: #2980b9;
+    border-radius: 8px;
+}
+
+main {
+    
+}
+
+main aside {
+    background: #fff;
+    width: 6em;
+    min-height: 100%;
+    display: block;
+    z-index: 99;
+    box-shadow: 1px 1px 1px rgba(195, 195, 195, 0.8);
+}
+
+main aside nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+main aside nav ul li {
+    padding: 0;
+    margin: 0;
+}
+
+main aside nav ul li a {
+    display: block;
+    width: 6em;
+    height: 6em;
+    border-bottom: 1px solid rgb(195, 195, 195);
+    color: rgb(195, 195, 195);
+    text-decoration: none;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+main aside nav ul li a p {
+    display: block;
+    margin: 0;
+    padding: 0;
+}
+
+main aside nav ul li a i {
+    font-size: 2.5em !important;
+    color: rgb(155, 155, 155);
+    margin: 0;
+    padding: 0;
+    padding-bottom: 5px;
+    display: block;
+}
+
+main aside nav ul li a span {
+    text-transform: uppercase;
+    font-size: 0.7em;
+    margin: 0;
+    padding: 0 5px;
+    display: block;
+    line-height: 1em;
+}
+
+
+main article {
+    width: 100%;
+    padding: 1em 2em;
 }
 
 .calendar {
@@ -101,7 +193,7 @@ header nav .logout:hover {
 .calendar-day {
     display: block;
 	width: 14.28571428571429%;
-	border: 1px solid rgb(235, 235, 235);
+	border: 1px solid rgb(195, 195, 195);
 	min-height: 120px;
 	margin: 0.1em;
 	padding: 0.3em;
@@ -112,7 +204,7 @@ header nav .logout:hover {
 
 .calendar-item-back {
     width: 100%;
-    background: rgb(235, 235, 235);
+    background: rgb(195, 195, 195);
     margin: 0.1em;
     height: 1em;
     border-radius: 10px;
@@ -152,3 +244,6 @@ header nav .logout:hover {
 /* HELPERS */
 .flex { display: flex; }
 .justify-content-space-between { justify-content: space-between; }
+.align-items-center { align-items: center; }
+.flex-grow { flex-grow: 1; }
+.flex-column { flex-direction: column; }

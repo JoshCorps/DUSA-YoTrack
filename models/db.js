@@ -19,6 +19,11 @@ module.exports = () => {
       console.log('Created/verified transaction collection');
       db.transactions = db.collection('transactions');
     });
+    
+    db.createCollection('uploads', {}, () => {
+      console.log('Created/verified uploads collection');
+      db.uploads = db.collection('uploads');
+    });
       
     // when the database is connected, fire this event.
     db.on('connect', () => {

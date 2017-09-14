@@ -117,7 +117,7 @@ class User {
       if (err) {
         callback(err);
       }
-      callback(null, deleted.result.n);
+      callback(null, deleted);
     });
   }
   
@@ -127,7 +127,6 @@ class User {
         $in: emails
       }
     };
-    console.log(query);
     db.users.update(query, {$set: {'isApproved': true}}, (err, res) => {
       if (err) {
         callback(err);
