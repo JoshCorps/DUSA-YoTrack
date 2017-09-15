@@ -4,7 +4,7 @@ let express = require('express');
 let router = express.Router();
 let User = require('../models/user.js');
 let db = require('../models/db.js')();
-let authenticate = require('./index.js').authenticate;
+let authenticate = require('./index').authenticate;
 
 router.get('/', authenticate, (req, res) => {
     User.getUnapprovedUsers(db, (err, users) => {

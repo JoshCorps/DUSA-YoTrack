@@ -6,12 +6,19 @@ let router = express.Router();
 let authenticate = (req, res, next) => {
     // if the user is logged in, proceed.
     if (req.isAuthenticated()) {
+        if (!req.user.isApproved) {
+            req.flash('error', 'Your account has not yet been approved. Please contact an admin.')
+            res.redirect('/login');
+        }
+        
         return next();
     }
+
 
     // if not, redirect back to login page
     res.redirect('/login')
 };
+module.exports.authenticate = authenticate;
 
 // set locals before doing anything
 router.use((req, res, next) => {
@@ -45,7 +52,6 @@ router.use('/upload_history', require('./upload_history'));
 
 // serve index page
 router.use('/', authenticate, (req, res) => {
-    req.flash('success', 'Hello! Just testing flash messages.');
     res.render('index', {
         title: 'Index'
     });
@@ -68,4 +74,3 @@ router.use((error, req, res, next) => {
 });
 
 module.exports = router;
-module.exports.authenticate = authenticate;

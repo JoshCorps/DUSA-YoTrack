@@ -1,3 +1,5 @@
+let ObjectID = require('mongojs').ObjectID;
+
 class Transaction {
     
     constructor() {
@@ -50,9 +52,26 @@ class Transaction {
     console.log("Inserted" + transactions.length + " transactions.");
   }
   
-  static deleteTransactions(db, transactions, callback) {
-      
-  }
+    static deleteTransactions(db, upload_ids, callback) {
+        db.uploads.find({'_id': {$in: upload_ids}}, {transactionIDs: 1, _id: 0}, (err, uploads) => {
+            if (err) {
+                callback(err);
+            }
+            var transaction_ids = [];
+            for(let i=0; i<uploads.length; i++) {
+                transaction_ids = Array.prototype.concat(uploads[i].transactionIDs);
+            }
+            db.transactions.remove()
+        });
+        
+        db.transactions.remove({'_id': {$in: db.updloads.find({'_id': {$in: upload_ids}}, {transactionIDs: 1, _id: 0})}})
+        
+        db.uploads.remove({'_id': {$in: transactions.map((transaction) => {return new ObjectID(transaction);})}}, (err) => {
+           if (err) {
+               callback(err);
+           } 
+        });
+    }
   
 }
 

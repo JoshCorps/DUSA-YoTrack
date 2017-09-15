@@ -53,7 +53,7 @@ router.post('/', (request, response) => {
         response.redirect('/login');
         return;
     }
-    if (!email.endsWith("@dusa.co.uk") && !email.endsWith("@dundee.ac.uk")) {
+    if (!(email.endsWith("@dusa.co.uk") || !email.endsWith("@dundee.ac.uk"))) {
         request.flash('error', "Invalid email address");
         response.redirect('/login');
         return;
@@ -81,6 +81,7 @@ router.post('/', (request, response) => {
         }
         else {
             console.log("passed");
+            request.flash('success', 'Your account request has been submitted for approval. Please wait for an admin to verify your account.')
         }
         response.redirect('/login');
         return;

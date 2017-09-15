@@ -1,7 +1,7 @@
 let express = require('express');
 let router = express.Router();
 const fs = require("fs");
-let authenticate = require('index').authenticate;
+let authenticate = require('./index').authenticate;
     
 //models
 let db = require('../models/db.js')();

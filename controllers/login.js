@@ -57,7 +57,6 @@ passport.use(new LocalStrategy({ usernameField: 'email' }, (email, password, don
             console.log('User does not exist');
             return done(null, false, { message: 'Incorrect username.' });
         }
-        console.log('Shouldn"t reach here...');
     });
 }));
 
