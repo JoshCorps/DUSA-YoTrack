@@ -1,0 +1,15 @@
+extend page 
+block content
+    div(class="block")
+        if (uploads.length != 0)
+            
+            form(action="/upload_history" method="post")
+                - for (var i = 0; i < uploads.length; i++)
+                    - var upload = uploads[i]
+                    li= upload.date
+                    input(type='checkbox', name='uploads' value=upload._id)
+            
+                input(type='submit', value='Delete selected uploads')
+            
+        else
+            p No upload history to display

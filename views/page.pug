@@ -22,7 +22,10 @@ html(lang="en", dir="ltr")
         link(rel="stylesheet", href="css/skeleton.min.css")
         link(rel="stylesheet", href="css/normalize.min.css")
         link(rel="stylesheet", href="css/style.css")
+        link(rel="stylesheet", href="css/flash.css")
 
+        script(src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js")
+        
     body(class="flex flex-column")
         header
             nav
@@ -35,7 +38,7 @@ html(lang="en", dir="ltr")
                     div(class="right")
                         ul
                             li
-                                a(href="#", class="logout") 
+                                a(href="/logout", class="logout") 
                                     | Log out 
                                     i(class="fa fa-sign-out", aria-hidden="true")
                 
@@ -64,7 +67,7 @@ html(lang="en", dir="ltr")
                                     i(class="fa fa-upload", aria-hidden="true")
                                     span Upload Data
                         li 
-                            a(href="#")
+                            a(href="/upload_history")
                                 p
                                     i(class="fa fa-history", aria-hidden="true")
                                     span Upload History
@@ -74,5 +77,23 @@ html(lang="en", dir="ltr")
                                     i(class="fa fa-thumbs-o-up", aria-hidden="true")
                                     span Account Approval
             article
+                if (messages)
+                    if (messages.error)
+                        for message, index in messages.error
+                            div(class="flash error", id="flash-error-" + index)
+                                i(class="fa fa-bug", aria-hidden="true")
+                                p
+                                    strong= message
+                                a(onclick="$('#flash-error-" + index + "').fadeOut();")
+                                    i(class="fa fa-times", aria-hidden="true")
+                    if (messages.success)
+                        for message, index in messages.success
+                            div(class="flash success", id="flash-success-" + index)
+                                i(class="fa fa-lightbulb-o", aria-hidden="true")
+                                p
+                                    strong= message
+                                a(onclick="$('#flash-success-" + index + "').fadeOut();")
+                                    i(class="fa fa-times", aria-hidden="true")
+                                
                 block content
             

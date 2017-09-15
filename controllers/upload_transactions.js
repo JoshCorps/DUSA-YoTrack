@@ -1,5 +1,7 @@
 let express = require('express');
 let router = express.Router();
+const fs = require("fs");
+let authenticate = require('index').authenticate;
     
 //models
 let db = require('../models/db.js')();
@@ -7,11 +9,11 @@ let Transaction = require('../models/transaction');
 let Upload = require('../models/upload');
 let moment = require('moment');
 
-router.get('/', (request, response) => {
+router.get('/', authenticate, (request, response) => {
     response.render('upload_transactions');
 });
 
-router.post('/', (req, res) => {
+router.post('/', authenticate, (req, res) => {
     let fileUpload = require('express-fileupload');
     if (!req.files)
     {
@@ -21,7 +23,29 @@ router.post('/', (req, res) => {
 
     let spreadsheet = req.files.spreadsheet;
     
-    var fileName = '/home/ubuntu/workspace/spreadsheets/file.xlsx';
+    var fileSizeInMB = spreadsheet.data.byteLength/1048576; //Clarification:MebiBytes are used (MiB), not the new simplified definition of MB
+    
+    console.log("MIME Type: " + spreadsheet.mimetype);
+    console.log("File size: " + fileSizeInMB);
+    
+    //mimetype check
+    if (spreadsheet.mimetype === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    {
+        req.flash("The file is not in .xlsx format. Please ensure your file is properly.");
+        res.redirect("/");
+        return;
+    }
+    
+    //filesize check before writing to disk
+    var uploadLimitInMB = 1;
+    if (fileSizeInMB > uploadLimitInMB)
+    {
+        req.flash("File size is too large for the server to handle (larger than " + uploadLimitInMB + "MB). Please break the file into smaller chunks.");
+        res.redirect("/");
+        return;
+    }
+    
+    const fileName = '/home/ubuntu/workspace/spreadsheets/file.xlsx';
 
     spreadsheet.mv(fileName, function(err) {
         //req.flash('error', "Couldn't detect file!");
@@ -70,7 +94,6 @@ function insertTransactions(transactions)
 {
     if (transactions.length > 0)
     {
-        
         Transaction.insertTransactions(db, transactions, (transactionIDs) => {
             console.log("inserted transactions, inserting upload");
             var upload = new Upload();
@@ -91,8 +114,25 @@ function afterUploadCreated(){
 function convertExcelToTransactions(filename, workbookNumber, transactions, callback) {
     const uuidv1 = require('uuid/v1');
     var parseXlsx = require('excel');
+    console.log("about to parse...");
+    
+    /*
+    if (fileSizeInMegabytes > 1)
+    {
+        req.flash("File size is too large. Please break the file into smaller chunks.");
+        res.redirect("/");
+        return;
+    }
+    */
+    
     parseXlsx(filename, workbookNumber, function(err, data) {
-        if (err) throw err;
+        if (err) {
+            console.log("Error parsing file.");
+            //throw err;
+            return;
+        }
+        
+        console.log("parsed...");
 
         // data is an array of arrays
         // so y coordinate is specified first, then x - e.g. data[6][1] = 2nd column, 7th row.
@@ -101,6 +141,7 @@ function convertExcelToTransactions(filename, workbookNumber, transactions, call
 
         //make as many objects as there are rows
         if (data[0] === undefined) { //we need at least one row in the file
+            console.log("No rows in file.");
             throw err;
         };
         for (var i = 0; i < data.length; i++) {
@@ -109,8 +150,11 @@ function convertExcelToTransactions(filename, workbookNumber, transactions, call
         console.log("transactions: " + transactions.length);
         //try to find each field and update the objects:
 
+        console.log("populating transactions...");
         addField(data, transactions, "dateTime", "Date & Time", formatDate);
+        console.log("did datetime...");
         addField(data, transactions, "retailerRef", "Retailer Ref");
+        console.log("did retref...");
         addField(data, transactions, "outletRef", "Outlet Ref");
         addField(data, transactions, "retailerName", "Retailer Name");
         addField(data, transactions, "outletRef", "Outlet Ref");

@@ -50,6 +50,10 @@ class Transaction {
     console.log("Inserted" + transactions.length + " transactions.");
   }
   
+  static deleteTransactions(db, transactions, callback) {
+      
+  }
+  
 }
 
 module.exports = Transaction;

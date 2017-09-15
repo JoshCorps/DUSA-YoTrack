@@ -1,3 +1,5 @@
+let ObjectID = require('mongojs').ObjectID;
+
 class Upload {
     
     constructor() {
@@ -27,7 +29,7 @@ class Upload {
     }
     
     static deleteUploads(db, upload_ids, callback) {
-        db.uploads.remove({'_id': {$in: upload_ids}}, (err) => {
+        db.uploads.remove({'_id': {$in: upload_ids.map((upload) => {return new ObjectID(upload);})}}, (err) => {
            if (err) {
                callback(err);
            } 

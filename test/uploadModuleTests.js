@@ -21,7 +21,7 @@ describe('UploadModule', () => {
             if (err) return;
         });
         
-        Upload.deleteUploads(db, [up1, up2], (err, db) => {
+        Upload.deleteUploads(db, [101, 102], (err, db) => {
             if (err) return;
             db.uploads.findOne({'_id':{$in: [101,102]}}, (err, data) => {
                 if (err) return;

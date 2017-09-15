@@ -3,19 +3,34 @@
 let express = require('express');
 let router = express.Router();
 
+let authenticate = (req, res, next) => {
+    // if the user is logged in, proceed.
+    if (req.isAuthenticated()) {
+        return next();
+    }
+
+    // if not, redirect back to login page
+    res.redirect('/login')
+};
+
 // set locals before doing anything
 router.use((req, res, next) => {
     console.log(req.session.messages);
-    if (req.session.messages) {
-        res.locals.messages = req.session.messages;
-        req.session.messages = {};
+    if (req.method === 'GET') {
+        if (req.session.messages) {
+            res.locals.messages = req.session.messages;
+            req.session.messages = {};
+        }
     }
     req.flash = (type, message) => {
         console.log('Added message of type "' + type + '": ' + message);
         if (!req.session.messages) {
-            req.session.messages = {};
+            req.session.messages = {}
         }
-        req.session.messages[type] = message;
+        if (!req.session.messages[type]) {
+            req.session.messages[type] = [];
+        }
+        req.session.messages[type].push(message);
     }
     next();
 });
@@ -29,7 +44,8 @@ router.use('/upload_transactions', require('./upload_transactions'));
 router.use('/upload_history', require('./upload_history'));
 
 // serve index page
-router.use('/', (req, res) => {
+router.use('/', authenticate, (req, res) => {
+    req.flash('success', 'Hello! Just testing flash messages.');
     res.render('index', {
         title: 'Index'
     });
@@ -52,15 +68,4 @@ router.use((error, req, res, next) => {
 });
 
 module.exports = router;
-
-/* todo
-module.exports = (req, res, next) => {
-    // if the user is logged in, proceed.
-    if (req.isAuthenticated() || global.config["debugmode"]) {
-        return next();
-    }
-
-    // if not, redirect back to login page
-    res.redirect('/')
-}
-*/
+module.exports.authenticate = authenticate;

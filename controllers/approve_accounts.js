@@ -4,8 +4,9 @@ let express = require('express');
 let router = express.Router();
 let User = require('../models/user.js');
 let db = require('../models/db.js')();
+let authenticate = require('./index.js').authenticate;
 
-router.get('/', (req, res) => {
+router.get('/', authenticate, (req, res) => {
     User.getUnapprovedUsers(db, (err, users) => {
       if(err) {
           // handle error somehow
@@ -16,7 +17,7 @@ router.get('/', (req, res) => {
   });
 });
 
-router.post('/', (req, res) => {
+router.post('/', authenticate, (req, res) => {
     var approved = [];
     var declined = [];
     var users = Array.prototype.slice.call(req.body.users);
@@ -41,6 +42,8 @@ router.post('/', (req, res) => {
             }
         });
     }
+    
+    res.redirect('/approve_accounts');
 });
 
 module.exports = router;

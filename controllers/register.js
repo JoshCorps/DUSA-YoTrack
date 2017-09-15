@@ -17,6 +17,10 @@ router.post('/', (request, response) => {
     var emailUnique = false;
     
     User.getUserByEmail(db, email, (err, user) => {
+        if (err)
+        {
+            //handle error
+        }
         if (user !== null) {
             emailUnique = false;
         } else {
@@ -25,9 +29,9 @@ router.post('/', (request, response) => {
         
         if (!emailUnique)
         {
-            request.flash('error', "Email already in use");
-            response.redirect('/login');
-            return;
+            //request.flash('error', "Email already in use");
+            //response.redirect('/login');
+            //return;
         }
     });
 

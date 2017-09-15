@@ -1,0 +1,35 @@
+.error {
+    background: #FF9494;
+    border: 1px solid #F42D10;
+}
+
+.success {
+    background: #C1E1A6;
+    border: 1px solid #A8CD1B;    
+}
+
+.error, .success {
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.error i, .success i {
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+    display: inline;
+}
+
+.error p, .success p {
+    padding: 0;
+    margin: 0;
+    display: inline;
+}
+
+.error a, .success a {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    color: black;
+}

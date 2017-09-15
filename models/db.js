@@ -35,7 +35,6 @@ module.exports = () => {
       console.log('Database error: ', e);
     });
   }  
-  
   // I know I said don't use return, but this is the one case where it's acceptable :>
   return db;
 };
