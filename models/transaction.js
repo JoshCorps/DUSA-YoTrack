@@ -36,7 +36,6 @@ class Transaction {
     }
     console.log("Encountered and deleted " + invalidCount + " invalid transactions before inserting to the database.");
     console.log("About to insert " + transactions.length + " transactions.");
-    
     db.transactions.insert(transactions, (err) => {
         if (err)
         {
@@ -59,7 +58,6 @@ class Transaction {
         }
 
     });
-    
   }
   
     static deleteTransactions(db, upload_ids, callback) {

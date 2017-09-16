@@ -4,10 +4,21 @@ block content
     div(class="block")
         form(action="/upload_transactions", method="POST", enctype="multipart/form-data")
             h1 Upload Transactions
-            p Select a spreadsheet to upload (Only the .xlsx format is accepted)
+            p Select a spreadsheet to upload. (Only the .xlsx format is accepted.)
             input(type="file", name="spreadsheet", accept=".xlsx")
-            p
-            p Specify the number of the workbook containing the full list of transactions:
-            input(type="number", min="1", value="1", name="workbookNumber")
+            button(type="button", onclick='toggleAdvanced()') Show advanced upload options
+            #advancedDiv(style="display:none;")
+                p Worksheet number to scan data from:
+                input(type="number", min="1", value="2", name="workbookNumber")
             p
             input(type="submit", value="Upload Transactions", class="button-primary")
+            
+            script.
+                function toggleAdvanced() {
+                    var x = document.getElementById('advancedDiv');
+                    if (x.style.display === 'none') {
+                        x.style.display = 'block';
+                    } else {
+                        x.style.display = 'none';
+                    }
+                }
