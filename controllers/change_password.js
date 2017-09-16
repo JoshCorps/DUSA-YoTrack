@@ -25,25 +25,32 @@ router.post('/', authenticate, (req, res) => {
     
     if(newPass !== repeatNewPass)
     {
-        //flash msg
-        return;
-    }
-    
-    if(user.checkPassword(currentPass))
+        req.flash('error', 'The new passwords do not match. Please try again.');
+        res.redirect('/change_password');
+    } else if (newPass.length < 8)
     {
-        //change pass
-        user.setPassword(newPass, false);
-        user.update(db, user, (err, user) => 
+        req.flash('error', 'The new password does not meet the requirements'); //list requirements
+        res.redirect('/change_password');
+    } else {
+        if(user.checkPassword(currentPass))
         {
-            if (err)
+            //change pass
+            user.setPassword(newPass, false);
+            user.update(db, user, (err, user) => 
             {
-                //handle err
-            } else {
-                req.flash('success', "Your password has been changed please login again");
-                res.redirect('/');
-            }
-            
-        });
+                if (err)
+                {
+                    //handle err
+                } else {
+                    req.session.change_pass = true;
+                    res.redirect('/logout');
+                }
+                
+            });
+        } else {
+            req.flash('error', 'Current password incorrect. Please try again');
+            res.redirect('/change_password');
+        }
     }
     
 });

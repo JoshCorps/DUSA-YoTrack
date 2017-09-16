@@ -61,6 +61,7 @@ router.post('/', (request, response) => {
     if (password.length < 8) //add more reqs
     {
         request.flash('error', "Password requirements not met");
+        console.log(request.session)
         response.redirect('/login');
         return;
     }
