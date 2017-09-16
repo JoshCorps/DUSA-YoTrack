@@ -1,18 +1,18 @@
 extend page
-
 block content
+
     div(class="block")
         if  (accounts.length != 0)
             
             form(action="/approve_accounts" method="post")
                 - for (var i = 0; i < accounts.length; i++)
-                    - var user = accounts[i]
-                    li= user.email
+                    - var account = accounts[i]
+                    li= account.email
                     input(type='radio', checked, name='users['+i+'][isApproved]' value='true')
                     | Approve
                     input(type='radio', checked, name='users['+i+'][isApproved]' value='false')
                     | Decline
-                    input(type="hidden", name='users['+i+'][email]', value=user.email)
+                    input(type="hidden", name='users['+i+'][email]', value=account.email)
             
                 input(type='submit', value='Approve/Decline Accounts')
             

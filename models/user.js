@@ -14,14 +14,14 @@ class User {
   
   update(db, data, callback) {
     // sync changes to database
-    db.users.update({'email': this.email}, { 
+    db.users.update({'email': this.email}, {$set:{ 
       'firstName': data.firstName,
       'lastName': data.lastName,
       'password': data.password,
       'salt': data.salt,
       'accountType': data.accountType,
       'isApproved': data.isApproved
-    }, callback);
+    }}, callback);
   }
   
   setPassword(password, update) {
@@ -39,13 +39,16 @@ class User {
   checkPassword(inputPassword) {
     // hash input + salt
     let hashedPassword = sha512(inputPassword + this.salt).toString('hex');
-    
     // check if they match
     if (hashedPassword === this.password) {
       return true;
     } else {
       return false;
     }
+  }
+  
+  isMasterAccount() {
+    return (this.accountType == 'master');
   }
   
   static create(db, data, callback) {
@@ -89,20 +92,6 @@ class User {
         }
       }
       callback(null, users);
-    });
-  }
-  
-  static isMasterAccount(db, email, callback) {
-    db.users.findOne({'email': email}, (err, user) => {
-      if (err) {
-        callback(err);
-        return;
-      }
-      if (user.accountType == 'master') {
-        callback(null, true);
-      } else {
-        callback(null, false);
-      }
     });
   }
   

@@ -22,15 +22,18 @@ module.exports.authenticate = authenticate;
 
 // set locals before doing anything
 router.use((req, res, next) => {
-    console.log(req.session.messages);
+    if (req.user) {
+        res.locals.user = req.user;
+    }
+    
     if (req.method === 'GET') {
         if (req.session.messages) {
             res.locals.messages = req.session.messages;
             req.session.messages = {};
         }
     }
+    
     req.flash = (type, message) => {
-        console.log('Added message of type "' + type + '": ' + message);
         if (!req.session.messages) {
             req.session.messages = {}
         }
@@ -39,6 +42,7 @@ router.use((req, res, next) => {
         }
         req.session.messages[type].push(message);
     }
+    
     next();
 });
 
@@ -49,6 +53,7 @@ router.use('/logout', require('./logout'));
 router.use('/approve_accounts', require('./approve_accounts'));
 router.use('/upload_transactions', require('./upload_transactions'));
 router.use('/upload_history', require('./upload_history'));
+router.use('/change_password', require('./change_password'));
 
 // serve index page
 router.use('/', authenticate, (req, res) => {

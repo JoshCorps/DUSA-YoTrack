@@ -1,8 +1,9 @@
 let express = require('express');
 let router = express.Router();
 const fs = require("fs");
+var AsyncLock = require('async-lock');
 let authenticate = require('./index').authenticate;
-    
+
 //models
 let db = require('../models/db.js')();
 let Transaction = require('../models/transaction');
@@ -14,178 +15,271 @@ router.get('/', authenticate, (request, response) => {
 });
 
 router.post('/', authenticate, (req, res) => {
+    
     let fileUpload = require('express-fileupload');
-    if (!req.files)
-    {
-        //req.flash('error', "Couldn't detect file!");
-        //res.redirect('/');
+    if (!req.files || req.files.spreadsheet === undefined) {
+        req.flash('error', "Couldn't detect file!");
+        res.redirect('/');
+        return;
     }
 
     let spreadsheet = req.files.spreadsheet;
-    
-    var fileSizeInMB = spreadsheet.data.byteLength/1048576; //Clarification:MebiBytes are used (MiB), not the new simplified definition of MB
-    
+
+    var fileSizeInMB = spreadsheet.data.byteLength / 1048576; //Clarification:MebiBytes are used (MiB), not the new simplified definition of MB
+
     console.log("MIME Type: " + spreadsheet.mimetype);
     console.log("File size: " + fileSizeInMB);
-    
+
+    /*
     //mimetype check
-    if (spreadsheet.mimetype === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-    {
+    if (spreadsheet.mimetype === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
         req.flash("The file is not in .xlsx format. Please ensure your file is properly.");
         res.redirect("/");
         return;
     }
-    
+    */
+
     //filesize check before writing to disk
-    var uploadLimitInMB = 1;
-    if (fileSizeInMB > uploadLimitInMB)
-    {
+    var uploadLimitInMB = 20;
+    if (fileSizeInMB > uploadLimitInMB) {
         req.flash("File size is too large for the server to handle (larger than " + uploadLimitInMB + "MB). Please break the file into smaller chunks.");
         res.redirect("/");
         return;
     }
-    
+
     const fileName = '/home/ubuntu/workspace/spreadsheets/file.xlsx';
 
     spreadsheet.mv(fileName, function(err) {
         //req.flash('error', "Couldn't detect file!");
         //res.redirect('/');
     });
-    
+
     var workbookNumber = parseInt(req.body.workbookNumber);
-    if (isNaN(workbookNumber))
-    {
+    if (isNaN(workbookNumber)) {
         console.log("The workbook number supllied was not a number.");
         workbookNumber = 0;
     }
-    
-    console.log("workbookNumber: " + workbookNumber);
-    
-    /*
-    const readChunk = require('read-chunk');
-    const fileType = require('file-type');
 
-    var buffer = readChunk.sync(fileName, 0, 4100);
-     
-    var ftype = fileType(buffer);
-    console.log("ftype: ");
-    console.log(fileName);
-    console.log(ftype);
-    console.log(buffer);
-    
-    var isFileValid = (ftype.ext === "xlsx" && ftype.mime === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    
-    if (!isFileValid){
-        req.flash('error', "Invalid spreadsheet file format/content!");
-        res.redirect('/');
-    }
-    */
-    
+    console.log("workbookNumber: " + workbookNumber);
+
+    console.log("About to process uploaded file.");
     var transactions = [];
-    convertExcelToTransactions(fileName, workbookNumber, transactions, insertTransactions); //callback necessary to ensure array is processed before being sent to the DB
-    
-    res.redirect('/');
-    return;
+    convertExcelToTransactions(fileName, workbookNumber, transactions, insertTransactions, req, res); //callback necessary to ensure array is processed before being sent to the DB
 
     //res.render('upload_transactions_receive', {transactions});
 });
 
-function insertTransactions(transactions)
-{
+function insertTransactions(transactions) {
+    
+    console.log("Inserting transactions. " + transactions.length + " transactions left.");
+    
+    const insertLimit = 50000; //we need an insertLimit as inserting has a large memory footprint.
+    
     if (transactions.length > 0)
     {
-        Transaction.insertTransactions(db, transactions, (transactionIDs) => {
-            console.log("inserted transactions, inserting upload");
-            var upload = new Upload();
-            upload.date = new Date();
-            upload.transactionIDs = transactionIDs;
-            Upload.create(db, upload, afterUploadCreated);
-    });
-        
+        var isDone = false;
+            
+            if (transactions.length > insertLimit)
+            {
+                //break off into smaller chunks if over the limit
+                isProcessing = true;
+                var batch = transactions.splice(0, insertLimit);
+                
+                //insert the batch without finishing up
+                Transaction.insertTransactions(db, batch, (transactionIDs, startDate, endDate) => {
+                    console.log("inserted transactions, inserting upload");
+                    
+                    var upload = new Upload();
+                    upload.date = new Date();
+                    upload.startDate = startDate;
+                    upload.endDate = endDate;
+                    upload.transactionIDs = transactionIDs;
+                    Upload.create(db, upload, seqFactory(transactions));
+                    });
+                    
+                } else {
+                
+                    isDone = true;
+                    //insert and finish up
+                    Transaction.insertTransactions(db, transactions, (transactionIDs) => {
+                        console.log("inserted transactions, inserting upload");
+                        
+                        var upload = new Upload();
+                        upload.date = new Date();
+                        upload.transactionIDs = transactionIDs;
+                        Upload.create(db, upload, afterFinalUploadCreated);
+                    });
+                }
+}
+    
+
+}
+
+function seqFactory(newTrans) {
+    return function() {
+        insertTransactions(newTrans);
     }
 }
 
-function afterUploadCreated(){
+function afterUploadCreated() {
     //nothing for now
     console.log("Upload created.");
 }
 
-//use this method to get an array of transaction objects out of an uploaded excel spreadsheet
-function convertExcelToTransactions(filename, workbookNumber, transactions, callback) {
-    const uuidv1 = require('uuid/v1');
-    var parseXlsx = require('excel');
-    console.log("about to parse...");
-    
-    /*
-    if (fileSizeInMegabytes > 1)
-    {
-        req.flash("File size is too large. Please break the file into smaller chunks.");
-        res.redirect("/");
-        return;
-    }
-    */
-    
-    parseXlsx(filename, workbookNumber, function(err, data) {
-        if (err) {
-            console.log("Error parsing file.");
-            //throw err;
-            return;
-        }
-        
-        console.log("parsed...");
-
-        // data is an array of arrays
-        // so y coordinate is specified first, then x - e.g. data[6][1] = 2nd column, 7th row.
-
-        if (data === undefined) { console.log("spreadsheet data is undefined!"); throw err; }
-
-        //make as many objects as there are rows
-        if (data[0] === undefined) { //we need at least one row in the file
-            console.log("No rows in file.");
-            throw err;
-        };
-        for (var i = 0; i < data.length; i++) {
-            transactions.push(new Transaction());
-        }
-        console.log("transactions: " + transactions.length);
-        //try to find each field and update the objects:
-
-        console.log("populating transactions...");
-        addField(data, transactions, "dateTime", "Date & Time", formatDate);
-        console.log("did datetime...");
-        addField(data, transactions, "retailerRef", "Retailer Ref");
-        console.log("did retref...");
-        addField(data, transactions, "outletRef", "Outlet Ref");
-        addField(data, transactions, "retailerName", "Retailer Name");
-        addField(data, transactions, "outletRef", "Outlet Ref");
-        addField(data, transactions, "outletName", "Outlet Name");
-        addField(data, transactions, "newUserID", "New user id");
-        addField(data, transactions, "transactionType", "Transaction Type");
-        addField(data, transactions, "cashSpent", "Cash Spent", formatMoney);
-        addField(data, transactions, "discountAmount", "Discount Amount", formatMoney);
-        addField(data, transactions, "totalAmount", "Total Amount", formatMoney);
-        /* Timestamps removed in favour of the uploads table (to get rid of data duplication and normalise the structure of the data).
-        for (var i = 0; i < transactions.length; i++) {
-            transactions[i].uploadID = uuidv1(); //timestamp as uploadID
-        }
-        */
-        
-        console.log("transaction count before deletions: " + transactions.length);
-        removeElementsWithUndefinedProperties(transactions);
-        console.log("transaction count after processing: " + transactions.length);
-        
-        callback(transactions);
-    });
+function afterFinalUploadCreated() {
+    console.log("Final upload created.");
 }
 
-function formatMoney(str){
+
+class columnExtractionDetails {
+    constructor(fieldName, title, formatFunc){
+        this.fieldName = fieldName;
+        this.title = title;
+        this.formatFunc = formatFunc;
+        this.found = false;
+        this.x = undefined;
+    }
+}
+
+//use this method to get an array of transaction objects out of an uploaded excel spreadsheet
+function convertExcelToTransactions(filename, workbookNumber, transactions, callback, req, res) {
+    const uuidv1 = require('uuid/v1');
+    var parseXlsx = require('excel');
+    var XLSX = require('xlsx-extract').XLSX;
+
+    var extractionDetails = [];
+
+    extractionDetails.push(new columnExtractionDetails("dateTime", "Date & Time", formatDate));
+    extractionDetails.push(new columnExtractionDetails("retailerRef", "Retailer Ref"));
+    extractionDetails.push(new columnExtractionDetails("outletRef", "Outlet Ref"));
+    extractionDetails.push(new columnExtractionDetails("retailerName", "Retailer Name"));
+    extractionDetails.push(new columnExtractionDetails("outletName", "Outlet Name"));
+    extractionDetails.push(new columnExtractionDetails("newUserID", "New user id"));
+    extractionDetails.push(new columnExtractionDetails("transactionType", "Transaction Type"));
+    extractionDetails.push(new columnExtractionDetails("cashSpent", "Cash Spent", formatMoney));
+    extractionDetails.push(new columnExtractionDetails("discountAmount", "Discount Amount", formatMoney));
+    extractionDetails.push(new columnExtractionDetails("totalAmount", "Total Amount", formatMoney));
+    
+    var rowIndex = -1;
+    var detailsFound = false;
+    var titleScanLimit = 20; //we must encounter the title within this number of rows from the start
+    
+    var transactions = [];
+    
+    new XLSX().extract(filename, { sheet_id: workbookNumber }) // or sheet_name or sheet_nr 
+        .on('sheet', function(sheet) {
+            //nothing
+        })
+        .on('row', function(row) {
+            
+            //console.log("row", row);
+            rowIndex++;
+            if (!detailsFound && row !== null && row !== undefined) {
+                if (rowIndex <= titleScanLimit)
+                {
+                    for (var e = 0; e < extractionDetails.length; e++)
+                    {
+                        for (var i = 0; i < row.length; i++) {
+                            //console.log("Processed row #" + rowIndex + " contaning " + row[i]);
+                            if (row[i] !== null && row[i]!== undefined && (""+row[i]).toLowerCase() === extractionDetails[e].title.toLowerCase())
+                            {
+                                extractionDetails[e].x = i;
+                                extractionDetails[e].found = true;
+                                //console.log("Found heading: " + row[i]);
+                                break;
+                            }
+                        }
+                    }
+                }
+                
+                //check if every detail column heading has been found
+                detailsFound = true; //assume true, change if necessary
+                for (var e = 0; e < extractionDetails.length; e++) {
+                    if (extractionDetails[e].found === false)
+                    {
+                        detailsFound = false;
+                    }
+                }
+                
+                /*
+                if (!detailsFound && rowIndex > titleScanLimit)
+                {
+                    res.flash("Could not find transaction data in the uploaded file.");
+                    res.redirect("/");
+                    return;
+                }
+                */
+            }
+            else { //if details have already been found
+                for (var i = 0; i < row.length; i++) {
+                    
+                    if (i==0) {transactions.push(new Transaction()); }
+                    
+                    if (row[i] !== null && row[i]!== undefined) //only process cells if they contain data
+                    {
+                        //find the relevant columnExtractionDetails Object
+                        var details = undefined;
+                        
+                        for (var e = 0; e < extractionDetails.length; e++) {
+                            if (extractionDetails[e].x === i)
+                            {
+                                details = extractionDetails[e];
+                            }
+                        }
+                        
+                        if (details !== undefined && details !== null)
+                        {
+                            var value = undefined;
+                            if (details.formatFunc !== undefined && details.formatFunc !== null) {
+                                //format value here, if necessary
+                                value = details.formatFunc(row[i]);
+                            } else {
+                                value = row[i];
+                            }
+                            //add the object
+                            (transactions[transactions.length - 1])[details.fieldName] = value;
+                        }
+                        
+                    }
+
+                }
+            }
+            
+
+        })
+        .on('cell', function(cell) {
+            //console.log('cell', cell); //cell is a value or null 
+        })
+        .on('error', function(err) {
+            console.error('error', err);
+        })
+        .on('end', function(err) {
+            console.log("Finished processing and found " + transactions.length + " transactions.");
+            
+            if (transactions.length === 0)
+            {
+                req.flash("error", "Could not find transaction data in the uploaded file.");
+                res.redirect("/");
+                return;
+            } else {
+                req.flash("success", "The data has been uploaded for processing. Please allow some time for this process if your dataset is large.");
+                res.redirect('/');
+            }
+            
+            callback(transactions);
+        });
+        
+}
+
+function formatMoney(str) {
     //store as number of 1p coins, i.e. £1.62 is stored as 162p
-    var money = Number(str.replace(/[^0-9\.-]+/g,"")); //remove all chars except digits, dots and minus signs
-    money = Math.round((parseFloat(str)*100));
+    str = (""+str);     //Make sure str is a string, so we can call the regex replace function on it without issue.
+    var money = Number(str.replace(/[^0-9\.-]+/g, "")); //remove all chars except digits, dots and minus signs
+    money = Math.round((parseFloat(str) * 100));
     return money;
 }
 
-function formatDate(str){
+function formatDate(str) {
     //format in spreadsheets: dd/MM/yyyy hh:mm
     var date = moment(str, "dd/MM/yyyy hh:mm").toDate();
     return date;

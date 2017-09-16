@@ -37,6 +37,8 @@ html(lang="en", dir="ltr")
                             span(class="light") dashboard
                     div(class="right")
                         ul
+                            - var greetings = [ 'Hello, {0} {1}!', 'Hi, {0} {1}!', 'Hi, {0}!' ]
+                            li(class="greet")= greetings[Math.floor(Math.random() * greetings.length)].replace('{0}', user.firstName).replace('{1}', user.lastName)
                             li
                                 a(href="/logout", class="logout") 
                                     | Log out 
@@ -61,21 +63,24 @@ html(lang="en", dir="ltr")
                                 p
                                     i(class="fa fa-search", aria-hidden="true")
                                     span Search
-                        li 
-                            a(href="/upload_transactions")
-                                p
-                                    i(class="fa fa-upload", aria-hidden="true")
-                                    span Upload Data
-                        li 
-                            a(href="/upload_history")
-                                p
-                                    i(class="fa fa-history", aria-hidden="true")
-                                    span Upload History
-                        li 
-                            a(href="/approve_accounts")
-                                p
-                                    i(class="fa fa-thumbs-o-up", aria-hidden="true")
-                                    span Account Approval
+                        if (user.isMasterAccount())
+                            li 
+                                a(href="/upload_transactions")
+                                    p
+                                        i(class="fa fa-upload", aria-hidden="true")
+                                        span Upload Data
+                        if (user.isMasterAccount())
+                            li 
+                                a(href="/upload_history")
+                                    p
+                                        i(class="fa fa-history", aria-hidden="true")
+                                        span Upload History
+                        if (user.isMasterAccount())
+                            li 
+                                a(href="/approve_accounts")
+                                    p
+                                        i(class="fa fa-thumbs-o-up", aria-hidden="true")
+                                        span Account Approval
             article
                 if (messages)
                     if (messages.error)

@@ -1,5 +1,4 @@
 var chai = require('chai');
-var assert = chai.assert;
 var expect = chai.expect;
 var User = require('../../models/user.js');
 let db = require('../../models/db.js')();
@@ -23,9 +22,7 @@ describe('createAccount', () => {
         }); 
         user.setPassword("password", false);
         User.create(db, user, (err, data) => {
-            console.log("data: " + data)
             expect(err).equal(undefined);
-            //assert.strictEqual(err,undefined);
             done();
         });
     });

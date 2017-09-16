@@ -7,7 +7,11 @@ let authenticate = require('./index').authenticate;
 router.get('/', authenticate, (req, res) => {
     req.logout();
     req.session.destroy();
-    res.send(401);
+    res.redirect('/');
+});
+
+router.post('/', authenticate, (req,res) => {
+    
 });
 
 module.exports = router;

@@ -36,24 +36,34 @@ class Transaction {
     }
     console.log("Encountered and deleted " + invalidCount + " invalid transactions before inserting to the database.");
     console.log("About to insert " + transactions.length + " transactions.");
-    db.transactions.insert(transactions, (err, objs) => {
+    
+    db.transactions.insert(transactions, (err) => {
         if (err)
         {
             //TODO: Handle error
             console.log("Could not insert data.");
         }
-        var transactionIDs = [];
-        for (var i = 0; i < objs.length; i++) {
-            transactionIDs.push(objs[i]._id);
+        else {
+            console.log("Inserted " + transactions.length + " transactions.");
+            
+            var transactionIDs = [];
+            
+            var startDate = transactions[0].dateTime;
+            var endDate = transactions[transactions.length - 1].dateTime;
+            
+            for (var i = transactions.length - 1; i >= 0; i--) {
+                transactionIDs.push(transactions[i]._id);
+            }
+            transactions = undefined; //mark for garbage collection to make space for other inserts
+            callback(transactionIDs, startDate, endDate);
         }
-        callback(transactionIDs);
+
     });
     
-    console.log("Inserted" + transactions.length + " transactions.");
   }
   
     static deleteTransactions(db, upload_ids, callback) {
-        db.uploads.find({'_id': {$in: upload_ids}}, {transactionIDs: 1, _id: 0}, (err, uploads) => {
+        db.uploads.find({'_id': {$in: upload_ids.map((upload) => {return new ObjectID(upload);})}}, (err, uploads) => {
             if (err) {
                 callback(err);
             }
@@ -61,15 +71,11 @@ class Transaction {
             for(let i=0; i<uploads.length; i++) {
                 transaction_ids = Array.prototype.concat(uploads[i].transactionIDs);
             }
-            db.transactions.remove()
-        });
-        
-        db.transactions.remove({'_id': {$in: db.updloads.find({'_id': {$in: upload_ids}}, {transactionIDs: 1, _id: 0})}})
-        
-        db.uploads.remove({'_id': {$in: transactions.map((transaction) => {return new ObjectID(transaction);})}}, (err) => {
-           if (err) {
-               callback(err);
-           } 
+            db.transactions.remove({'_id': {$in: transaction_ids.map((transaction) => {return new ObjectID(transaction);})}}, (err) => {
+                if (err) {
+                   callback(err);
+                }
+            });
         });
     }
   

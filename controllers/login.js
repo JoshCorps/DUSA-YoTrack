@@ -25,12 +25,7 @@ passport.deserializeUser(function(user, done) {
 });
 
 passport.use(new LocalStrategy({ usernameField: 'email' }, (email, password, done) => {
-    console.log(email);
-    console.log(password);
-    console.log('About to do database query')
-
     User.getUserByEmail(db, email, (error, data) => {
-        console.log('Database query');
         if (error) {
             return done(error);
         }
@@ -40,21 +35,17 @@ passport.use(new LocalStrategy({ usernameField: 'email' }, (email, password, don
 
         // if the user objects exists in the DB 
         if (data) {
-            console.log('User exists');
             if (data.checkPassword(password)) {
                 // password is OK
-                console.log('Password is OK');
                 return done(null, data);
             }
             else {
                 // password is not OK
-                console.log('Password is not OK');
                 return done(null, false, { message: 'Incorrect password.' });
             }
         }
         else {
             // email does not exist in DB
-            console.log('User does not exist');
             return done(null, false, { message: 'Incorrect username.' });
         }
     });
@@ -62,13 +53,12 @@ passport.use(new LocalStrategy({ usernameField: 'email' }, (email, password, don
 
 router.get('/', (request, response) => {
     response.render('login');
-})
+});
 
 router.post('/',
-    passport.authenticate('local', { failureRedirect: '/login' }),
-    function(req, res) {
-        console.log('Is redirecting');
-        res.redirect('/');
-    });
+    passport.authenticate('local', { successRedirect: '/',
+                                   failureRedirect: '/login',
+                                   failureFlash: true })
+);
 
 module.exports = router;
