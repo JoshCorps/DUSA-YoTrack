@@ -23,7 +23,7 @@ describe('getUserByEmail', () => {
         User.getUserByEmail(db, 'dskjahkdsjga', (err, user) => {
            if (err) return;
            expect(user).equal(null);
-           done(); 
+            done(); 
         });
     });
 });

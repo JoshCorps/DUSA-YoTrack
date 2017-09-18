@@ -24,6 +24,16 @@ module.exports = () => {
       console.log('Created/verified uploads collection');
       db.uploads = db.collection('uploads');
     });
+    
+    db.createCollection('tribe_analyses', {}, () => {
+      console.log('Created/verified tribe analyses collection');
+      db.tribe_analyses = db.collection('tribe_analyses');
+    });
+    
+    db.createCollection('tribes', {}, () => {
+      console.log('Created/verified tribes collection');
+      db.tribes = db.collection('tribes');
+    });
       
     // when the database is connected, fire this event.
     db.on('connect', () => {

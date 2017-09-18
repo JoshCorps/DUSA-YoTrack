@@ -28,15 +28,13 @@ describe('changePassword', () => {
     });
     
     it('changePassword() should change the password of changePassword@test.com', (done) => {
-        console.log("user = " + JSON.stringify(user));
         user.setPassword("changedPassword", false);
         user.update(db,user, (err, user) => 
         {
-            console.log("user: " + JSON.stringify(user));
-            console.log("err: " + err);
             expect(err).equal(null);
-            // ***
         });
+        expect(user.checkPassword("password")).equal(false);
+        expect(user.checkPassword("changedPassword")).equal(true);
         done();
     });
 })

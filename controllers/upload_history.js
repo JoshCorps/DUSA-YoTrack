@@ -28,12 +28,12 @@ router.post('/', authenticate, (req, res) => {
     Transaction.deleteTransactions(db, uploads, (err) => {
         if(err) {
             //handle error
-        } 
-    });
-    Upload.deleteUploads(db, uploads, (err) => {
-        if (err) {
-            // handle error
         }
+        Upload.deleteUploads(db, uploads, (err) => {
+            if (err) {
+                // handle error
+            }
+        });
     });
     
     res.redirect('/upload_history');

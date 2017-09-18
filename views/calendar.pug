@@ -1,0 +1,16 @@
+extend page
+block content
+    div(class="block")
+        div(class="calendar")
+            - for (var week = 0; week < 5; week++)
+                div(class="calendar-week row-dynamic")
+                    - for(var cell = (7 * week); cell < (7 * week) + 7; cell++)
+                        - if (data[cell])
+                            - if (data[cell].faded)
+                                div(class="calendar-day no-day")
+                            - else
+                                div(class="calendar-day" style="#{data[i].color}")= data[cell].dayNumber
+                        - else
+                            //- remove when data is there
+                            div(class="calendar-day no-day")
+                        

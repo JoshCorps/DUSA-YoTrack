@@ -54,6 +54,7 @@ router.use('/approve_accounts', require('./approve_accounts'));
 router.use('/upload_transactions', require('./upload_transactions'));
 router.use('/upload_history', require('./upload_history'));
 router.use('/change_password', require('./change_password'));
+router.use('/calendar', require('./calendar'));
 
 // serve index page
 router.use('/', authenticate, (req, res) => {

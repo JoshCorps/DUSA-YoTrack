@@ -3,10 +3,8 @@ let ObjectID = require('mongojs').ObjectID;
 class Upload {
     
     constructor() {
-        this.date = undefined; //this is the upload date
+        this.date = undefined;
         this.transactionIDs = undefined;
-        this.startDate = undefined; //datetime of the first transaction within the batch covered by the upload
-        this.endDate = undefined //datetime of the last transaction within the batch covered by the upload
     }
     
     static create(db, upload, callback) {
