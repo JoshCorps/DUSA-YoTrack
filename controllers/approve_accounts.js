@@ -29,7 +29,7 @@ router.post('/', authenticate, (req, res) => {
     var users = Array.prototype.slice.call(req.body.users);
     for(let i=0; i<users.length; i++) {
         if (users[i].isApproved == 'true') {
-            approved.push(users[i].email);
+            approved.push(users[i]);
         } else {
             declined.push(users[i].email);
         }
