@@ -7,6 +7,7 @@ let authenticate = require('./index').authenticate;
 // models
 let db = require('../models/db.js')();
 let Day = require('../models/day.js');
+let Month = require('../models/month.js');
 
 router.get('/:year/:month/:day', authenticate, (request, response) => {
     
@@ -20,7 +21,8 @@ router.get('/:year/:month/:day', authenticate, (request, response) => {
             'data': data,
             'year': year,
             'month': month,
-            'day': day
+            'day': day,
+            'startHour' : 6 //TODO: Fix - passing month.startHour doesn't work.
         });
     });
     

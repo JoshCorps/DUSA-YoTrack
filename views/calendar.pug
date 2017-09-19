@@ -31,7 +31,7 @@ block content
                     - for (var d2 = offset; d2 < 7; d2++)
                         - var day = d2 - offset + 1;
                         - if (data[day])
-                            a(class="calendar-day" href="#" style="color: black; text-decoration:none; background: "+colors[day]+";")
+                            a(class="calendar-day" href="/day_view/"+year+"/"+month+"/"+day style="color: black; text-decoration:none; background: "+colors[day]+";")
                                 span= day
                                 p= "£" + (data[day] / 100).toFixed(2)
                         - else
@@ -48,7 +48,7 @@ block content
                                 div(class="calendar-day no-day") 
                             - else 
                                 - if (data[day])
-                                    a(class="calendar-day" href="#" style="color: black; text-decoration:none; background: "+colors[day]+";")
+                                    a(class="calendar-day" href="/day_view/"+year+"/"+month+"/"+day style="color: black; text-decoration:none; background: "+colors[day]+";")
                                         span= day
                                         p= "£" + (data[day] / 100).toFixed(2)
                                 - else

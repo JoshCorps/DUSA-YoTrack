@@ -36,7 +36,7 @@ class Day {
                 }
                 hours[theHour].push(data[i]);
             }
-        }
+        } // **** Need to do some padding for hours with 0 transactions
       console.log('Day Data length: '+hours.length);
       callback(err, hours);
     });

@@ -1,6 +1,58 @@
 extend page
 block content
-    - var keys = Object.keys(data);
-    p= Object.keys(data).length
-    - for (var i = 0; i < keys.length; i++)
-        p= data[keys[i]][0].totalAmount
+	script(src='/chartjs/Chart.js')
+	
+	p #{data}
+	
+	- var hourLabels = []
+	- for (var h = 0; h < 24; h++)
+		- var hourText = (startHour + h) % 24
+		- if (hourText < 10) hourText = ("0" + hourText)
+		- hourText = (""+hourText)+":00"
+		- hourLabels.push(hourText)
+	
+	- var total = []
+	- var keys = Object.keys(data);
+	- for (var i = 0; i < keys.length; i++)
+		- var totalAmount = 0
+		- for (var e = 0; e < data[keys[i]].length; e++)
+			- totalAmount += data[keys[i]][e].totalAmount
+		- total.push((totalAmount/100).toFixed(2))
+	p= JSON.stringify(total)
+	p #{hourLabels}
+	
+	canvas#myChart
+		script.
+			var ctx = document.getElementById("myChart").getContext('2d');
+			var hourlyTotals = !{JSON.stringify(total)};
+			var labels = !{JSON.stringify(hourLabels)};
+			
+			var myChart = new Chart(ctx, {
+			type: 'bar',
+			data: {
+			labels: labels,
+			datasets: [{
+			label: 'Total Hourly Revenue',
+			data: hourlyTotals,
+			backgroundColor:
+			'rgba(255, 103, 199, 0.85)'
+			,
+			borderColor:
+			'rgba(0, 0, 0,,1)',
+			borderWidth: 1
+			}]
+			},
+			options: {
+			scales: {
+			yAxes: [{
+			ticks: {
+			beginAtZero:true
+			},
+			scaleLabel: {
+			display: true,
+			labelString: 'Revenue (GBP)'
+			}
+			}]
+			}
+			}
+			});
