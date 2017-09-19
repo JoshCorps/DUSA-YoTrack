@@ -27,14 +27,34 @@ class Transaction {
         }
         db.transactions.insert(trans, callback());
     }
-    
+
+    static getTransactionsByDateRange(db, startDate, endDate, callback) {
+        db.transactions.find({ dateTime: { $gte: startDate, $lt: endDate } }, (err, data) => {
+            if (err) {
+                callback(err);
+                return;
+            }
+
+            let days = {};
+            for (let i = 0; i < data.length; i++) {
+                var date = data[i].dateTime.getFullYear() + '-' + (data[i].dateTime.getMonth() + 1) + '-' + data[i].dateTime.getDate();
+                if (!days[date]) {
+                    days[date] = [];
+                }
+                days[date].push(data[i]);
+            }
+            
+            callback(null, days);
+        });
+    }
+
     static getTransactionsByDay() {
         // todo
     }
-    
+
     static getTransactionsByTime(startTime, endTime, callback) {
         // get list of transactions
-        
+
     }
 
     static getTransactionsByShop(shopID, callback) {
@@ -63,7 +83,7 @@ class Transaction {
                 var startDate = transactions[0].dateTime;
                 var endDate = transactions[transactions.length - 1].dateTime;
 
-                TribeAnalysis.analyse(db, transactions);
+                //TribeAnalysis.analyse(db, transactions);
                 for (var i = transactions.length - 1; i >= 0; i--) {
                     transactionIDs.push(db, transactions[i]._id);
                 }

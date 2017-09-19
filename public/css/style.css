@@ -232,6 +232,21 @@ main article {
     color: #000;
 }
 
+.calendar-day p {
+    margin: 0;
+    text-align: center;
+}
+
+.calendar-day span {
+    margin-left: 1em;
+    margin-top: 1em;
+}
+
+.date-heading {
+    min-height: initial !important;
+    text-transform: uppercase;
+}
+
 .calendar-item-back {
     width: 100%;
     background: rgb(195, 195, 195);

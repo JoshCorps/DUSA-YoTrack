@@ -55,12 +55,17 @@ router.use('/upload_transactions', require('./upload_transactions'));
 router.use('/upload_history', require('./upload_history'));
 router.use('/change_password', require('./change_password'));
 router.use('/calendar', require('./calendar'));
+router.use('/day_view', require('./day_view'));
 
 // serve index page
 router.use('/', authenticate, (req, res) => {
-    res.render('index', {
+    let date = new Date();
+    let year = date.getFullYear();
+    let month = date.getMonth() + 1;
+    res.redirect(`/calendar/${year}/${month}`);
+    /*res.render('index', {
         title: 'Index'
-    });
+    });*/
 });
 
 // serve 404 when nothing can be found

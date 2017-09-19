@@ -1,21 +1,71 @@
 extend page
 block content
     div(class="block")
-        p= console.log(JSON.stringify(data))
-            div(class="calendar")
-                - if (data)
-                    - for (var week = 0; week < 5; week++)
-                        div(class="calendar-week row-dynamic")
-                            - for(var cell = (7 * week); cell < (7 * week) + 7; cell++)
-                                - if (data[cell])
-                                    - if (data[cell].faded)
-                                        a(class="calendar-day no-day" href="#")
-                                        div
-                                    - else
-                                        a(class="calendar-day" href="#" style="color: black; text-decoration:none; background: " + data[cell].color)
-                                            div= data[cell].dayNumber
-                                                p= "£" + data[cell].revenue
+        - var monthNames = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];
+        h1= monthNames[month - 1] + " " + year
+        div(class="calendar")
+            div(class="calendar-week row-dynamic")
+                div(class="calendar-day date-heading")
+                    p Monday
+                div(class="calendar-day date-heading")
+                    p Tuesday
+                div(class="calendar-day date-heading")
+                    p Wednesday
+                div(class="calendar-day date-heading")
+                    p Thursday
+                div(class="calendar-day date-heading")
+                    p Friday
+                div(class="calendar-day date-heading")
+                    p Saturday
+                div(class="calendar-day date-heading")
+                    p Sunday
+            - if (data)
+                - var offset = new Date(year, month - 1, 1).getDay();
+                - var daysInMonth = new Date(year, month, 0).getDate();
+                - if (offset === 0) { offset = 7; }
+                - offset--;
+                - console.log(offset);
+                div(class="calendar-week row-dynamic")
+                    - for (var d1 = 0; d1 < offset; d1++) 
+                        div(class="calendar-day no-day")
+                    - for (var d2 = offset; d2 < 7; d2++)
+                        - var day = d2 - offset + 1;
+                        - if (data[day])
+                            a(class="calendar-day" href="#" style="color: black; text-decoration:none; background: "+colors[day]+";")
+                                span= day
+                                p= "£" + (data[day] / 100).toFixed(2)
+                        - else
+                            div(class="calendar-day no-data")
+                                span= day
+                                p No Data
+                - for (var week = 1; week < 6; week++)
+                    - var store
+                    div(class="calendar-week row-dynamic")
+                        - for (d3 = (7 * week); d3 < (7 * week) + 7; d3++)
+                            - store = d3
+                            - var day = d3 - offset + 1;
+                            - if (day > daysInMonth)
+                                div(class="calendar-day no-day") 
+                            - else 
+                                - if (data[day])
+                                    a(class="calendar-day" href="#" style="color: black; text-decoration:none; background: "+colors[day]+";")
+                                        span= day
+                                        p= "£" + (data[day] / 100).toFixed(2)
                                 - else
-                                    //- remove when data is there
-                                    div(class="calendar-day no-day")
+                                    div(class="calendar-day no-data")
+                                        span= day
+                                        p No Data
+                    - if ((store + 1 - offset) >= daysInMonth) 
+                        - break
                         
+    div(class="block flex justify-content-space-between")
+        - var lastMonth = (+month - 1 == 0 ? (+year - 1) + '/12' : year + '/' + (+month - 1)) 
+        - var nextMonth = (+month + 1 == 13 ? (+year + 1) + '/01' : year + '/' + (+month + 1)) 
+        a(class="button", href="/calendar/" + lastMonth)
+            i(class="fa fa-arrow-left", aria-hidden="true")
+            |  
+            = lastMonth 
+        a(class="button", href="/calendar/" + nextMonth)
+            = nextMonth
+            |  
+            i(class="fa fa-arrow-right", aria-hidden="true")
