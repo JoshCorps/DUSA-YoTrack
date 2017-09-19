@@ -1,0 +1,12 @@
+extend page
+block content
+
+    div(class="block")
+        form(action="/insights" method="post")
+            input(id="start" type="date")
+            input(id="end" type="date")
+            input(type='submit', value='Analyse')
+    
+    - if (insight)
+        div(class="block") 
+            p= JSON.stringify(insight, null, 2)

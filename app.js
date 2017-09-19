@@ -31,8 +31,9 @@ app.use(minify());
 app.use(session({
 	secret: 'some-super-secret-random-string-should-probably-go-here',
 	resave: true,
-	saveUninitialized: true,
-	cookie: { maxAge: 60000 }
+	rolling: true,
+	saveUninitialized: false,
+	cookie: { maxAge: 1000 * 60 * 60 * 24 }
 })); 
 app.use(passport.initialize());
 app.use(passport.session());

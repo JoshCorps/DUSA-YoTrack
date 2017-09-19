@@ -18,6 +18,13 @@ describe('approveUsers()', () => {
       done();
     });
     
+    after((done) => {
+        User.deleteUsersByEmails(db, ["approveUsers@test.com"], (err) => {
+            if(err) return;
+        });
+        done();
+    })
+    
     it('', (done) => {
         User.approveUsers(db, ['approveUsers@test.com'], (err, data) => {
             expect(err, "Error: " + err).to.be.null;

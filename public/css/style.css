@@ -293,8 +293,8 @@ main article {
 }
 
 .calendar .no-data {
-    background: black;
-    border: 1px solid black;
+    background: #333;
+    border: 1px solid #333;
     color: #fff;
 }
 

@@ -55,6 +55,7 @@ router.use('/upload_transactions', require('./upload_transactions'));
 router.use('/upload_history', require('./upload_history'));
 router.use('/change_password', require('./change_password'));
 router.use('/calendar', require('./calendar'));
+router.use('/insights', require('./insights'));
 router.use('/day_view', require('./day_view'));
 
 // serve index page

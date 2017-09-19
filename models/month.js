@@ -1,8 +1,8 @@
 let instadate = require('instadate');
 let Transaction = require('./transaction');
 
-const startHour = 6;
-module.exports = {startHour};
+let startHour = 6;
+module.exports.startHour = startHour;
 
 class Month {
   constructor() {
@@ -37,13 +37,16 @@ class Month {
   
   static getColorsForDays(days) {
       let total = 0;
+      let nullDays = 0;
       let keys = Object.keys(days);
       for (let j=0; j<keys.length; j++) {
           total += days[keys[j]];
       }
       let average = total/keys.length;
-      let lowThreshold = average * 0.3;
-      let highThreshold = average * 0.7;
+      let lowThreshold = average * 0.4;
+      let lowThreshold2 = average * 0.8;
+      let highThreshold = average * 1.4;
+      let highThreshold2=average * 1.2;
       var colors = {};
       let colorKeys = Object.keys(days);
       for (let j=0; j<keys.length; j++) {
@@ -51,8 +54,12 @@ class Month {
               colors[colorKeys[j]] = "#cc2b2b"; // red
           } else if(days[keys[j]] > highThreshold) {
               colors[colorKeys[j]] = "#31cc2b"; // green
+          } else if(days[keys[j]] > highThreshold2) {
+              colors[colorKeys[j]] = "#62e05e"; // green
+          } else if(days[keys[j]] < lowThreshold2) {
+              colors[colorKeys[j]] = "#f76c6c"; // green
           } else {
-              colors[colorKeys[j]] = "#f29100"; // orange
+              colors[colorKeys[j]] = "#c3ffb8"; // orange
           }
       }
       return colors;
@@ -64,14 +71,13 @@ class Month {
     
     Transaction.getTransactionsByDateRange(db, startDate, endDate, (err, data) => {
       let keys = Object.keys(data)
+        console.log('Data length 2: '+keys.length);
       
       let days = {};
       for (let i = 0; i < keys.length; i++) {
         let index = keys[i].split('-')[2];
         days[index] = data[keys[i]];
       }
-      
-      console.log(days);
       
       callback(err, days);
     });

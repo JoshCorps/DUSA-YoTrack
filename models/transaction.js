@@ -1,7 +1,5 @@
 let ObjectID = require('mongojs').ObjectID;
 
-let TribeAnalysis = require('./tribe_analysis');
-
 class Transaction {
     constructor() {
         this.dateTime = undefined;
@@ -28,6 +26,20 @@ class Transaction {
         db.transactions.insert(trans, callback());
     }
 
+    /*
+        @returns 
+        {
+            "YYYY-MM-01": [
+                { / sample transaction object / },
+                { / sample transaction object / },
+                { / sample transaction object / }
+            ],
+            "YYYY-MM-02": [
+                { / sample transaction object / },
+                { / sample transaction object / }
+            ]
+        }
+    */
     static getTransactionsByDateRange(db, startDate, endDate, callback) {
         db.transactions.find({ dateTime: { $gte: startDate, $lt: endDate } }, (err, data) => {
             if (err) {
@@ -45,6 +57,17 @@ class Transaction {
             }
             
             callback(null, days);
+        });
+    }
+    
+    static getTransactionsForDay(db, startDate, endDate, callback) {
+        db.transactions.find({ dateTime: { $gte: startDate, $lt: endDate } }, (err, data) => {
+            if (err) {
+                callback(err);
+                return;
+            }
+
+            callback(null, data);
         });
     }
 
