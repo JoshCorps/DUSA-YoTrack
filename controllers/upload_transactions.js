@@ -69,6 +69,9 @@ router.post('/', authenticate, (req, res) => {
         console.log("The workbook number supllied was not a number.");
         workbookNumber = 0;
     }
+    
+    req.flash('success', 'Your file was uploaded and is being processed. You will be notified when it is completed.');
+    res.redirect('/');
 
     console.log("workbookNumber: " + workbookNumber);
 
@@ -117,7 +120,8 @@ function insertTransactions(transactions) {
                 upload.startDate = startDate;
                 upload.endDate = endDate;
                 upload.transactionIDs = transactionIDs;
-                Upload.create(db, upload, seqFactory(transactions));
+                Upload.create(db, upload, afterUploadCreated);
+                insertTransactions(transactions);
             });
 
         }
@@ -141,7 +145,13 @@ function insertTransactions(transactions) {
 
 }
 
-function seqFactory(newTrans) {
+function afterUploadCreated(err)
+{
+    if (err) {console.log("Error processing batch."); return;}
+}
+
+function seqFactory(err, newTrans) {
+    //if (err) {console.log("error processing batch")}
     return function() {
         insertTransactions(newTrans);
     }
@@ -277,7 +287,7 @@ function convertExcelToTransactions(filename, extractionDetails, workbookNumber,
 
             if (transactions.length === 0) {
                 req.flash("error", "Could not find transaction data in the uploaded file.");
-                res.redirect("/");
+                //res.redirect("/");
                 return;
             }
             else {
@@ -287,7 +297,7 @@ function convertExcelToTransactions(filename, extractionDetails, workbookNumber,
                 else {
                     req.flash("success", "The data has been successfully uploaded.");
                 }
-                res.redirect('/');
+                //res.redirect('/');
                 callback(transactions);
             }
         });
@@ -381,8 +391,10 @@ function formatMoney(str) {
 }
 
 function formatDate(str) {
-    //format in spreadsheets: dd/MM/yyyy hh:mm
-    var date = moment(str, "dd/MM/yyyy hh:mm").toDate();
+    //format in spreadsheets: dd/MM/yyyy hh:mm:ss   (ss is not always present)
+    //console.log("formatting date: " + str);
+    var date = moment(str, "DD/MM/yyyy hh:mm:ss").toDate();
+    //console.log('formatted date: ' + date);
     return date;
 }
 

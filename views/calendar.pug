@@ -1,8 +1,27 @@
 extend page
 block content
     div(class="block")
-        - var monthNames = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];
-        h1= monthNames[month - 1] + " " + year
+        div(class="flex justify-content-space-between")
+            - var monthNames = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];
+            h1(class="flex-grow")= monthNames[month - 1] + " " + year
+            
+            - var lastMonth = (+month - 1 == 0 ? 12 : (+month - 1))
+            - var nextMonth = (+month + 1 == 13 ? 1 : (+month + 1))
+            - var lastYear = (lastMonth == 12 ? (+year - 1) : year)
+            - var nextYear = (nextMonth == 1 ? (+year + 1) : year)
+            //-
+                - var lastMonth = (+month - 1 == 0 ? (+year - 1) + '/12' : year + '/' + (+month - 1)) 
+                - var nextMonth = (+month + 1 == 13 ? (+year + 1) + '/01' : year + '/' + (+month + 1)) 
+            
+            div(class="flex justify-content-space-between")
+                a(class="button right-gap", href="/calendar/" + lastYear + "/" + lastMonth)
+                    i(class="fa fa-arrow-left", aria-hidden="true")
+                    |  
+                    = monthNames[lastMonth - 1] + ' ' + lastYear 
+                a(class="button", href="/calendar/" + nextYear + "/" + nextMonth)
+                    = monthNames[nextMonth - 1] + ' ' + nextYear
+                    |  
+                    i(class="fa fa-arrow-right", aria-hidden="true")
         div(class="calendar")
             div(class="calendar-week row-dynamic")
                 div(class="calendar-day date-heading")
@@ -58,14 +77,4 @@ block content
                     - if ((store + 1 - offset) >= daysInMonth) 
                         - break
                         
-    div(class="block flex justify-content-space-between")
-        - var lastMonth = (+month - 1 == 0 ? (+year - 1) + '/12' : year + '/' + (+month - 1)) 
-        - var nextMonth = (+month + 1 == 13 ? (+year + 1) + '/01' : year + '/' + (+month + 1)) 
-        a(class="button", href="/calendar/" + lastMonth)
-            i(class="fa fa-arrow-left", aria-hidden="true")
-            |  
-            = lastMonth 
-        a(class="button", href="/calendar/" + nextMonth)
-            = nextMonth
-            |  
-            i(class="fa fa-arrow-right", aria-hidden="true")
+        

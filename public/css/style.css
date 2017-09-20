@@ -245,6 +245,11 @@ main article {
 .date-heading {
     min-height: initial !important;
     text-transform: uppercase;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-width: 5px;
+    border-radius: 0;
 }
 
 .calendar-item-back {
@@ -298,7 +303,16 @@ main article {
     color: #fff;
 }
 
+.right-gap {
+    margin-right: 1em;
+}
+
 /* UPLOAD */
+
+/* DAY VIEW */
+.block canvas {
+    width: 100%;
+}
 
 /* HELPERS */
 .flex { display: flex; }
@@ -306,4 +320,3 @@ main article {
 .align-items-center { align-items: center; }
 .flex-grow { flex-grow: 1; }
 .flex-column { flex-direction: column; }
-

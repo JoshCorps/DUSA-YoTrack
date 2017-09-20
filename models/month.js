@@ -11,7 +11,7 @@ class Month {
     this.days = [];
 
   }
-
+  
   static getMonthTransactionTotals(db, year, month, callback) {
     Month.getMonth(db, year, month, (err, data) => {
       if (err) {
@@ -55,11 +55,11 @@ class Month {
           } else if(days[keys[j]] > highThreshold) {
               colors[colorKeys[j]] = "#31cc2b"; // green
           } else if(days[keys[j]] > highThreshold2) {
-              colors[colorKeys[j]] = "#62e05e"; // green
+              colors[colorKeys[j]] = "#79f277"; // light green
           } else if(days[keys[j]] < lowThreshold2) {
-              colors[colorKeys[j]] = "#f76c6c"; // green
+              colors[colorKeys[j]] = "#f76c6c"; // light red
           } else {
-              colors[colorKeys[j]] = "#c3ffb8"; // orange
+              colors[colorKeys[j]] = "#d0fac8"; // middle
           }
       }
       return colors;
@@ -69,9 +69,13 @@ class Month {
     let startDate = new Date(year, month - 1, 1, startHour);
     let endDate = new Date(year, month, 1, startHour);
     
+    console.log("(month) startdate: " + startDate);
+    console.log("(month) enddate: " + endDate);
+    
+    console.log(Transaction);
+    
     Transaction.getTransactionsByDateRange(db, startDate, endDate, (err, data) => {
-      let keys = Object.keys(data)
-        console.log('Data length 2: '+keys.length);
+      let keys = Object.keys(data);
       
       let days = {};
       for (let i = 0; i < keys.length; i++) {

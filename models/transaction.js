@@ -50,6 +50,18 @@ class Transaction {
             let days = {};
             for (let i = 0; i < data.length; i++) {
                 var date = data[i].dateTime.getFullYear() + '-' + (data[i].dateTime.getMonth() + 1) + '-' + data[i].dateTime.getDate();
+                let hour = data[i].dateTime.getHours();
+                
+                if (hour < (6)) {
+                    date = data[i].dateTime.getFullYear() + '-' + (data[i].dateTime.getMonth() + 1) + '-' + (data[i].dateTime.getDate() - 1);
+                }
+                console.log('date ', date);
+                
+                if ((data[i].dateTime.getDate() - 1) === 0) {
+                    console.log('previous month; ignoring');
+                    continue;
+                }
+                
                 if (!days[date]) {
                     days[date] = [];
                 }
@@ -108,7 +120,7 @@ class Transaction {
 
                 //TribeAnalysis.analyse(db, transactions);
                 for (var i = transactions.length - 1; i >= 0; i--) {
-                    transactionIDs.push(db, transactions[i]._id);
+                    transactionIDs.push(transactions[i]._id);
                 }
                 transactions = undefined; //mark for garbage collection to make space for other inserts
                 callback(transactionIDs, startDate, endDate);

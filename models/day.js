@@ -12,24 +12,19 @@ class Day {
     }
     
   static getDay(db, year, month, day, callback) {
-      console.log("year: " + year);
-      console.log("month: " + month);
-      console.log("day: " + day);
-      console.log("startHour: " + startHour);
     let startDate = new Date(year, (month - 1), day, startHour);
     let endDate = instadate.addDays(startDate, 1);
-    
-    console.log('Start date: '+startDate+' End Date: '+endDate);
+    console.log("(day) startdate: " + startDate);
+    console.log("(day) enddate: " + endDate);
     
     Transaction.getTransactionsForDay(db, startDate, endDate, (err, data) => {
         let hours = {};
-        console.log('Data length: '+data.length);
+        
         for (var i = 0; i < data.length; i++) {
             if(data[i])
             {
                 
                 var theHour = data[i].dateTime.getHours();
-                console.log('Hour: '+theHour);
                 if (!hours[theHour])
                 {
                     hours[theHour] = [];
@@ -37,7 +32,6 @@ class Day {
                 hours[theHour].push(data[i]);
             }
         } // **** Need to do some padding for hours with 0 transactions
-      console.log('Day Data length: '+hours.length);
       callback(err, hours);
     });
   }

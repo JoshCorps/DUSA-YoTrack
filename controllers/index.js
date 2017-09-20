@@ -13,8 +13,7 @@ let authenticate = (req, res, next) => {
         
         return next();
     }
-
-
+    
     // if not, redirect back to login page
     res.redirect('/login')
 };
@@ -41,6 +40,7 @@ router.use((req, res, next) => {
             req.session.messages[type] = [];
         }
         req.session.messages[type].push(message);
+        console.log(req.session);
     }
     
     next();
