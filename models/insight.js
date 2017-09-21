@@ -27,6 +27,82 @@ class Insight {
         }
         return out;
     }
+    
+    static refine(db, startDate, endDate, callback) {
+        Insight.analyse(db, startDate, endDate, (err, data) => {
+            if (err) {
+                return callback(err);
+            }
+            
+            let count = data.length;
+            
+            // take the top 20%, middle 5% and bottom 5%;
+            let topPull = 20;
+            let topIndex = ~~((count / 100) * topPull);
+            
+            let middlePull = 10;
+            let halfCount = ~~(count / 2);
+            let halfAmount = ~~((count / 100) * (middlePull / 2));
+            let middleIndex = halfCount - halfAmount;
+            
+            let bottomPull = 5;
+            let bottomIndex = count - ~~((count / 100) * bottomPull)
+            
+            let top = data.slice(0, topIndex);
+            let middle = data.slice(middleIndex, middleIndex + (halfAmount * 2));
+            let bottom = data.slice(bottomIndex);
+            
+            let topDetails = [];
+            let middleDetails = [];
+            let bottomDetails = [];
+            
+            // time, date, shop, shopTime, shopDate, data
+            
+            // now process
+            for (let i = 0; i < top.length; i++) {
+                let item = top[i];
+                
+                if (item.shop) {
+                    topDetails.push(`<strong>${item.shop}</strong> is popular on ${item.date} at ${item.time}; there are ${item.data.length} recurring customers.`);
+                } else {
+                    topDetails.push(`There is an overlap of ${item.data.length} customers that visit <strong>${item.shopDate}</strong> on ${item.date} and <strong>${item.shopTime}</strong> at ${item.time}`);
+                }
+            }
+            
+            
+            for (let i = 0; i < middle.length; i++) {
+                let item = middle[i];
+                
+                if (item.shop) {
+                    middleDetails.push(`<strong>${item.shop}</strong> performs averagely on ${item.date} at ${item.time}; there are ${item.data.length} recurring customers.`);
+                } else {
+                    middleDetails.push(`There is an overlap of ${item.data.length} customers that visit <strong>${item.shopDate}</strong> on ${item.date} and <strong>${item.shopTime}</strong> at ${item.time}`);
+                }
+            }
+            
+            for (let i = 0; i < bottom.length; i++) {
+                let item = bottom[i];
+                
+                if (item.shop) {
+                    if (item.time) {
+                        bottomDetails.push(`<strong>${item.shop}</strong> is unpopular on ${item.date} at ${item.time}.`);
+                    }
+                } else {
+                    bottomDetails.push(`Customers that make a purchase at <strong>${item.shopDate}</strong> on ${item.date} tend to not make a purchase at <strong>${item.shopTime}</strong>`);
+                }
+            }
+
+            topDetails = Insight.unique_fast(topDetails);
+            middleDetails = Insight.unique_fast(middleDetails);
+            bottomDetails = Insight.unique_fast(bottomDetails);
+            
+            callback(null, {
+                top: topDetails,
+                middle: middleDetails,
+                bottom: bottomDetails
+            });
+        });
+    }
 
     static analyse(db, startDate, endDate, callback) {
         // step-by-step
@@ -84,19 +160,19 @@ class Insight {
             console.log('trace ', 3);
 
             // before continuing, merge hours into groups of 3 hours
-            timeConstraints['Between 12am to 3am'] = [].concat(hourConstraints[0] || []).concat(hourConstraints[1] || []).concat(hourConstraints[2] || []);
-            timeConstraints['Between 3am to 6am'] = [].concat(hourConstraints[3] || []).concat(hourConstraints[4] || []).concat(hourConstraints[5] || []);
-            timeConstraints['Between 6am to 9am'] = [].concat(hourConstraints[6] || []).concat(hourConstraints[7] || []).concat(hourConstraints[8] || []);
-            timeConstraints['Between 9am to 12pm'] = [].concat(hourConstraints[9] || []).concat(hourConstraints[10] || []).concat(hourConstraints[11] || []);
-            timeConstraints['Between 12pm to 3pm'] = [].concat(hourConstraints[12] || []).concat(hourConstraints[13] || []).concat(hourConstraints[14] || []);
-            timeConstraints['Between 3pm to 6pm'] = [].concat(hourConstraints[15] || []).concat(hourConstraints[16] || []).concat(hourConstraints[17] || []);
-            timeConstraints['Between 6pm to 9pm'] = [].concat(hourConstraints[18] || []).concat(hourConstraints[19] || []).concat(hourConstraints[20] || []);
-            timeConstraints['Between 9pm to 12am'] = [].concat(hourConstraints[21] || []).concat(hourConstraints[22] || []).concat(hourConstraints[23] || []);
+            timeConstraints['12am to 3am'] = [].concat(hourConstraints[0] || []).concat(hourConstraints[1] || []).concat(hourConstraints[2] || []);
+            timeConstraints['3am to 6am'] = [].concat(hourConstraints[3] || []).concat(hourConstraints[4] || []).concat(hourConstraints[5] || []);
+            timeConstraints['6am to 9am'] = [].concat(hourConstraints[6] || []).concat(hourConstraints[7] || []).concat(hourConstraints[8] || []);
+            timeConstraints['9am to 12pm'] = [].concat(hourConstraints[9] || []).concat(hourConstraints[10] || []).concat(hourConstraints[11] || []);
+            timeConstraints['12pm to 3pm'] = [].concat(hourConstraints[12] || []).concat(hourConstraints[13] || []).concat(hourConstraints[14] || []);
+            timeConstraints['3pm to 6pm'] = [].concat(hourConstraints[15] || []).concat(hourConstraints[16] || []).concat(hourConstraints[17] || []);
+            timeConstraints['6pm to 9pm'] = [].concat(hourConstraints[18] || []).concat(hourConstraints[19] || []).concat(hourConstraints[20] || []);
+            timeConstraints['9pm to 12am'] = [].concat(hourConstraints[21] || []).concat(hourConstraints[22] || []).concat(hourConstraints[23] || []);
 
             // now do an intersection of every permutation
-            let intersectionTimeShop = {};
-            let intersectionTimeDay = {};
-            let intersectionDayShop = {};
+            let intersectionTimeShop = [];
+            let intersectionTimeDay = [];
+            let intersectionDayShop = []
 
             let timeKeys = Object.keys(timeConstraints);
             let dateKeys = Object.keys(dateConstraints);
@@ -124,8 +200,12 @@ class Insight {
                         for (let y = 0; y < shopKeys.length; y++) {
                             let b = shopKeys[y];
                             arr = timeConstraints[a].filter((n) => shopConstraints[b].includes(n));
-                            if (arr.length > 1) {
-                                intersectionTimeShop[b + ' ' + a] = arr
+                            if (arr.length > 0) {
+                                intersectionTimeShop.push({
+                                    'shop': b,
+                                    'time': a,
+                                    'data': arr
+                                });
                             }
                         }
                     }
@@ -159,8 +239,12 @@ class Insight {
                         for (let y = 0; y < shopKeys.length; y++) {
                             let b = shopKeys[y];
                             arr = dateConstraints[a].filter((n) => shopConstraints[b].includes(n));
-                            if (arr.length > 1) {
-                                intersectionDayShop[b + ' ' + a] = arr
+                            if (arr.length > 0) {
+                                intersectionDayShop.push({
+                                    'shop': b,
+                                    'date': a,
+                                    'data': arr
+                                });
                             }
                         }
                     }
@@ -168,22 +252,54 @@ class Insight {
                     cb();
                 }
             ], (err, results) => {
-
-                let intersections = {};
-                let timeShopKeys = Object.keys(intersectionTimeShop);
-                let dayShopKeys = Object.keys(intersectionDayShop);
-
+                let intersections = [];
                 let arr = [];
-                for (let x = 0; x < timeShopKeys.length; x++) {
-                    let a = timeShopKeys[x];
-                    for (let y = 0; y < dayShopKeys.length; y++) {
-                        let b = dayShopKeys[y];
-                        arr = intersectionTimeShop[a].filter((n) => intersectionDayShop[b].includes(n));
-                        if (arr.length > 1) {
-                            intersections[b + ' ' + a] = arr
+                
+                for (let i = 0; i < intersectionTimeShop.length; i++) {
+                    let timeShop = intersectionTimeShop[i];
+                    if (!timeShop) {
+                        continue;
+                    }
+                    
+                    for (let e = 0; e < intersectionDayShop.length; e++) {
+                        let dayShop = intersectionDayShop[i];
+                        if (!dayShop) {
+                            continue;
+                        }
+                        
+                        arr = timeShop.data.filter((n) => dayShop.data.includes(n));
+                        if (arr.length > 0) {
+                            if (timeShop.shop === dayShop.shop) {
+                                intersections.push({
+                                    'shop': timeShop.shop,
+                                    'time': timeShop.time,
+                                    'date': dayShop.date,
+                                    'data': arr
+                                });
+                            } else {
+                                intersections.push({
+                                    'shopTime': timeShop.shop,
+                                    'time': timeShop.time,
+                                    'shopDate': dayShop.shop,
+                                    'date': dayShop.date,
+                                    'data': arr
+                                });
+                            }
                         }
                     }
                 }
+                
+                //intersections = intersections.concat(intersectionTimeShop).concat(intersectionDayShop);
+                intersections.sort((a, b) => {
+                    if (a.data.length < b.data.length) {
+                        return 1;
+                    } else if (a.data.length > b.data.length) {
+                        return -1;
+                    } else {
+                        return 0;
+                    }
+                })
+                
                 let insights = intersections;
                 /*{
                     "time-shop": intersectionTimeShop,

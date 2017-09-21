@@ -9,4 +9,24 @@ block content
     
     - if (insight)
         div(class="block") 
-            p= JSON.stringify(insight, null, 2)
+            - for (let i = 0; i < insight.top.length; i++)
+                - let item = insight.top[i];
+                p(style="color: #27ae60")
+                    i(class="fa fa-check", aria-hidden="true")
+                    |  
+                    != item
+                    
+            - for (let i = 0; i < insight.middle.length; i++)
+                - let item = insight.middle[i];
+                p(style="color: #f39c12")
+                    i(class="fa fa-circle-o", aria-hidden="true")
+                    |  
+                    != item
+                    
+            - for (let i = 0; i < insight.bottom.length; i++)
+                - let item = insight.bottom[i];
+                p(style="color: #e74c3c")
+                    i(class="fa fa-times", aria-hidden="true")
+                    |  
+                    != item
+                

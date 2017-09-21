@@ -17,13 +17,12 @@ block content
 		
 		- var allTotals = {};
 		- for (var i = 0; i < outlets.length; i++)
-			p #{outlets[i]}
 			- allTotals[outlets[i]] = []
-			- getHourlyTotals(outlets[i], allTotals[outlets[i]] )
+			- allTotals[outlets[i]] = getHourlyTotals(outlets[i])
 		- allTotals["Combined"] = []
 		- allTotals["Combined"] = getHourlyTotals(null)
 			
-		p #{JSON.stringify(allTotals)}
+		p !{JSON.stringify(allTotals)}
 			
 		-
 			function getHourlyTotals(venueName) { 
@@ -38,6 +37,8 @@ block content
 						var thisPlace = data[keys[i]][e].outletName;
 						if (venueName === null || thisPlace === venueName)
 						{
+						
+		-
 							var thisHour = data[keys[i]][e].dateTime.getHours();
 							var hourDifference = thisHour - lastHour;
 							if (hourDifference > 1)
@@ -62,9 +63,25 @@ block content
 				total = movedHours;
 				return total;
 			};
+			
+			function createDataset(key, dataArray){
+				var dataset = {};
+				dataset.label = key; //location name
+				dataset.fillColor = "rgba(220,220,220,0.2)";
+				dataset.strokeColor = "rgba(220,220,220,1)";
+				dataset.pointColor = "rgba(220,220,220,1)";
+				dataset.pointStrokeColor = "#fff";
+				dataset.pointHighlightFill = "#fff";
+				dataset.pointHighlightStroke = "rgba(220,220,220,1)";
+				dataset.data = dataArray; //!{JSON.stringify( dataArray )}
+				
+				return dataset;
+			}
 		
 		p Hello
 		p #{hTotal}
+		
+		- var datasets = [];
 			
 		canvas#myChart
 			script.
@@ -72,66 +89,19 @@ block content
 				var hourlyTotals = !{JSON.stringify(allTotals["Combined"])};
 				var labels = !{JSON.stringify(hourLabels)};
 				
+				var keys = Object.keys(allTotals);
+				for (var i=0; i < keys.length; i++)
+				{
+					var dataset = createDataset(keys[i], (allTotals[keys[i]]));
+					datasets.push(dataset);
+				}
+				datasets.push(createDataset("Combined", allTotals["Combined"]));
+
 				var myChart = new Chart(ctx, {
 				type: 'bar',
 				data: {
 				labels: labels,
-				datasets: [{
-				label: 'Total Hourly Revenue',
-				data: hourlyTotals,
-				backgroundColor:
-				['rgba(255, 103, 199, 0.85)',
-				'rgba(255, 103, 199, 0.85)',
-				'rgba(255, 103, 199, 0.85)',
-				'rgba(255, 103, 199, 0.85)',
-				'rgba(255, 103, 199, 0.85)',
-				'rgba(255, 103, 199, 0.85)',
-				'rgba(255, 103, 199, 0.85)',
-				'rgba(255, 103, 199, 0.85)',
-				'rgba(255, 103, 199, 0.85)',
-				'rgba(255, 103, 199, 0.85)',
-				'rgba(255, 103, 199, 0.85)',
-				'rgba(255, 103, 199, 0.85)',
-				'rgba(255, 103, 199, 0.85)',
-				'rgba(255, 103, 199, 0.85)',
-				'rgba(255, 103, 199, 0.85)',
-				'rgba(255, 103, 199, 0.85)',
-				'rgba(255, 103, 199, 0.85)',
-				'rgba(255, 103, 199, 0.85)',
-				'rgba(255, 103, 199, 0.85)',
-				'rgba(255, 103, 199, 0.85)',
-				'rgba(255, 103, 199, 0.85)',
-				'rgba(255, 103, 199, 0.85)',
-				'rgba(255, 103, 199, 0.85)',
-				'rgba(255, 103, 199, 0.85)']
-				,
-				borderColor:
-				['rgba(0, 0, 0,,1)',
-				'rgba(0, 0, 0,,1)',
-				'rgba(0, 0, 0,,1)',
-				'rgba(0, 0, 0,,1)',
-				'rgba(0, 0, 0,,1)',
-				'rgba(0, 0, 0,,1)',
-				'rgba(0, 0, 0,,1)',
-				'rgba(0, 0, 0,,1)',
-				'rgba(0, 0, 0,,1)',
-				'rgba(0, 0, 0,,1)',
-				'rgba(0, 0, 0,,1)',
-				'rgba(0, 0, 0,,1)',
-				'rgba(0, 0, 0,,1)',
-				'rgba(0, 0, 0,,1)',
-				'rgba(0, 0, 0,,1)',
-				'rgba(0, 0, 0,,1)',
-				'rgba(0, 0, 0,,1)',
-				'rgba(0, 0, 0,,1)',
-				'rgba(0, 0, 0,,1)',
-				'rgba(0, 0, 0,,1)',
-				'rgba(0, 0, 0,,1)',
-				'rgba(0, 0, 0,,1)',
-				'rgba(0, 0, 0,,1)',
-				'rgba(0, 0, 0,,1)'],
-				borderWidth: 1
-				}]
+				datasets : datasets;
 				},
 				options: {
 				scales: {
@@ -147,3 +117,5 @@ block content
 				}
 				}
 				});
+				
+		p !{JSON.stringify(datasets)}

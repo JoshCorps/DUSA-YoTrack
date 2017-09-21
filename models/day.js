@@ -29,7 +29,7 @@ class Day {
                 }
                 hours[theHour].push(data[i]);
             }
-        } // **** Need to do some padding for hours with 0 transactions
+        }
       callback(err, hours);
     });
   }

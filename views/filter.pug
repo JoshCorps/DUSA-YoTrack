@@ -1,13 +1,46 @@
 extend page
 block content
-    link(rel='stylesheet', href='//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css')
-    script(src='https://code.jquery.com/jquery-1.12.4.js')
-    script(src='https://code.jquery.com/ui/1.12.1/jquery-ui.js')
-    script.
-      $( function() {
-        $( "#datepicker" ).datepicker();
-        } );
-    body
-        p
+    div(class="block")
+        form(action='/filter', method='POST')
+            p Date Range: 
+                input(type='radio', name='dateRange', value='Daily', checked)
+                |  Daily  
+                input(type='radio', name='dateRange', value='Weekly')
+                |  Weekly  
+                input(type='radio', name='dateRange', value='Monthly')
+                |  Monthly 
             | Start Date: 
-            input#datepicker(type='text' name='startDate' id='startDate')
+            input(type='date', name='startDate')
+            | End Date
+            input(type='date', name='endDate')
+            p
+            | Start Date: 
+            input(type='time', name='startDate')
+            | End Date
+            input(type='time', name='endDate')
+            p
+            button(type="button", onclick='toggleAdvanced()') Show advanced options
+            #advancedDiv(style="display:none;")
+                | Graph Type   
+                select(name="graphType")
+                    option(value="line") Line
+                    option(value="bar") Bar
+                br
+                    
+                - for (var i = 0,  j = 0; i < outletNames.length; i++,j++)
+                    - if (j % 3 === 0 && j !== 0)
+                        br
+                    input(type='checkbox', name='venues' value=outletNames[i])
+                    |  #{outletNames[i]}  
+            p
+            input(type='submit',  class="u-full-width button-primary", value='Filter')
+
+        script.
+                function toggleAdvanced() {
+                    var x = document.getElementById('advancedDiv');
+                    if (x.style.display === 'none') {
+                        x.style.display = 'block';
+                    } else {
+                        x.style.display = 'none';
+                    }
+                }

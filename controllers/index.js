@@ -40,7 +40,6 @@ router.use((req, res, next) => {
                 req.session.messages[type] = [];
             }
             req.session.messages[type].push(message);
-            console.log(req.session);
         }
     }
 

@@ -19,7 +19,7 @@ router.get('/:startYear/:startMonth/:startDay/:endYear/:endMonth/:endDay', authe
     var endDay = req.params.endDay;
     
     if (startYear && startMonth && startDay && endYear && endMonth && endDay) {
-        Insight.analyse(db, new Date(startYear, startMonth, startDay), new Date(endYear, endMonth, endDay), (err, data) => {
+        Insight.refine(db, new Date(startYear, startMonth, startDay), new Date(endYear, endMonth, endDay), (err, data) => {
             //console.log(JSON.stringify(data, null, 2));
             res.render('insights', { insight: data });
         });

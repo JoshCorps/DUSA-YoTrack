@@ -89,6 +89,16 @@ class Transaction {
         // get list of transactions
 
     }
+    
+    static getTransactions(db, query, callback) {
+        db.transactions.find(query, (err, data) => {
+           if (err) {
+               callback(err);
+               return;
+           }
+           callback(null,data);
+        });
+    }
 
     static getTransactionsByShopAndDate(db, startDate, endDate, shopName, callback) {
         db.transactions.find({ dateTime: { $gte: startDate, $lt: endDate }, outletName: shopName }, (err, data) => {
@@ -98,6 +108,13 @@ class Transaction {
             }
             callback(null, data);
         });
+    }
+    
+    
+    processTransactionData(startTime, endTime, dateRange, data) {
+        for(let i=0; i<data.length; i++) {
+            
+        }
     }
     
     static insertTransactions(db, transactions, callback) {

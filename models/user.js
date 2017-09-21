@@ -113,10 +113,11 @@ class User {
   
   static emailApprovedUsers(users, callback) {
     var emails = users[0].email;
-    for (let i=0; i<users.length; i++) {
+    for (let i=1; i<users.length; i++) {
       emails = emails + ', '+users[i].email;
     }
-      let transporter = nodemailer.createTransport();
+    console.log('Emails: '+emails);
+    let transporter = nodemailer.createTransport();
 
     let mailOptions = {
         from: '"YO! Track',
@@ -139,7 +140,6 @@ class User {
   
   static approveUsers(db, users, callback) {
     for(let i=0; i<users.length; i++) {
-      console.log('Account type: '+users[i].accountType);
       db.users.update({email: users[i].email}, {$set: {'isApproved': true, 'accountType': users[i].accountType}}, (err, res) => {
         if (err) {
           callback(err);

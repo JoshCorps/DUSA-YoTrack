@@ -39,9 +39,6 @@ router.post('/', authenticate, (req, res, next) => {
         User.approveUsers(db, approved, (err) => {
             if(err) return;
         });
-        User.emailApprovedUsers(approved, (err) => {
-            if(err) return;
-        });
     }
     if (declined.length != 0) {
         User.deleteUsersByEmails(db, declined, (err) => {

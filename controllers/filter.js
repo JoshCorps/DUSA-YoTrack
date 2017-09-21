@@ -6,24 +6,49 @@ let authenticate = require('./index').authenticate;
 
 // models
 let db = require('../models/db.js')();
-let Day = require('../models/day.js');
-let Month = require('../models/month.js');
 let Outlet = require('../models/outlet.js');
 let Transaction = require('../models/transaction.js');
 
 router.get('/', authenticate, (req, res, next) => {
-    res.render('filter', {transactions: null});
+    Outlet.getNames(db, (err, data) => {
+        if (err) return;
+         res.render('filter', {transactions: null, outletNames: data});  
+    });
 });
 
 router.post('/', (req, res) => {
-    var startDate, endDate, shopName;
-    startDate = req.body.startDate;
-    endDate = req.body.endDate;
-    shopName = req.body.shopName;
+    var startDate, endDate, dateRange, venues, query, startTime, endTime;
+    startDate = new Date(req.body.startDate);
+    endDate = new Date(req.body.endDate);
+    dateRange = req.body.dateRange;
+    venues = req.body.venues;
+    startTime = req.body.startTime;
+    endTime = req.body.endTime;
     
-    Transaction.getTransactionsByShopAndDate(db, startDate, endDate, shopName, (err, data) => {
-         if (err) return;
-         res.render('filter', { transactions: data });
+    if (venues) {
+        if (!Array.isArray(venues)) {
+            let temp = [ venues ];
+            venues = temp;
+        }
+        query = {
+            dateTime: { $gte: startDate, $lt: endDate },
+            outletName: { $in: venues }
+        };
+    } else {
+        query =  {
+            dateTime: { $gte: startDate, $lt: endDate }
+        };
+    }
+    
+    Transaction.getTransactions(db, query, (err, data) => {
+        if (err) return;
+        
+        
+        
+        Outlet.getNames(db, (err, outletNames) => {
+            if (err) return;
+            res.render('filter', {transactions: data, outletNames: outletNames});  
+        });
     });
 });
 
