@@ -17,6 +17,8 @@ router.get('/', authenticate, (req, res) => {
 });
 
 router.get('/:year/:month', authenticate, (request, response, next) => {
+    request.flash();
+    
     var year = request.params.year;
     var month = request.params.month;
     

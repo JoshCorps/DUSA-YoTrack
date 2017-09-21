@@ -6,6 +6,7 @@ let authenticate = require('./index').authenticate;
 //var parseXlsx = require('excel');
 //const uuidv1 = require('uuid/v1');
 var XLSX = require('xlsx-extract').XLSX;
+var Promise = require('promise');
 
 //models
 let db = require('../models/db.js')();
@@ -14,8 +15,8 @@ let Upload = require('../models/upload');
 let moment = require('moment');
 
 router.get('/', authenticate, (request, response, next) => {
+    request.flash();
     response.render('upload_transactions');
-    next();
 });
 
 router.post('/', authenticate, (req, res, next) => {
@@ -71,9 +72,8 @@ router.post('/', authenticate, (req, res, next) => {
         workbookNumber = 0;
     }
 
-    req.flash('success', 'Your file was uploaded and is being processed. You will be notified when it is completed.');
+    req.flash('success', 'Your file was uploaded and is now being processed. Please allow some time for the data to be processed.');
     res.redirect('/');
-    next();
     
     console.log("workbookNumber: " + workbookNumber);
 
@@ -110,20 +110,33 @@ function insertTransactions(transactions) {
 
         if (transactions.length > insertLimit) {
             //break off into smaller chunks if over the limit
-            isProcessing = true;
             var batch = transactions.splice(0, insertLimit);
 
             //insert the batch without finishing up
             Transaction.insertTransactions(db, batch, (transactionIDs, startDate, endDate) => {
                 console.log("inserted transactions, inserting upload");
 
-                var upload = new Upload();
-                upload.date = new Date();
-                upload.startDate = startDate;
-                upload.endDate = endDate;
-                upload.transactionIDs = transactionIDs;
-                Upload.create(db, upload, afterUploadCreated);
-                insertTransactions(transactions);
+                var promise = new Promise(function (resolve, reject) {
+                    var upload = new Upload();
+                    upload.date = new Date();
+                    upload.startDate = startDate;
+                    upload.endDate = endDate;
+                    upload.transactionIDs = transactionIDs;
+                    Upload.create(db, upload, (err, res) => {
+                        if (err) {
+                            console.log("Error inserting upload");
+                            reject(err);
+                        }
+                        else
+                        {
+                            resolve(transactions);
+                        }
+                    });
+                });
+                
+                promise.then(value => {insertTransactions(transactions);} );
+
+                
             });
 
         }
@@ -280,16 +293,16 @@ function convertExcelToTransactions(filename, extractionDetails, workbookNumber,
             console.log("Finished processing and found " + transactions.length + " transactions.");
 
             if (transactions.length === 0) {
-                //req.flash("error", "Could not find transaction data in the uploaded file.");
+                req.flash("error", "Could not find transaction data in the uploaded file.");
                 //res.redirect("/");
                 return;
             }
             else {
                 if (transactions.length > 20000) {
-                    //req.flash("success", "The data has been successfully uploaded. Since your dataset is large, please allow some time for the server to process the data.");
+                    req.flash("success", "The data has been successfully uploaded. Since your dataset is large, please allow some time for the server to process the data.");
                 }
                 else {
-                    //req.flash("success", "The data has been successfully uploaded.");
+                    req.flash("success", "The data has been successfully uploaded.");
                 }
                 //res.redirect('/');
                 callback(transactions);

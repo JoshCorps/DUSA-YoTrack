@@ -6,24 +6,24 @@ class Insight {
         //this.description = data.description;
         //this.userIDs = [];
     }
-    
+
     static unique(a) {
         return a.sort().filter((item, pos, ary) => {
             return !pos || item != ary[pos - 1];
         })
     }
-    
+
     static unique_fast(a) {
         var seen = {};
         var out = [];
         var len = a.length;
         var j = 0;
-        for(var i = 0; i < len; i++) {
-             var item = a[i];
-             if(seen[item] !== 1) {
-                   seen[item] = 1;
-                   out[j++] = item;
-             }
+        for (var i = 0; i < len; i++) {
+            var item = a[i];
+            if (seen[item] !== 1) {
+                seen[item] = 1;
+                out[j++] = item;
+            }
         }
         return out;
     }
@@ -73,8 +73,8 @@ class Insight {
             for (var i = 0; i < data.length; i++) {
                 let transaction = data[i];
                 let time = transaction.dateTime.getHours();
-                let date = 'On ' + dateNames[transaction.dateTime.getDay()];
-                let shop = 'At ' + transaction.outletName;
+                let date = dateNames[transaction.dateTime.getDay()];
+                let shop = transaction.outletName;
                 let user = transaction.newUserID;
 
                 hourConstraints = push(hourConstraints, time, user);
@@ -102,16 +102,16 @@ class Insight {
             let dateKeys = Object.keys(dateConstraints);
             let shopKeys = Object.keys(shopConstraints);
             console.log('trace ', 4);
-            
+
             // remove duplicate users
             for (let a = 0; a < timeKeys.length; a++) {
-                Insight.unique_fast(timeConstraints[timeKeys[a]]);
+                timeConstraints[timeKeys[a]] = Insight.unique_fast(timeConstraints[timeKeys[a]]);
             }
             for (let a = 0; a < dateKeys.length; a++) {
-                Insight.unique_fast(dateConstraints[dateKeys[a]]);
+                dateConstraints[dateKeys[a]] = Insight.unique_fast(dateConstraints[dateKeys[a]]);
             }
             for (let a = 0; a < shopKeys.length; a++) {
-                Insight.unique_fast(shopConstraints[shopKeys[a]]);
+                shopConstraints[shopKeys[a]] = Insight.unique_fast(shopConstraints[shopKeys[a]]);
             }
             console.log('trace ', 4, 'a');
 
@@ -124,7 +124,7 @@ class Insight {
                         for (let y = 0; y < shopKeys.length; y++) {
                             let b = shopKeys[y];
                             arr = timeConstraints[a].filter((n) => shopConstraints[b].includes(n));
-                            if (arr.length > 0) {
+                            if (arr.length > 1) {
                                 intersectionTimeShop[b + ' ' + a] = arr
                             }
                         }
@@ -132,24 +132,25 @@ class Insight {
 
                     console.log('trace ', 5);
                     cb();
-                },/*
-                (cb) => {
-                    // check between times and day
-                    let arr = [];
-                    for (let x = 0; x < timeKeys.length; x++) {
-                        let a = timeKeys[x];
-                        for (let y = 0; y < dateKeys.length; y++) {
-                            let b = dateKeys[y];
-                            arr = timeConstraints[a].filter((n) => dateConstraints[b].includes(n));
-                            if (arr.length > 0) {
-                                intersectionTimeDay[b + ' ' + a] = arr
-                            }
-                        }
-                    }
+                },
+                /*
+                                (cb) => {
+                                    // check between times and day
+                                    let arr = [];
+                                    for (let x = 0; x < timeKeys.length; x++) {
+                                        let a = timeKeys[x];
+                                        for (let y = 0; y < dateKeys.length; y++) {
+                                            let b = dateKeys[y];
+                                            arr = timeConstraints[a].filter((n) => dateConstraints[b].includes(n));
+                                            if (arr.length > 0) {
+                                                intersectionTimeDay[b + ' ' + a] = arr
+                                            }
+                                        }
+                                    }
 
-                    console.log('trace ', 6);
-                    cb();
-                },*/
+                                    console.log('trace ', 6);
+                                    cb();
+                                },*/
                 (cb) => {
                     // check between day and shops
                     let arr = [];
@@ -158,7 +159,7 @@ class Insight {
                         for (let y = 0; y < shopKeys.length; y++) {
                             let b = shopKeys[y];
                             arr = dateConstraints[a].filter((n) => shopConstraints[b].includes(n));
-                            if (arr.length > 0) {
+                            if (arr.length > 1) {
                                 intersectionDayShop[b + ' ' + a] = arr
                             }
                         }
@@ -167,11 +168,28 @@ class Insight {
                     cb();
                 }
             ], (err, results) => {
-                let insights = {
+
+                let intersections = {};
+                let timeShopKeys = Object.keys(intersectionTimeShop);
+                let dayShopKeys = Object.keys(intersectionDayShop);
+
+                let arr = [];
+                for (let x = 0; x < timeShopKeys.length; x++) {
+                    let a = timeShopKeys[x];
+                    for (let y = 0; y < dayShopKeys.length; y++) {
+                        let b = dayShopKeys[y];
+                        arr = intersectionTimeShop[a].filter((n) => intersectionDayShop[b].includes(n));
+                        if (arr.length > 1) {
+                            intersections[b + ' ' + a] = arr
+                        }
+                    }
+                }
+                let insights = intersections;
+                /*{
                     "time-shop": intersectionTimeShop,
-                    "time-day": intersectionTimeDay,
+                    //"time-day": intersectionTimeDay,
                     "day-shop": intersectionDayShop
-                };
+                };*/
 
                 callback(null, insights);
             });

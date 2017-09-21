@@ -2,7 +2,6 @@ extend page
 block content
 	script(src='/chartjs/Chart.js')
 	div(class="block")
-		- var totalsByVenue = {};
 		
 		p #{JSON.stringify(outlets)}
 		
@@ -12,9 +11,19 @@ block content
 			- if (hourText < 10) hourText = ("0" + hourText)
 			- hourText = (""+hourText)+":00"
 			- hourLabels.push(hourText)
-			- var hTotal = getHourlyTotals(null, hTotal);
+		
+		- var hTotal = []
+		- getHourlyTotals(null, hTotal)
+		
+		- var allTotals = {};
+		- for (var i = 0; i < outlets.length; i++)
+			p #{outlets[i]}
+			- allTotals[outlets[i]] = []
+			- getHourlyTotals(outlets[i], allTotals[outlets[i]] )
+		- allTotals["Combined"] = []
+		- allTotals["Combined"] = getHourlyTotals(null)
 			
-		p #{JSON.stringify(hTotal)}
+		p #{JSON.stringify(allTotals)}
 			
 		-
 			function getHourlyTotals(venueName) { 
@@ -60,7 +69,7 @@ block content
 		canvas#myChart
 			script.
 				var ctx = document.getElementById("myChart").getContext('2d');
-				var hourlyTotals = !{JSON.stringify(hTotal)};
+				var hourlyTotals = !{JSON.stringify(allTotals["Combined"])};
 				var labels = !{JSON.stringify(hourLabels)};
 				
 				var myChart = new Chart(ctx, {

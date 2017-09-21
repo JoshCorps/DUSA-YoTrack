@@ -52,8 +52,8 @@ passport.use(new LocalStrategy({ usernameField: 'email' }, (email, password, don
 }));
 
 router.get('/', (request, response, next) => {
+    request.flash();
     response.render('login');
-    next();
 });
 
 router.post('/',

@@ -27,8 +27,6 @@ router.use((req, res, next) => {
 
     req.flash = (type, message) => {
         if (!type) {
-            console.log('Should set to locals:')
-            console.log(req.session.messages);
             if (req.session.messages) {
                 res.locals.messages = req.session.messages;
                 req.session.messages = {};
@@ -60,6 +58,7 @@ router.use('/change_password', require('./change_password'));
 router.use('/calendar', require('./calendar'));
 router.use('/insights', require('./insights'));
 router.use('/day_view', require('./day_view'));
+router.use('/filter', require('./filter'));
 
 // serve index page
 router.get('/', authenticate, (req, res) => {

@@ -90,10 +90,16 @@ class Transaction {
 
     }
 
-    static getTransactionsByShop(shopID, callback) {
-        // todo
+    static getTransactionsByShopAndDate(db, startDate, endDate, shopName, callback) {
+        db.transactions.find({ dateTime: { $gte: startDate, $lt: endDate }, outletName: shopName }, (err, data) => {
+            if (err) {
+                callback(err);
+                return;
+            }
+            callback(null, data);
+        });
     }
-
+    
     static insertTransactions(db, transactions, callback) {
         var invalidCount = 0;
         for (var i = transactions.length - 1; i >= 0; i--) {

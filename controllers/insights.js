@@ -9,6 +9,8 @@ let db = require('../models/db.js')();
 let Insight = require('../models/insight');
 
 router.get('/:startYear/:startMonth/:startDay/:endYear/:endMonth/:endDay', authenticate, (req, res, next) => {
+    req.flash();
+    
     var startYear = req.params.startYear;
     var startMonth = req.params.startMonth;
     var startDay = req.params.startDay;

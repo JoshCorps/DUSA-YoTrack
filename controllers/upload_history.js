@@ -8,6 +8,7 @@ let Upload = require('../models/upload');
 let Transaction = require('../models/transaction');
 
 router.get('/', authenticate, (req, res, next) => {
+    req.flash();
     Upload.getAllUploads(db, (err, data) => {
         if(err) {
             // handle error
@@ -15,7 +16,6 @@ router.get('/', authenticate, (req, res, next) => {
         res.render('upload_history', {
             uploads: data
         });  
-        next();
     });
 });
 
@@ -38,7 +38,6 @@ router.post('/', authenticate, (req, res, next) => {
     });
     
     res.redirect('/upload_history');
-    next();
 });
 
 module.exports = router;

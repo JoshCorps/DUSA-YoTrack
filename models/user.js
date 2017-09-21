@@ -1,5 +1,6 @@
 let sha512 = require('sha512');
 let randomID = require("random-id");
+let nodemailer = require('nodemailer');
 
 class User {
   constructor(user) {
@@ -107,6 +108,32 @@ class User {
         callback(err);
       }
       callback(null, deleted);
+    });
+  }
+  
+  static emailApprovedUsers(users, callback) {
+    var emails = users[0].email;
+    for (let i=0; i<users.length; i++) {
+      emails = emails + ', '+users[i].email;
+    }
+      let transporter = nodemailer.createTransport();
+
+    let mailOptions = {
+        from: '"YO! Track',
+        to: emails, 
+        subject: 'Hello',
+        text: 'Hi', 
+        html: '<b>YOUR ACCOUNT HAS BEEN APPROVED YAY</b>' 
+    };
+
+    // send mail with defined transport object
+    transporter.sendMail(mailOptions, (err, info) => {
+        if (err) {
+            callback(err);
+        }
+        console.log('Message sent: %s', info.messageId);
+        // Preview only available when sending through an Ethereal account
+        console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
     });
   }
   

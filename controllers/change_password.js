@@ -9,8 +9,8 @@ let db = require('../models/db.js')();
 let User = require('../models/user.js');
 
 router.get('/', authenticate, (req, res, next) => {
+    req.flash();
     res.render('change_password');
-    next();
 });
 
 router.post('/', authenticate, (req, res, next) => {

@@ -7,6 +7,7 @@ let db = require('../models/db.js')();
 let authenticate = require('./index').authenticate;
 
 router.get('/', authenticate, (req, res, next) => {
+    req.flash();
     User.getUnapprovedUsers(db, (err, users) => {
       if(err) {
           // handle error somehow
@@ -36,16 +37,15 @@ router.post('/', authenticate, (req, res, next) => {
     }
     if (approved.length != 0) {
         User.approveUsers(db, approved, (err) => {
-            if(err) {
-                // handle error
-            }
+            if(err) return;
+        });
+        User.emailApprovedUsers(approved, (err) => {
+            if(err) return;
         });
     }
     if (declined.length != 0) {
         User.deleteUsersByEmails(db, declined, (err) => {
-            if(err) {
-                // handle error
-            }
+            if(err) return;
         });
     }
     
