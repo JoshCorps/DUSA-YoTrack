@@ -11,7 +11,7 @@ class Month {
     this.days = [];
 
   }
-  
+
   static getMonthTransactionTotals(db, year, month, callback) {
     Month.getMonth(db, year, month, (err, data) => {
       if (err) {
@@ -69,13 +69,8 @@ class Month {
     let startDate = new Date(year, month - 1, 1, startHour);
     let endDate = new Date(year, month, 1, startHour);
     
-    console.log("(month) startdate: " + startDate);
-    console.log("(month) enddate: " + endDate);
-    
-    console.log(Transaction);
-    
     Transaction.getTransactionsByDateRange(db, startDate, endDate, (err, data) => {
-      let keys = Object.keys(data);
+      let keys = Object.keys(data)
       
       let days = {};
       for (let i = 0; i < keys.length; i++) {

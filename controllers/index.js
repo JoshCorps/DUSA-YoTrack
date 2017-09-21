@@ -29,6 +29,7 @@ router.use((req, res, next) => {
         if (req.session.messages) {
             res.locals.messages = req.session.messages;
             req.session.messages = {};
+            req.session.save();
         }
     }
     
@@ -40,6 +41,7 @@ router.use((req, res, next) => {
             req.session.messages[type] = [];
         }
         req.session.messages[type].push(message);
+        req.session.save();
         console.log(req.session);
     }
     
@@ -59,7 +61,7 @@ router.use('/insights', require('./insights'));
 router.use('/day_view', require('./day_view'));
 
 // serve index page
-router.use('/', authenticate, (req, res) => {
+router.get('/', authenticate, (req, res) => {
     let date = new Date();
     let year = date.getFullYear();
     let month = date.getMonth() + 1;
@@ -70,7 +72,7 @@ router.use('/', authenticate, (req, res) => {
 });
 
 // serve 404 when nothing can be found
-router.use((req, res, next) => {
+router.get((req, res, next) => {
     res.status(404).render('404', {
         title: '404: Page Not Found',
         url: req.url
@@ -78,7 +80,7 @@ router.use((req, res, next) => {
 });
 
 // serve 5xx on error
-router.use((error, req, res, next) => {
+router.get((error, req, res, next) => {
     res.status(500).render('5xx', {
         title: '500: Internal Server Error',
         error: error

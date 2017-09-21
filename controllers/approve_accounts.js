@@ -14,7 +14,7 @@ router.get('/', authenticate, (req, res) => {
       
       if (users.length === 0) {
           req.flash('success', 'There are no accounts pending approval.');
-          res.redirect('/');
+          return res.redirect('/');
       }
       
       res.render('approve_accounts', {

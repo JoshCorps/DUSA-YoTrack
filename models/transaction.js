@@ -55,10 +55,8 @@ class Transaction {
                 if (hour < (6)) {
                     date = data[i].dateTime.getFullYear() + '-' + (data[i].dateTime.getMonth() + 1) + '-' + (data[i].dateTime.getDate() - 1);
                 }
-                console.log('date ', date);
                 
                 if ((data[i].dateTime.getDate() - 1) === 0) {
-                    console.log('previous month; ignoring');
                     continue;
                 }
                 
@@ -139,7 +137,6 @@ class Transaction {
             console.log('Upload ID: ' + uploads[0]._id);
             for (let i = 0; i < uploads.length; i++) {
                 transaction_ids = Array.prototype.concat(uploads[i].transactionIDs);
-                console.log('Transaction length: ' + transaction_ids.length);
             }
             db.transactions.remove({ '_id': { $in: transaction_ids.map((transaction) => { return new ObjectID(transaction); }) } }, (err) => {
                 if (err) {

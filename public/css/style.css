@@ -311,7 +311,7 @@ main article {
 
 /* DAY VIEW */
 .block canvas {
-    width: 100%;
+    width: 100% !important;
 }
 
 /* HELPERS */

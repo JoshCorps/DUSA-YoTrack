@@ -34,6 +34,11 @@ module.exports = () => {
       console.log('Created/verified tribes collection');
       db.tribes = db.collection('tribes');
     });
+    
+    db.createCollection('outlets', {}, () => {
+      console.log('Created/verified outlets collection');
+      db.outlets = db.collection('outlets');
+    });
       
     // when the database is connected, fire this event.
     db.on('connect', () => {

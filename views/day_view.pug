@@ -10,32 +10,55 @@ block content
 			- if (hourText < 10) hourText = ("0" + hourText)
 			- hourText = (""+hourText)+":00"
 			- hourLabels.push(hourText)
+			- var hTotal = getHourlyTotals(null, hTotal);
+			
+		p #{JSON.stringify(hTotal)}
+			
+		-
+			function getHourlyTotals(venueName) { 
+				var total = [];
+				var keys = Object.keys(data);
+				var lastHour = -1; //initial value
+				for (var i = 0; i < keys.length; i++)
+				{
+					var totalAmount = 0;
+					for (var e = 0; e < data[keys[i]].length; e++)
+					{
+						var thisPlace = data[keys[i]][e].outletName;
+						if (venueName === null || thisPlace === venueName)
+						{
+							var thisHour = data[keys[i]][e].dateTime.getHours();
+							var hourDifference = thisHour - lastHour;
+							if (hourDifference > 1)
+							{
+								for (var x = 1; x < hourDifference; x++)
+								{
+									total.push(0); //pad out the hours we have no data for
+								}
+							}
+							lastHour = thisHour;
+							totalAmount += data[keys[i]][e].totalAmount;
+						}
+					}
+					total.push((totalAmount/100).toFixed(2));
+				}
+				var movedHours = [];
+				for (var i = 6; i < 24; i++)
+				{	movedHours.push(total[i])}
+				for (var i = 0; i < 6; i++)
+				{	movedHours.push(total[i])}
+				
+				total = movedHours;
+				return total;
+			};
 		
-		- var total = []
-		- var keys = Object.keys(data);
-		- var lastHour = -1; //initial value
-		- for (var i = 0; i < keys.length; i++)
-			- var totalAmount = 0
-			- for (var e = 0; e < data[keys[i]].length; e++)
-				- var thisHour = data[keys[i]][e].dateTime.getHours()
-				- var hourDifference = thisHour - lastHour;
-				- if (hourDifference > 1)
-					- for (var x = 1; x < hourDifference; x++)
-						- total.push(0) //pad out the hours we have no data for
-				- lastHour = thisHour;
-				- totalAmount += data[keys[i]][e].totalAmount
-			- total.push((totalAmount/100).toFixed(2))
-		
-		- var movedHours = []
-		- for (var i = 6; i < 24; i++)
-			- movedHours.push(total[i])
-		- for (var i = 0; i < 6; i++)
-			- movedHours.push(total[i])
-
+		p Hello
+		p #{hTotal}
+			
 		canvas#myChart
 			script.
 				var ctx = document.getElementById("myChart").getContext('2d');
-				var hourlyTotals = !{JSON.stringify(movedHours)};
+				var hourlyTotals = !{JSON.stringify(hTotal)};
 				var labels = !{JSON.stringify(hourLabels)};
 				
 				var myChart = new Chart(ctx, {

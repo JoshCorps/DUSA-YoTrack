@@ -14,8 +14,6 @@ class Day {
   static getDay(db, year, month, day, callback) {
     let startDate = new Date(year, (month - 1), day, startHour);
     let endDate = instadate.addDays(startDate, 1);
-    console.log("(day) startdate: " + startDate);
-    console.log("(day) enddate: " + endDate);
     
     Transaction.getTransactionsForDay(db, startDate, endDate, (err, data) => {
         let hours = {};

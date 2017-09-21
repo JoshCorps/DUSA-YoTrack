@@ -23,7 +23,7 @@ router.post('/', authenticate, (req, res) => {
     
     if (!req.files || req.files.spreadsheet === undefined) {
         console.log("File not found.");
-        req.flash('error', "Couldn't detect file!");
+        //req.flash('error', "Couldn't detect file!");
         res.redirect('/');
         return;
     }
@@ -69,9 +69,6 @@ router.post('/', authenticate, (req, res) => {
         console.log("The workbook number supllied was not a number.");
         workbookNumber = 0;
     }
-    
-    req.flash('success', 'Your file was uploaded and is being processed. You will be notified when it is completed.');
-    res.redirect('/');
 
     console.log("workbookNumber: " + workbookNumber);
 
@@ -120,8 +117,7 @@ function insertTransactions(transactions) {
                 upload.startDate = startDate;
                 upload.endDate = endDate;
                 upload.transactionIDs = transactionIDs;
-                Upload.create(db, upload, afterUploadCreated);
-                insertTransactions(transactions);
+                Upload.create(db, upload, seqFactory(transactions));
             });
 
         }
@@ -145,13 +141,7 @@ function insertTransactions(transactions) {
 
 }
 
-function afterUploadCreated(err)
-{
-    if (err) {console.log("Error processing batch."); return;}
-}
-
-function seqFactory(err, newTrans) {
-    //if (err) {console.log("error processing batch")}
+function seqFactory(newTrans) {
     return function() {
         insertTransactions(newTrans);
     }
@@ -286,18 +276,18 @@ function convertExcelToTransactions(filename, extractionDetails, workbookNumber,
             console.log("Finished processing and found " + transactions.length + " transactions.");
 
             if (transactions.length === 0) {
-                req.flash("error", "Could not find transaction data in the uploaded file.");
-                //res.redirect("/");
+                //req.flash("error", "Could not find transaction data in the uploaded file.");
+                res.redirect("/");
                 return;
             }
             else {
                 if (transactions.length > 20000) {
-                    req.flash("success", "The data has been successfully uploaded. Since your dataset is large, please allow some time for the server to process the data.");
+                    //req.flash("success", "The data has been successfully uploaded. Since your dataset is large, please allow some time for the server to process the data.");
                 }
                 else {
-                    req.flash("success", "The data has been successfully uploaded.");
+                    //req.flash("success", "The data has been successfully uploaded.");
                 }
-                //res.redirect('/');
+                res.redirect('/');
                 callback(transactions);
             }
         });
@@ -391,10 +381,8 @@ function formatMoney(str) {
 }
 
 function formatDate(str) {
-    //format in spreadsheets: dd/MM/yyyy hh:mm:ss   (ss is not always present)
-    //console.log("formatting date: " + str);
-    var date = moment(str, "DD/MM/yyyy hh:mm:ss").toDate();
-    //console.log('formatted date: ' + date);
+    //format in spreadsheets: dd/MM/yyyy hh:mm
+    var date = moment(str, "DD/MM/yyyy hh:mm").toDate();
     return date;
 }
 

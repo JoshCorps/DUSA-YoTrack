@@ -27,8 +27,10 @@ router.post('/', authenticate, (req, res) => {
     }
     Transaction.deleteTransactions(db, uploads, (err) => {
         if(err) {
+            console.log('Error: '+err);
             //handle error
         }
+        console.log('Deleting uploads: '+uploads.length);
         Upload.deleteUploads(db, uploads, (err) => {
             if (err) {
                 // handle error

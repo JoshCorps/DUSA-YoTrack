@@ -21,6 +21,7 @@ let compression = require('compression');
 let session = require('express-session');
 let MongoStore = require('connect-mongo')(session);
 let fileUpload = require('express-fileupload');
+let cookieParser = require('cookie-parser');
 
 let db = require('./models/db.js')();
 
@@ -35,6 +36,7 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(compression());
 app.use(minify());
+app.use(cookieParser());
 app.use(session({
 	secret: 'some-super-secret-random-string-should-probably-go-here',
 	resave: true,

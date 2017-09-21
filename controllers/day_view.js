@@ -18,9 +18,7 @@ router.get('/', authenticate, (req, res) => {
     res.redirect(`/day_view/${year}/${month}/${day}`);
 });
 
-
 router.get('/:year/:month/:day', authenticate, (request, response) => {
-    
     var day = request.params.day;
     var month = request.params.month;
     var year = request.params.year;
