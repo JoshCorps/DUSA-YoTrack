@@ -13,17 +13,18 @@ let Transaction = require('../models/transaction');
 let Upload = require('../models/upload');
 let moment = require('moment');
 
-router.get('/', authenticate, (request, response) => {
+router.get('/', authenticate, (request, response, next) => {
     response.render('upload_transactions');
+    next();
 });
 
-router.post('/', authenticate, (req, res) => {
+router.post('/', authenticate, (req, res, next) => {
     
     let fileUpload = require('express-fileupload');
     
     if (!req.files || req.files.spreadsheet === undefined) {
         console.log("File not found.");
-        //req.flash('error', "Couldn't detect file!");
+        req.flash('error', "Couldn't detect file!");
         res.redirect('/');
         return;
     }
@@ -70,6 +71,10 @@ router.post('/', authenticate, (req, res) => {
         workbookNumber = 0;
     }
 
+    req.flash('success', 'Your file was uploaded and is being processed. You will be notified when it is completed.');
+    res.redirect('/');
+    next();
+    
     console.log("workbookNumber: " + workbookNumber);
 
     console.log("About to process uploaded file.");
@@ -117,7 +122,8 @@ function insertTransactions(transactions) {
                 upload.startDate = startDate;
                 upload.endDate = endDate;
                 upload.transactionIDs = transactionIDs;
-                Upload.create(db, upload, seqFactory(transactions));
+                Upload.create(db, upload, afterUploadCreated);
+                insertTransactions(transactions);
             });
 
         }
@@ -127,7 +133,7 @@ function insertTransactions(transactions) {
             //insert and finish up
             Transaction.insertTransactions(db, transactions, (transactionIDs, startDate, endDate) => {
                 console.log("inserted transactions, inserting upload");
-
+                
                 var upload = new Upload();
                 upload.date = new Date();
                 upload.startDate = startDate;
@@ -137,19 +143,17 @@ function insertTransactions(transactions) {
             });
         }
     }
+}
 
-
+function afterUploadCreated(err)
+{
+    if (err) {console.log("Error processing batch."); return;}
 }
 
 function seqFactory(newTrans) {
     return function() {
         insertTransactions(newTrans);
     }
-}
-
-function afterUploadCreated() {
-    //nothing for now
-    console.log("Upload created.");
 }
 
 function afterFinalUploadCreated() {
@@ -277,7 +281,7 @@ function convertExcelToTransactions(filename, extractionDetails, workbookNumber,
 
             if (transactions.length === 0) {
                 //req.flash("error", "Could not find transaction data in the uploaded file.");
-                res.redirect("/");
+                //res.redirect("/");
                 return;
             }
             else {
@@ -287,90 +291,12 @@ function convertExcelToTransactions(filename, extractionDetails, workbookNumber,
                 else {
                     //req.flash("success", "The data has been successfully uploaded.");
                 }
-                res.redirect('/');
+                //res.redirect('/');
                 callback(transactions);
             }
         });
 
 }
-
-/*
-function findWorkbook(workbookNumber, filename, extractionDetails, transactions, callback, req, res)
-{
-    var rowIndex = -1;
-    var detailsFound = false;
-    var titleScanLimit = 20; //we must encounter the title within this number of rows from the start
-
-    new XLSX().extract(filename, { sheet_id: workbookNumber }) // or sheet_name or sheet_nr 
-        .on('sheet', function(sheet) {
-            //nothing
-        })
-        .on('row', function(row) {
-            
-            //console.log("row", row);
-            rowIndex++;
-            if (!detailsFound && row !== null && row !== undefined) {
-                if (rowIndex <= titleScanLimit)
-                {
-                    for (var e = 0; e < extractionDetails.length; e++)
-                    {
-                        for (var i = 0; i < row.length; i++) {
-                            //console.log("Processed row #" + rowIndex + " contaning " + row[i]);
-                            if (row[i] !== null && row[i]!== undefined && (""+row[i]).toLowerCase() === extractionDetails[e].title.toLowerCase())
-                            {
-                                extractionDetails[e].x = i;
-                                extractionDetails[e].found = true;
-                                //console.log("Found heading: " + row[i]);
-                                break;
-                            }
-                        }
-                    }
-                }
-                
-                //check if every detail column heading has been found
-                detailsFound = true; //assume true, change if necessary
-                for (var e = 0; e < extractionDetails.length; e++) {
-                    if (extractionDetails[e].found === false)
-                    {
-                        detailsFound = false;
-                    }
-                }
-                
-                
-                if (!detailsFound && rowIndex > titleScanLimit)
-                {
-                    
-                    console.log("Finished workbook pass #"+workbookNumber);
-                    findWorkbook(workbookNumber+1, filename, extractionDetails, transactions, callback, req, res);  //look for more data in other workbooks
-                    return;
-                }
-                
-                if (detailsFound)
-                {
-                    console.log("Finished workbook pass #"+workbookNumber + " (found data)");
-                    //callback(fileName, extractionDetails, workbookNumber, transactions, insertTransactions, req, res);
-                    findWorkbook(workbookNumber+1, filename, extractionDetails, transactions, callback, req, res); //look for more data in other workbooks
-                    return;
-                }
-                
-            }
-        })
-        .on('cell', function(cell) {
-            //console.log('cell', cell); //cell is a value or null 
-        })
-        .on('error', function(err) {
-            console.error('error', err);
-            console.log("Finished workbook pass #"+workbookNumber + " (hit an error, so assuming there are no more workbooks)");
-            return;
-        })
-        .on('end', function(err) {
-            console.log("Finished workbook pass #"+workbookNumber);
-            findWorkbook(workbookNumber+1, filename, extractionDetails, transactions, callback, req, res);  //look for more data in other workbooks
-            return;
-        });
-    
-}
-*/
 
 function formatMoney(str) {
     //store as number of 1p coins, i.e. £1.62 is stored as 162p

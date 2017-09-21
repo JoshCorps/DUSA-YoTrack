@@ -8,7 +8,7 @@ let authenticate = require('./index').authenticate;
 let db = require('../models/db.js')();
 let Insight = require('../models/insight');
 
-router.get('/:startYear/:startMonth/:startDay/:endYear/:endMonth/:endDay', authenticate, (req, res) => {
+router.get('/:startYear/:startMonth/:startDay/:endYear/:endMonth/:endDay', authenticate, (req, res, next) => {
     var startYear = req.params.startYear;
     var startMonth = req.params.startMonth;
     var startDay = req.params.startDay;
@@ -19,14 +19,14 @@ router.get('/:startYear/:startMonth/:startDay/:endYear/:endMonth/:endDay', authe
     if (startYear && startMonth && startDay && endYear && endMonth && endDay) {
         Insight.analyse(db, new Date(startYear, startMonth, startDay), new Date(endYear, endMonth, endDay), (err, data) => {
             //console.log(JSON.stringify(data, null, 2));
-            return res.render('insights', { insight: data });
+            res.render('insights', { insight: data });
         });
     } else {
         return res.render('insights', { insight: null });
     }
 });
 
-router.post('/', authenticate, (request, response) => {
+router.post('/', authenticate, (request, response, next) => {
     var start = request.body.start;
     var end = request.body.end;
     

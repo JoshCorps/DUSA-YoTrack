@@ -6,7 +6,7 @@ let User = require('../models/user.js');
 let db = require('../models/db.js')();
 let authenticate = require('./index').authenticate;
 
-router.get('/', authenticate, (req, res) => {
+router.get('/', authenticate, (req, res, next) => {
     User.getUnapprovedUsers(db, (err, users) => {
       if(err) {
           // handle error somehow
@@ -23,7 +23,7 @@ router.get('/', authenticate, (req, res) => {
   });
 });
 
-router.post('/', authenticate, (req, res) => {
+router.post('/', authenticate, (req, res, next) => {
     var approved = [];
     var declined = [];
     var users = Array.prototype.slice.call(req.body.users);

@@ -5,21 +5,23 @@ class Outlet {
         this.outletName = undefined;
     }
     
-    static create(db, outlet, callback)
+    static getNames(db, callback)
     {
-        let out;
-        if(outlet instanceof Outlet)
+        db.transactions.distinct('outletName', {}, (err, outletNames) => 
         {
-            out = outlet;
-        } else {
-            out = new Outlet(outlet);
-        }
-        db.outlets.insert(out,callback());
+            if(err) return;
+            callback(null, outletNames);
+        });
     }
     
-    static getOutletNames()
+    static getRefs(db, callback)
     {
-        
+        db.transactions.distinct('outletRef', {}, (err, outletRefs) => 
+        {
+            if(err) return;
+            callback(null, outletRefs);
+        });
     }
-    
 }
+
+module.exports = Outlet;

@@ -6,8 +6,17 @@ block content
             form(action="/upload_history" method="post")
                 - for (var i = 0; i < uploads.length; i++)
                     - var upload = uploads[i]
-                    li= upload.date
-                    input(type='checkbox', name='uploads' value=upload._id)
+                    - var date = upload.date.getDate() + '/' + (upload.date.getMonth() + 1) + '/' + upload.date.getFullYear()
+                    - var startDate = upload.startDate.getDate() + '/' + (upload.startDate.getMonth() + 1) + '/' + upload.startDate.getFullYear()
+                    - var endDate = upload.endDate.getDate() + '/' + (upload.endDate.getMonth() + 1) + '/' + upload.endDate.getFullYear()
+                    
+                    | #{date}
+                    | &nbsp;
+                    | #{startDate} -
+                    | #{endDate}
+                    | &nbsp;
+                    input(type='checkbox', name='uploads', data-inline='true', value=upload._id)
+                    p
             
                 input(type='submit', value='Delete selected uploads')
             

@@ -133,16 +133,15 @@ class Transaction {
                 callback(err);
             }
             var transaction_ids = [];
-            console.log('Uploads: ' + uploads.length);
-            console.log('Upload ID: ' + uploads[0]._id);
             for (let i = 0; i < uploads.length; i++) {
-                transaction_ids = Array.prototype.concat(uploads[i].transactionIDs);
+                transaction_ids = transaction_ids.concat(uploads[i].transactionIDs);
             }
             db.transactions.remove({ '_id': { $in: transaction_ids.map((transaction) => { return new ObjectID(transaction); }) } }, (err) => {
                 if (err) {
                     callback(err);
                 }
             });
+            callback(null);
         });
     }
 

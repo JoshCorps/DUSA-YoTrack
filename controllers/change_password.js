@@ -8,29 +8,26 @@ let authenticate = require('./index').authenticate;
 let db = require('../models/db.js')();
 let User = require('../models/user.js');
 
-router.get('/', authenticate, (req, res) => {
+router.get('/', authenticate, (req, res, next) => {
     res.render('change_password');
+    next();
 });
 
-router.post('/', authenticate, (req, res) => {
+router.post('/', authenticate, (req, res, next) => {
     let currentPass = req.body.currentPass;
     let newPass = req.body.newPass;
     let repeatNewPass = req.body.repeatNewPass;
-    
-    console.log("currentPass: " + currentPass);
-    console.log("currentPass: " + newPass);
-    console.log("repeatNewPass: " + repeatNewPass);
     
     var user = new User(req.session.passport.user);
     
     if(newPass !== repeatNewPass)
     {
         req.flash('error', 'The new passwords do not match. Please try again.');
-        res.redirect('/change_password');
+        return res.redirect('/change_password');
     } else if (newPass.length < 8)
     {
         req.flash('error', 'The new password does not meet the requirements'); //list requirements
-        res.redirect('/change_password');
+        return res.redirect('/change_password');
     } else {
         if(user.checkPassword(currentPass))
         {
@@ -42,8 +39,8 @@ router.post('/', authenticate, (req, res) => {
                 {
                     //handle err
                 } else {
-                    req.session.change_pass = true;
-                    res.redirect('/logout');
+                    //req.flash("Password changed successfully");
+                    res.redirect('/');
                 }
                 
             });

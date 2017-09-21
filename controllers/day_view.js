@@ -8,8 +8,9 @@ let authenticate = require('./index').authenticate;
 let db = require('../models/db.js')();
 let Day = require('../models/day.js');
 let Month = require('../models/month.js');
+let Outlet = require('../models/outlet.js');
 
-router.get('/', authenticate, (req, res) => {
+router.get('/', authenticate, (req, res, next) => {
     let date = new Date();
     let year = date.getFullYear();
     let month = date.getMonth() + 1;
@@ -18,10 +19,15 @@ router.get('/', authenticate, (req, res) => {
     res.redirect(`/day_view/${year}/${month}/${day}`);
 });
 
-router.get('/:year/:month/:day', authenticate, (request, response) => {
+router.get('/:year/:month/:day', authenticate, (request, response, next) => {
     var day = request.params.day;
     var month = request.params.month;
     var year = request.params.year;
+    var outlets = [];
+    Outlet.getNames(db, (err, data) => {
+        if (err) { console.log("Could not get outlet names."); }
+        else {outlets = data;}
+    });
     Day.getDay(db, year, month, day, (err, data) => {
         if (err) return;
         console.log('Data length: '+Object.keys(data).length);
@@ -30,6 +36,7 @@ router.get('/:year/:month/:day', authenticate, (request, response) => {
             'year': year,
             'month': month,
             'day': day,
+            'outlets': outlets,
             'startHour' : 6 //TODO: Fix - passing month.startHour doesn't work.
         });
     });

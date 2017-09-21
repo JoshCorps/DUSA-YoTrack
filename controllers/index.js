@@ -10,10 +10,10 @@ let authenticate = (req, res, next) => {
             req.flash('error', 'Your account has not yet been approved. Please contact an admin.')
             res.redirect('/login');
         }
-        
+
         return next();
     }
-    
+
     // if not, redirect back to login page
     res.redirect('/login')
 };
@@ -24,27 +24,28 @@ router.use((req, res, next) => {
     if (req.user) {
         res.locals.user = req.user;
     }
-    
-    if (req.method === 'GET') {
-        if (req.session.messages) {
-            res.locals.messages = req.session.messages;
-            req.session.messages = {};
-            req.session.save();
-        }
-    }
-    
+
     req.flash = (type, message) => {
-        if (!req.session.messages) {
-            req.session.messages = {}
+        if (!type) {
+            console.log('Should set to locals:')
+            console.log(req.session.messages);
+            if (req.session.messages) {
+                res.locals.messages = req.session.messages;
+                req.session.messages = {};
+            }
         }
-        if (!req.session.messages[type]) {
-            req.session.messages[type] = [];
+        else {
+            if (!req.session.messages) {
+                req.session.messages = {}
+            }
+            if (!req.session.messages[type]) {
+                req.session.messages[type] = [];
+            }
+            req.session.messages[type].push(message);
+            console.log(req.session);
         }
-        req.session.messages[type].push(message);
-        req.session.save();
-        console.log(req.session);
     }
-    
+
     next();
 });
 
@@ -86,5 +87,6 @@ router.get((error, req, res, next) => {
         error: error
     });
 });
+
 
 module.exports = router;

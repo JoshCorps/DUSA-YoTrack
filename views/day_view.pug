@@ -4,6 +4,8 @@ block content
 	div(class="block")
 		- var totalsByVenue = {};
 		
+		p #{JSON.stringify(outlets)}
+		
 		- var hourLabels = []
 		- for (var h = 0; h < 24; h++)
 			- var hourText = (startHour + h) % 24

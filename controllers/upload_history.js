@@ -7,7 +7,7 @@ let db = require('../models/db.js')();
 let Upload = require('../models/upload');
 let Transaction = require('../models/transaction');
 
-router.get('/', authenticate, (req, res) => {
+router.get('/', authenticate, (req, res, next) => {
     Upload.getAllUploads(db, (err, data) => {
         if(err) {
             // handle error
@@ -15,10 +15,11 @@ router.get('/', authenticate, (req, res) => {
         res.render('upload_history', {
             uploads: data
         });  
+        next();
     });
 });
 
-router.post('/', authenticate, (req, res) => {
+router.post('/', authenticate, (req, res, next) => {
     var uploads = req.body.uploads;
     // if the item is not an array 
     if (!Array.isArray(uploads)) {
@@ -27,18 +28,17 @@ router.post('/', authenticate, (req, res) => {
     }
     Transaction.deleteTransactions(db, uploads, (err) => {
         if(err) {
-            console.log('Error: '+err);
-            //handle error
+            return;
         }
-        console.log('Deleting uploads: '+uploads.length);
         Upload.deleteUploads(db, uploads, (err) => {
             if (err) {
-                // handle error
+                return;
             }
         });
     });
     
     res.redirect('/upload_history');
+    next();
 });
 
 module.exports = router;

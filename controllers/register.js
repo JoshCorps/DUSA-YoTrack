@@ -8,7 +8,7 @@ let router = express.Router();
 let db = require('../models/db.js')();
 let User = require('../models/user.js');
 
-router.post('/', (request, response) => {
+router.post('/', (request, response, next) => {
     let firstName = request.body.firstName;
     let lastName = request.body.lastName;
     let email = request.body.email;
@@ -39,31 +39,31 @@ router.post('/', (request, response) => {
     {
         request.flash('error', "Email cannot be empty");
         response.redirect('/login');
-        return;
+        return next();
     }
     if (password === '' || repeatPassword === '')
     {
         request.flash('error', "Passwords cannot be empty");
         response.redirect('/login');
-        return;
+        return next();
     }
     
     if (password !== repeatPassword) {
         request.flash('error', "Passwords do not match");
         response.redirect('/login');
-        return;
+        return next();
     }
     if (!(email.endsWith("@dusa.co.uk") || !email.endsWith("@dundee.ac.uk"))) {
         request.flash('error', "Invalid email address");
         response.redirect('/login');
-        return;
+        return next();
     }
     if (password.length < 8) //add more reqs
     {
         request.flash('error', "Password requirements not met");
         console.log(request.session)
         response.redirect('/login');
-        return;
+        return next();
     }
 
     var user = new User({
@@ -85,7 +85,7 @@ router.post('/', (request, response) => {
             request.flash('success', 'Your account request has been submitted for approval. Please wait for an admin to verify your account.')
         }
         response.redirect('/login');
-        return;
+        return next();
     });
 });
 

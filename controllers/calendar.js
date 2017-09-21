@@ -16,7 +16,7 @@ router.get('/', authenticate, (req, res) => {
     res.redirect(`/calendar/${year}/${month}`);
 });
 
-router.get('/:year/:month', authenticate, (request, response) => {
+router.get('/:year/:month', authenticate, (request, response, next) => {
     var year = request.params.year;
     var month = request.params.month;
     
@@ -25,8 +25,7 @@ router.get('/:year/:month', authenticate, (request, response) => {
         let colors = Month.getColorsForDays(data);
         
         response.render('calendar', {'data': data, 'colors': colors, 'year': year, 'month': month}); 
-     });
-
+    });
 });
 
 module.exports = router;

@@ -13,11 +13,15 @@ module.exports = () => {
       // assign the user collection to this object so we can reuse it
       console.log('Created/verified user collection');
       db.users = db.collection('users');
+      db.users.createIndex('email');
+      db.users.reIndex();
     });
       
     db.createCollection('transactions', {}, () => {
       console.log('Created/verified transaction collection');
       db.transactions = db.collection('transactions');
+      db.transactions.createIndex('dateTime');
+      db.transactions.reIndex();
     });
     
     db.createCollection('uploads', {}, () => {
@@ -33,11 +37,6 @@ module.exports = () => {
     db.createCollection('tribes', {}, () => {
       console.log('Created/verified tribes collection');
       db.tribes = db.collection('tribes');
-    });
-    
-    db.createCollection('outlets', {}, () => {
-      console.log('Created/verified outlets collection');
-      db.outlets = db.collection('outlets');
     });
       
     // when the database is connected, fire this event.
