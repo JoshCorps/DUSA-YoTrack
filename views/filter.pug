@@ -1,46 +1,51 @@
 extend page
 block content
-    div(class="block")
-        form(action='/filter', method='POST')
-            p Date Range: 
-                input(type='radio', name='dateRange', value='Daily', checked)
-                |  Daily  
-                input(type='radio', name='dateRange', value='Weekly')
-                |  Weekly  
-                input(type='radio', name='dateRange', value='Monthly')
-                |  Monthly 
-            | Start Date: 
-            input(type='date', name='startDate')
-            | End Date
-            input(type='date', name='endDate')
-            p
-            | Start Date: 
-            input(type='time', name='startDate')
-            | End Date
-            input(type='time', name='endDate')
-            p
-            button(type="button", onclick='toggleAdvanced()') Show advanced options
-            #advancedDiv(style="display:none;")
-                | Graph Type   
-                select(name="graphType")
-                    option(value="line") Line
-                    option(value="bar") Bar
-                br
-                    
-                - for (var i = 0,  j = 0; i < outletNames.length; i++,j++)
-                    - if (j % 3 === 0 && j !== 0)
-                        br
-                    input(type='checkbox', name='venues' value=outletNames[i])
-                    |  #{outletNames[i]}  
-            p
-            input(type='submit',  class="u-full-width button-primary", value='Filter')
+	div(class="block")
+		form(action='/filter_graph', method='GET')
+			| Start Date: 
+			if (startDate === null)
+				input(type='date', name='startDate') 
+			else
+				input(type='date', name='startDate', value=startDate)
+			| End Date
+			if (endDate === null)
+				input(type='date', name='endDate')
+			else
+				input(type='date', name='endDate', value=endDate)
+			
+			p Group By: 
+				input(type='radio', name='groupBy', value='Daily', checked)
+				|  Daily  
+				input(type='radio', name='groupBy', value='Weekly')
+				|  Weekly  
+				input(type='radio', name='groupBy', value='Monthly')
+				|  Monthly 
+				input(type='radio', name='groupBy', value='Yearly')
+				|  Yearly 
+			
+			button(type="button", onclick='toggleAdvanced()') Show advanced options
+			#advancedDiv(style="display:none;")
+				| Chart Type   
+				select(name="chartType")
+					option(value="line") Line
+					option(value="bar") Bar
+				br
+					
+				- for (var i = 0, j = 0; i < outletNames.length; i++,j++)
+					- if (j % 3 === 0 && j !== 0)
+					br
+					input(type='checkbox', name='venues' value=outletNames[i])
+					|  #{outletNames[i]}  
 
-        script.
-                function toggleAdvanced() {
-                    var x = document.getElementById('advancedDiv');
-                    if (x.style.display === 'none') {
-                        x.style.display = 'block';
-                    } else {
-                        x.style.display = 'none';
-                    }
-                }
+			input(type="submit", value="Filter Data", class="button-primary")
+			
+			script.
+				function toggleAdvanced() {
+					var x = document.getElementById('advancedDiv');
+					if (x.style.display === 'none') {
+						x.style.display = 'block';
+					} else {
+						x.style.display = 'none';
+					}
+				}
+				

@@ -80,15 +80,6 @@ class Transaction {
             callback(null, data);
         });
     }
-
-    static getTransactionsByDay() {
-        // todo
-    }
-
-    static getTransactionsByTime(startTime, endTime, callback) {
-        // get list of transactions
-
-    }
     
     static getTransactions(db, query, callback) {
         db.transactions.find(query, (err, data) => {
@@ -110,11 +101,94 @@ class Transaction {
         });
     }
     
-    
-    processTransactionData(startTime, endTime, dateRange, data) {
-        for(let i=0; i<data.length; i++) {
-            
+    static groupTransactionsByDay(numberOfDays, startDate, endDate, transactions) {
+        var groupedTransactions = {};
+        var key, d;
+        
+        for (let j=0; j<numberOfDays; j++) {
+            d = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + j);
+            key = d.toDateString();
+            groupedTransactions[key] = 0;
         }
+        
+        for (let i=0; i<transactions.length; i++) {
+            d = new Date(transactions[i].dateTime.getFullYear(), transactions[i].dateTime.getMonth(), transactions[i].dateTime.getDate());
+            key = d.toDateString();
+            groupedTransactions[key] += transactions[i].totalAmount;
+        }
+        
+        return groupedTransactions;
+    }
+    
+    static groupTransactionsByWeek(numberOfWeeks, startDate, endDate, transactions) {
+        var groupedTransactions = {};
+        var key, d;
+        
+        for (let j=0; j<numberOfWeeks; j++) {
+            d = new Date(startDate.getFullYear(), startDate.getMonth(), (startDate.getDate() + j * 7 - 1));
+            key = d.toDateString();
+            groupedTransactions[key] = 0;
+        }
+        
+        for (let i=0; i<transactions.length; i++) {
+            var day = transactions[i].dateTime.getDay();
+            if(day == 0) {
+                day = 7;
+            }
+            day -= 1;
+            d = new Date(transactions[i].dateTime.getFullYear(), transactions[i].dateTime.getMonth(), transactions[i].dateTime.getDate() - day);
+            key = d.toDateString();
+            groupedTransactions[key] += transactions[i].totalAmount;
+        }
+        
+        return groupedTransactions;
+    }
+    
+    static groupTransactionsByMonth(numberOfMonths, startDate, endDate, transactions) {
+        var groupedTransactions = {};
+        var key, d;
+        
+        for (let j=0; j<numberOfMonths; j++) {
+            d = new Date(startDate.getFullYear(), (startDate.getMonth()+j), 1);
+            key = d.toDateString();
+            groupedTransactions[key] = 0;
+        }
+        
+        for (let i=0; i<transactions.length; i++) {
+            d = new Date(transactions[i].dateTime.getFullYear(), transactions[i].dateTime.getMonth(), 1);
+            key = d.toDateString();
+            groupedTransactions[key] += transactions[i].totalAmount;
+        }
+        
+        return groupedTransactions;
+    }
+    
+    static sortTransactionsForDaysOfTheWeek(numberOfWeeks, startDate, endDate, daysOfWeek, transactions) {
+        var sortedTransactions = {};
+        var key, d;
+        
+        for (let j=0; j<numberOfWeeks; j++) {
+            for(let n=0; n<daysOfWeek.length; n++) {
+                d = new Date(startDate.getFullYear(), startDate.getMonth(), (startDate.getDate() + j*7 + daysOfWeek[n]));
+                key = d.toDateString();
+                sortedTransactions[key] = 0;
+            }
+        }
+        
+        for (let i=0; i<transactions.length; i++) {
+            var day = transactions[i].dateTime.getDay();
+            if (day == 0) {
+                day = 7;
+            }
+            day -= 1;
+            if(daysOfWeek.indexOf(day) != -1) {
+                d = new Date(transactions[i].dateTime.getFullYear(), transactions[i].dateTime.getMonth(), transactions[i].dateTime.getDate());
+                key = d.toDateString();
+                sortedTransactions[key] += transactions[i].totalAmount;
+            }
+        }
+        
+        return sortedTransactions;
     }
     
     static insertTransactions(db, transactions, callback) {

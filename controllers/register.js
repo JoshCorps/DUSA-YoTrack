@@ -47,13 +47,12 @@ router.post('/', (request, response, next) => {
         response.redirect('/login');
         return;
     }
-    
     if (password !== repeatPassword) {
         request.flash('error', "Passwords do not match");
         response.redirect('/login');
         return;
     }
-    if (!(email.endsWith("@dusa.co.uk") || !email.endsWith("@dundee.ac.uk"))) {
+    if (!email.endsWith("@dusa.co.uk") && !email.endsWith("@dundee.ac.uk")) {
         request.flash('error', "Invalid email address");
         response.redirect('/login');
         return;
@@ -61,7 +60,6 @@ router.post('/', (request, response, next) => {
     if (password.length < 8) //add more reqs
     {
         request.flash('error', "Password requirements not met");
-        console.log(request.session)
         response.redirect('/login');
         return;
     }

@@ -7,7 +7,8 @@ class Outlet {
     
     static getNames(db, callback)
     {
-        db.transactions.distinct('outletName', {}, (err, outletNames) => 
+        // $nin tells mongo to ignore fields matching data in the array given
+        db.transactions.distinct('outletName', {'outletName' : {$nin : ["", null]}}, (err, outletNames) => 
         {
             if(err) return;
             callback(null, outletNames);
@@ -16,7 +17,7 @@ class Outlet {
     
     static getRefs(db, callback)
     {
-        db.transactions.distinct('outletRef', {}, (err, outletRefs) => 
+        db.transactions.distinct('outletRef', {'outletRef' : {$nin : ["", null]}}, (err, outletRefs) => 
         {
             if(err) return;
             callback(null, outletRefs);

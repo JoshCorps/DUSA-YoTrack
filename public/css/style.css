@@ -13,6 +13,7 @@ html, body {
 
 body {
     overflow-x: hidden;
+    overflow-y: scroll;
     background: rgb(235, 238, 250);
 }
 
@@ -112,7 +113,7 @@ main {
 
 main aside {
     background: #fff;
-    width: 6em;
+    min-width: 6em;
     min-height: 100%;
     display: block;
     z-index: 99;
@@ -169,6 +170,24 @@ main aside nav ul li a span {
     padding: 0 5px;
     display: block;
     line-height: 1em;
+}
+
+main aside section {
+    border-left: 1px solid rgb(195, 195, 195);
+    width: 25vw;
+    min-height: 100%;
+    display: block
+}
+
+main aside section ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+main aside section ul li {
+    margin: 0;
+    padding: 0;
 }
 
 main article {
@@ -312,6 +331,8 @@ main article {
 /* DAY VIEW */
 .block canvas {
     width: 100% !important;
+    max-width: 100%;
+    overflow-x: hidden;
 }
 
 /* HELPERS */
@@ -320,3 +341,15 @@ main article {
 .align-items-center { align-items: center; }
 .flex-grow { flex-grow: 1; }
 .flex-column { flex-direction: column; }
+
+::-webkit-scrollbar {
+    width: 6px;
+}
+ 
+::-webkit-scrollbar-track {
+    background: #2c3e50;
+}
+ 
+::-webkit-scrollbar-thumb {
+    background: #ff67c7;
+}

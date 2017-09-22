@@ -58,6 +58,7 @@ router.use('/calendar', require('./calendar'));
 router.use('/insights', require('./insights'));
 router.use('/day_view', require('./day_view'));
 router.use('/filter', require('./filter'));
+router.use('/filter_graph', require('./filter_graph'));
 
 // serve index page
 router.get('/', authenticate, (req, res) => {

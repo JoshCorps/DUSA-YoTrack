@@ -18,14 +18,17 @@ class Day {
     Transaction.getTransactionsForDay(db, startDate, endDate, (err, data) => {
         let hours = {};
         
+        /*
+        for(let j=0; j<24; j++) {
+          hours[j] = [];
+        }*/
+        
         for (var i = 0; i < data.length; i++) {
             if(data[i])
             {
-                
                 var theHour = data[i].dateTime.getHours();
-                if (!hours[theHour])
-                {
-                    hours[theHour] = [];
+                if (!hours[theHour]) {
+                  hours[theHour] = [];
                 }
                 hours[theHour].push(data[i]);
             }
@@ -56,6 +59,63 @@ class Day {
   
         callback(null, hourTotals);
       });
+  }
+  
+  static getDifferenceInDays(startDate, endDate) {
+    var diffAndDates = [];
+    startDate.setHours(startHour, 0, 0);
+    endDate.setDate(endDate.getDate()+1);
+    endDate.setHours(startHour, 0, 0);
+    var diff = instadate.differenceInDays(startDate, endDate);
+    
+    diffAndDates = [diff, startDate, endDate];
+    return diffAndDates;
+  }
+  
+  static getDifferenceInMonths(startDate, endDate) {
+    var startMonth, endMonth, diff;
+    var diffAndDates = [];
+    startMonth = startDate.getMonth();
+    endMonth = endDate.getMonth();
+    
+    startDate = instadate.firstDateInMonth(startDate);
+    endDate = instadate.lastDateInMonth(endDate);
+    
+    if (startMonth > endMonth) {
+      diff = 11 - startMonth + endMonth +2;
+    } else {
+      diff = endMonth - startMonth - 1;
+    }
+    
+    diffAndDates = [diff, startDate, endDate];
+    
+    return diffAndDates;
+  }
+  
+  static getDifferenceInWeeks(startDate, endDate) {
+    var dayDiff, diff, offset1, offset2;
+    var diffAndDates = [];
+    offset1 = startDate.getDay();
+    offset2 = endDate.getDay();
+    
+    if (offset1 == 0) {
+      offset1 = 7;
+    }
+    offset1 -= 1;
+    startDate.setDate(startDate.getDate() - offset1);
+    
+    if (offset2 == 0) {
+      offset2 = 7;
+    }
+    offset2 -= 1;
+    endDate.setDate(endDate.getDate() + (6-offset2));
+    
+    dayDiff = Day.getDifferenceInDays(startDate, endDate)[0];
+    diff = dayDiff/7;
+    
+    diffAndDates = [diff, startDate, endDate];
+    
+    return diffAndDates;
   }
 }
 

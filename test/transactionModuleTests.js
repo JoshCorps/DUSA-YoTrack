@@ -6,49 +6,111 @@ var Transaction = require('../models/transaction.js');
 let db = require('../models/db.js')();
 
 describe('TransactionModule', () => {
+    var trans1, trans2, trans3, trans4, trans5, trans6, trans7, trans8;
+    var date1, date2, date3, date4, date5, date6;
+    
+    before(() => {
+        date1 = new Date(2016, 7, 23);
+        date2 = new Date(2016, 7, 28);
+        date3 = new Date(2016, 8, 2);
+        date4 = new Date(2016, 7, 30);
+        date5 = new Date(2016, 9, 1);
+        date6 = new Date(2016, 10, 15);
+        
+        trans1 = new Transaction();
+        trans1.totalAmount = 10;
+        trans1.dateTime = date1;
+        
+        trans2 = new Transaction();
+        trans2.totalAmount = 15;
+        trans2.dateTime = date2;
+        
+        trans3 = new Transaction();
+        trans3.totalAmount = 20;
+        trans3.dateTime = date3;
+        
+        trans4 = new Transaction();
+        trans4.totalAmount = 25;
+        trans4.dateTime = date3;
+        
+        trans5 = new Transaction();
+        trans5.totalAmount = 25;
+        trans5.dateTime = date5;
+        
+        trans6 = new Transaction();
+        trans6.totalAmount = 25;
+        trans6.dateTime = date5;
+        
+        trans7 = new Transaction();
+        trans7.totalAmount = 25;
+        trans7.dateTime = date6;
+        
+        trans8 = new Transaction();
+        trans8.totalAmount = 25;
+        trans8.dateTime = date6;
+    });
 
-    it('deleteTransactions() should delete the transactions relating to given uploads', (done) => {
-        var up1 = new Upload({
-            'date': 1,
-            'transactions': [111, 112],
-            '_id': 1010
-        });
-        var up2 = new Upload({
-            'date': 2,
-            'transactions': [113, 114],
-            '_id': 1020
-        });
+    it('groupTransactionsByDay() should return total amount spend each day for specified date range', () => {
         
-        var trans1 = new Transaction({
-            '_id': 111
-        });
-        var trans2 = new Transaction({
-            '_id': 112
-        });
-        var trans3 = new Transaction({
-            '_id': 113
-        });
-        var trans4 = new Transaction({
-            '_id': 114
-        });
+        var transactions = [trans1, trans2, trans3, trans4];
+        var nod, startDate, endDate;
+        nod = 11;
         
-        db.uploads.insert(db, [trans1, trans2, trans3, trans4], (err) => {
-            if(err) return;
-        });
+        startDate = new Date(2016, 7, 23);
+        endDate = new Date(2016, 8, 2);
         
-        db.uploads.insert([up1,up2], (err) => {
-            if (err) return;
-        });
+        var groupedTransactions = Transaction.groupTransactionsByDay(nod, startDate, endDate, transactions);
         
-        Transaction.deleteTransactions(db, [1010, 1020], (err, db) => {
-            if (err) return;
-            db.transactions.findOne({'_id':{$in: [111,112, 113, 114]}}, (err, data) => {
-                if (err) return;
-               expect(data).to.be.an('array').that.is.empty;
-            });
-        });
+        expect(Object.keys(groupedTransactions).length).to.equal(11);
+        expect(groupedTransactions[Object.keys(groupedTransactions)[10]]).to.equal(45);
+    });
+
+    it('groupTransactionsByWeek() should return total amount spend each day for specified date range', () => {
+        var transactions = [trans1, trans2, trans3, trans4];
+        var now, startDate, endDate;
+        now = 2;
         
-        done();
+        startDate = new Date(2016, 7, 23);
+        endDate = new Date(2016, 8, 2);
+        
+        var groupedTransactions = Transaction.groupTransactionsByWeek(now, startDate, endDate, transactions);
+        
+        expect(Object.keys(groupedTransactions).length).to.equal(2);
+        expect(groupedTransactions[Object.keys(groupedTransactions)[0]]).to.equal(25);
+    });
+
+    it('groupTransactionsByMonth() should return total amount spend each day for specified date range', () => {
+        var transactions = [trans1, trans2, trans3, trans4, trans5, trans6, trans7, trans8];
+        var nom, startDate, endDate;
+        nom = 4;
+        
+        startDate = new Date(2016, 7, 22);
+        endDate = new Date(2016, 10, 20);
+        
+        var groupedTransactions = Transaction.groupTransactionsByMonth(nom, startDate, endDate, transactions);
+        
+        expect(Object.keys(groupedTransactions).length).to.equal(4);
+        expect(groupedTransactions[Object.keys(groupedTransactions)[3]]).to.equal(50);
+    });
+
+    it('sortTransactionsForDaysOfTheWeek() should return total amount spend each selected day of the week for specified date range', () => {
+        var transactions = [trans1, trans2, trans3, trans4, trans5, trans6, trans7, trans8];
+        var now, startDate, endDate;
+        var daysOfTheWeek = [0,1]; // 0 for Monday, 1 for Tuesday
+        var daysOfTheWeek2 = [6]; // 6 for Sunday
+        now = 13;
+        
+        startDate = new Date(2016, 7, 22);
+        endDate = new Date(2016, 10, 20);
+        
+        var groupedTransactions = Transaction.sortTransactionsForDaysOfTheWeek(now, startDate, endDate, daysOfTheWeek, transactions);
+        var groupedTransactions2 = Transaction.sortTransactionsForDaysOfTheWeek(now, startDate, endDate, daysOfTheWeek2, transactions);
+        
+        expect(Object.keys(groupedTransactions).length).to.equal(26);
+        expect(groupedTransactions[Object.keys(groupedTransactions)[25]]).to.equal(50);
+        
+        expect(Object.keys(groupedTransactions2).length).to.equal(13);
+        expect(groupedTransactions2[Object.keys(groupedTransactions2)[0]]).to.equal(15);
     });
   
 });

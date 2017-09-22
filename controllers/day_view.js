@@ -30,7 +30,6 @@ router.get('/:year/:month/:day', authenticate, (request, response, next) => {
         if (err) console.log("Could not get days.");
         Outlet.getNames(db, (err, outlets) => {
             if (err) { console.log("Could not get outlet names."); }
-            console.log('Data length: '+Object.keys(data).length);
             response.render('day_view', {
                 'data': data,
                 'year': year,

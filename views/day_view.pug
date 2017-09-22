@@ -1,43 +1,46 @@
 extend page
+
+block sidebar
+	section
+		p Test 1
+
+
 block content
 	script(src='/chartjs/Chart.js')
+	
 	div(class="block")
-		
 		- var hourLabels = []
 		-
 			for (var h = 0; h < 24; h++)
 			{
-				hourLabels.push(h);
-				/*
+				//hourLabels.push(h);
 				var hourText = (startHour + h) % 24
 				if (hourText < 10) hourText = ("0" + hourText)
 				{
 					hourText = (""+hourText)+":00"
 					hourLabels.push(hourText)
 				}
-				*/
+				
 			}
-			
-		p !{JSON.stringify(data)}
-		
-		p Sep 2nd 9AM-10AM should is missing a transaction.
 		
 		- var allTotals = {};
-		-// for (var i = 0; i < outlets.length; i++)
-			-// allTotals[outlets[i]] = []
-			-// allTotals[outlets[i]] = getHourlyTotals(outlets[i])
-		- allTotals["Combined"] = []
+		- for (var i = 0; i < outlets.length; i++)
+			- allTotals[outlets[i]] = []
+			- allTotals[outlets[i]] = getHourlyTotals(outlets[i])
+		- //allTotals["Combined"] = []
 		- allTotals["Combined"] = getHourlyTotals(null, false) //allTotals["Combined"] = getHourlyTotals(null)
-		- allTotals["Marketplace"] = getHourlyTotals("DUSA The Union - Marketplace", false) 
+		- //allTotals["Marketplace"] = getHourlyTotals("DUSA The Union - Marketplace", true)
 			
 		-
-			function getHourlyTotals(venueName, shouldMove) { 
+			function getHourlyTotals(venueName) { 
+				var shouldMove = true; //shouldMove hours to their proper places
 				var total = [];
 				var keys = Object.keys(data);
 				var lastHour = -1; //initial value, we start processing with the 0 hours (midnight to 1)
 				for (var i = 0; i < keys.length; i++)
 				{
 					var totalAmount = 0;
+					var willInsert = false;
 					for (var e = 0; e < data[keys[i]].length; e++)
 					{
 						var thisPlace = data[keys[i]][e].outletName;
@@ -56,10 +59,14 @@ block content
 							}
 							lastHour = thisHour;
 							totalAmount += data[keys[i]][e].totalAmount;
+							willInsert = true;
 						}
 					}
 					//total.push((totalAmount/100).toFixed(2));
-					total[thisHour] = ((totalAmount/100).toFixed(2));
+					if (lastHour >= 0 && willInsert)
+					{
+						total[lastHour] = ((totalAmount/100).toFixed(2));
+					}
 					
 					//insert padding at end if last iteration
 					if (i === keys.length - 1 && lastHour < (startHour - 1) % 24) //This needs wrapping around if set to midnight, hence the mod.
@@ -67,15 +74,15 @@ block content
 						var hourDifference = ((startHour - 1) - lastHour) % 24;
 						for (var x = 1; x < hourDifference; x++)
 						{
-							total.push(0); //pad out the hours we have no data for
+							//total.push(0); //pad out the hours we have no data for
 						}
 					}
 				}
 				var movedHours = [];
 				for (var i = 6; i < 24; i++)
-				{	movedHours.push(total[i])}
+				{	movedHours.push(total[i]) }
 				for (var i = 0; i < 6; i++)
-				{	movedHours.push(total[i])}
+				{	movedHours.push(total[i]) }
 				
 				if (shouldMove)
 				{
@@ -87,7 +94,13 @@ block content
 			function createDataset(key, dataArray, id){
 				var dataset = {};
 				dataset.label = key; //location name
-				dataset.backgroundColor = getUniqueColor(id);
+				if (id < outlets.length)
+				{
+					dataset.backgroundColor = getUniqueColor(id);
+				} else {
+					dataset.backgroundColor = 'rgba(255, 103, 199, 0.85)';
+				}
+
 				dataset.borderColor = 'rgba(0, 0, 0, 1)';
 				dataset.borderWidth = 0;
 				dataset.data = dataArray; //!{JSON.stringify( dataArray )}
@@ -111,30 +124,76 @@ block content
 				var dataset = createDataset(keys[i], (allTotals[keys[i]]), i);
 				datasets.push(dataset);
 			}
+			
+		- for (var i = 0; i < outlets.length + 1; i++)
+			-if (i !== outlets.length)
+				- var showGraph = false;
+				- for (var e = 0; e < datasets[i].data.length; e++)
+					- if (datasets[i].data[e])
+						- showGraph = true;
+				-if (showGraph)
+					button(type="button", "onclick"="updateChart("+i+")")= outlets[i]
+				- else
+					// button(type="button", "onclick"="updateChart("+i+")")= outlets[i] +  "(N)"
+			-else
+				script.
+					window.combinedIndex = #{i};
+				button(type="button", "onclick"="updateChart("+i+")")= "Combined"
+			
+		
 		
 		canvas#myChart
 			script.
 				var ctx = document.getElementById("myChart").getContext('2d');
 				var labels = !{JSON.stringify(hourLabels)};
 				var ds = !{JSON.stringify(datasets)};
+				var dsCombined = [ !{JSON.stringify( datasets[datasets.length - 1] )} ];
+				var dsAll = !{JSON.stringify(datasets)};
 				
 				var myChart = new Chart(ctx, {
-				type: 'bar',
-				data: {
-				labels: labels,
-				datasets: ds
-				},
-				options: {
-				scales: {
-				yAxes: [{
-				ticks: {
-				beginAtZero:true
-				},
-				scaleLabel: {
-				display: true,
-				labelString: 'Revenue (GBP)'
-				}
-				}]
-				}
-				}
+					type: 'bar',
+					data: {
+						labels: labels,
+						datasets: dsCombined
+					},
+					options: {
+						scales: {
+							yAxes: [{
+								ticks: {
+									beginAtZero:true
+								},
+								scaleLabel: {
+									display: true,
+									labelString: 'Revenue (GBP)'
+								}
+							}]
+						}
+					}
 				});
+				
+				
+				
+				
+		script.
+			
+			
+			let dataToggle = {};
+			dataToggle[combinedIndex] = true;
+			function updateChart(index)
+			{
+				console.log(index);
+				dataToggle[index] = !dataToggle[index];
+				console.log(dataToggle[index]);
+				
+				let data = [];
+				let toggles = Object.keys(dataToggle);
+				for (let i = 0; i < toggles.length; i++) {
+					
+					if (dataToggle[toggles[i]]) {
+						data.push(dsAll[toggles[i]]);
+					}
+				}
+				
+				myChart.data.datasets = data; //[dsAll[index]];
+				myChart.update();
+			}

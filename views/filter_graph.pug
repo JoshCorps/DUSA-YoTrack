@@ -1,0 +1,39 @@
+extend page
+
+block content
+	script(src='/chartjs/Chart.js')
+	
+	div(class="block")
+		
+		canvas#myChart
+			script.
+				var ctx = document.getElementById("myChart").getContext('2d');
+				var labels = !{JSON.stringify(labels)};
+				var ds = !{JSON.stringify(datasets)};
+				var dsCombined = [ !{JSON.stringify( datasets[datasets.length - 1] )} ];
+				var dsAll = !{JSON.stringify(datasets)};
+				
+				var myChart = new Chart(ctx, {
+					type: 'bar',
+					data: {
+						labels: labels,
+						datasets: dsCombined
+					},
+					options: {
+						scales: {
+							yAxes: [{
+								ticks: {
+									beginAtZero:true
+								},
+								scaleLabel: {
+									display: true,
+									labelString: 'Revenue (GBP)'
+								}
+							}]
+						}
+					}
+				});
+				
+				
+				
+				
