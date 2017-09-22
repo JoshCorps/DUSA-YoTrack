@@ -3,32 +3,38 @@ block content
 	script(src='/chartjs/Chart.js')
 	div(class="block")
 		
-		p #{JSON.stringify(outlets)}
-		
 		- var hourLabels = []
-		- for (var h = 0; h < 24; h++)
-			- var hourText = (startHour + h) % 24
-			- if (hourText < 10) hourText = ("0" + hourText)
-			- hourText = (""+hourText)+":00"
-			- hourLabels.push(hourText)
+		-
+			for (var h = 0; h < 24; h++)
+			{
+				hourLabels.push(h);
+				/*
+				var hourText = (startHour + h) % 24
+				if (hourText < 10) hourText = ("0" + hourText)
+				{
+					hourText = (""+hourText)+":00"
+					hourLabels.push(hourText)
+				}
+				*/
+			}
+			
+		p !{JSON.stringify(data)}
 		
-		- var hTotal = []
-		- getHourlyTotals(null, hTotal)
+		p Sep 2nd 9AM-10AM should is missing a transaction.
 		
 		- var allTotals = {};
-		- for (var i = 0; i < outlets.length; i++)
-			- allTotals[outlets[i]] = []
-			- allTotals[outlets[i]] = getHourlyTotals(outlets[i])
+		-// for (var i = 0; i < outlets.length; i++)
+			-// allTotals[outlets[i]] = []
+			-// allTotals[outlets[i]] = getHourlyTotals(outlets[i])
 		- allTotals["Combined"] = []
-		- allTotals["Combined"] = getHourlyTotals(null)
-			
-		p !{JSON.stringify(allTotals)}
+		- allTotals["Combined"] = getHourlyTotals(null, false) //allTotals["Combined"] = getHourlyTotals(null)
+		- allTotals["Marketplace"] = getHourlyTotals("DUSA The Union - Marketplace", false) 
 			
 		-
-			function getHourlyTotals(venueName) { 
+			function getHourlyTotals(venueName, shouldMove) { 
 				var total = [];
 				var keys = Object.keys(data);
-				var lastHour = -1; //initial value
+				var lastHour = -1; //initial value, we start processing with the 0 hours (midnight to 1)
 				for (var i = 0; i < keys.length; i++)
 				{
 					var totalAmount = 0;
@@ -37,22 +43,33 @@ block content
 						var thisPlace = data[keys[i]][e].outletName;
 						if (venueName === null || thisPlace === venueName)
 						{
-						
-		-
 							var thisHour = data[keys[i]][e].dateTime.getHours();
-							var hourDifference = thisHour - lastHour;
+							var hourDifference = (thisHour - lastHour) % 24;
 							if (hourDifference > 1)
 							{
+								/*
 								for (var x = 1; x < hourDifference; x++)
 								{
 									total.push(0); //pad out the hours we have no data for
 								}
+								*/
 							}
 							lastHour = thisHour;
 							totalAmount += data[keys[i]][e].totalAmount;
 						}
 					}
-					total.push((totalAmount/100).toFixed(2));
+					//total.push((totalAmount/100).toFixed(2));
+					total[thisHour] = ((totalAmount/100).toFixed(2));
+					
+					//insert padding at end if last iteration
+					if (i === keys.length - 1 && lastHour < (startHour - 1) % 24) //This needs wrapping around if set to midnight, hence the mod.
+					{
+						var hourDifference = ((startHour - 1) - lastHour) % 24;
+						for (var x = 1; x < hourDifference; x++)
+						{
+							total.push(0); //pad out the hours we have no data for
+						}
+					}
 				}
 				var movedHours = [];
 				for (var i = 6; i < 24; i++)
@@ -60,48 +77,52 @@ block content
 				for (var i = 0; i < 6; i++)
 				{	movedHours.push(total[i])}
 				
-				total = movedHours;
+				if (shouldMove)
+				{
+					total = movedHours;
+				}
 				return total;
 			};
 			
-			function createDataset(key, dataArray){
+			function createDataset(key, dataArray, id){
 				var dataset = {};
 				dataset.label = key; //location name
-				dataset.fillColor = "rgba(220,220,220,0.2)";
-				dataset.strokeColor = "rgba(220,220,220,1)";
-				dataset.pointColor = "rgba(220,220,220,1)";
-				dataset.pointStrokeColor = "#fff";
-				dataset.pointHighlightFill = "#fff";
-				dataset.pointHighlightStroke = "rgba(220,220,220,1)";
+				dataset.backgroundColor = getUniqueColor(id);
+				dataset.borderColor = 'rgba(0, 0, 0, 1)';
+				dataset.borderWidth = 0;
 				dataset.data = dataArray; //!{JSON.stringify( dataArray )}
 				
 				return dataset;
 			}
-		
-		p Hello
-		p #{hTotal}
-		
-		- var datasets = [];
 			
+			function getUniqueColor(uniqueNumber)
+			{
+				var num1 = (50 + uniqueNumber * 70) % 256;
+				var num2 = (120 + uniqueNumber + 35) % 256;
+				var num3 = (210 + uniqueNumber * 55) % 256;
+				return 'rgba('+ num1 + ', ' + num2 + ', ' + num3 + ', 0.85)';
+			}
+			
+		-
+			var datasets = [];
+			var keys = Object.keys(allTotals);
+			for (var i=0; i < keys.length; i++)
+			{
+				var dataset = createDataset(keys[i], (allTotals[keys[i]]), i);
+				datasets.push(dataset);
+			}
+		
 		canvas#myChart
 			script.
 				var ctx = document.getElementById("myChart").getContext('2d');
-				var hourlyTotals = !{JSON.stringify(allTotals["Combined"])};
 				var labels = !{JSON.stringify(hourLabels)};
+				var ds = !{JSON.stringify(datasets)};
 				
-				var keys = Object.keys(allTotals);
-				for (var i=0; i < keys.length; i++)
-				{
-					var dataset = createDataset(keys[i], (allTotals[keys[i]]));
-					datasets.push(dataset);
-				}
-				datasets.push(createDataset("Combined", allTotals["Combined"]));
-
 				var myChart = new Chart(ctx, {
 				type: 'bar',
 				data: {
 				labels: labels,
-				datasets : datasets;
+				datasets: ds
 				},
 				options: {
 				scales: {
@@ -117,5 +138,3 @@ block content
 				}
 				}
 				});
-				
-		p !{JSON.stringify(datasets)}

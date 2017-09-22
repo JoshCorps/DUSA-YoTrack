@@ -47,7 +47,7 @@ router.post('/', (req, res) => {
         
         Outlet.getNames(db, (err, outletNames) => {
             if (err) return;
-            res.render('filter', {transactions: data, outletNames: outletNames});  
+            res.render('filter', {transactions: data, outletNames: outletNames, startDate: startDate, endDate: endDate});  
         });
     });
 });
