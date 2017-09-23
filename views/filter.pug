@@ -1,17 +1,34 @@
 extend page
 block content
 	div(class="block")
+		link(rel='stylesheet', href='//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css')
+		script(src='https://code.jquery.com/jquery-1.12.4.js')
+		script(src='https://code.jquery.com/ui/1.12.1/jquery-ui.js')
+		script.
+			$( function() {
+				$( "#startDate" ).datepicker({
+					dateFormat: 'dd-mm-yy'
+				});
+			} );
+			
+			$( function() {
+				$( "#endDate" ).datepicker({
+					dateFormat: 'dd-mm-yy'
+				});
+			} );
+			
+			
 		form(action='/filter_graph', method='GET')
 			| Start Date: 
 			if (startDate === null)
-				input(type='date', name='startDate') 
+				input#startDate(type='text', name='startDate') 
 			else
-				input(type='date', name='startDate', value=startDate)
+				input#startDate(type='text', name='startDate', value=startDate)
 			| End Date
 			if (endDate === null)
-				input(type='date', name='endDate')
+				input#endDate(type='text', name='endDate')
 			else
-				input(type='date', name='endDate', value=endDate)
+				input#endDate(type='text', name='endDate', value=endDate)
 			
 			p Group By: 
 				input(type='radio', name='groupBy', value='Daily', checked)
@@ -30,13 +47,25 @@ block content
 					option(value="line") Line
 					option(value="bar") Bar
 				br
-					
-				- for (var i = 0, j = 0; i < outletNames.length; i++,j++)
-					- if (j % 3 === 0 && j !== 0)
+				input#ckbCheckAll(type='checkbox')
+				| Toggle All Venues
+				p#checkBoxes
+					input.checkBoxClass(type='checkbox')
 					br
-					input(type='checkbox', name='venues' value=outletNames[i])
-					|  #{outletNames[i]}  
-
+					input.checkBoxClass(type='checkbox')
+					br
+					input.checkBoxClass(type='checkbox')
+					br
+					input.checkBoxClass(type='checkbox')
+					br
+					input.checkBoxClass(type='checkbox')
+					br
+					- for (var i = 0, j = 0; i < outletNames.length; i++,j++)
+						- if (j % 3 === 0 && j !== 0)
+						input.checkBoxClass(type='checkbox', name='venues', value=outletNames[i])
+						|  #{outletNames[i]}  
+						br
+				
 			input(type="submit", value="Filter Data", class="button-primary")
 			
 			script.
@@ -49,3 +78,8 @@ block content
 					}
 				}
 				
+			script.
+				$(document).ready(function () {
+					$("#ckbCheckAll").click(function () {
+						$(".checkBoxClass").prop('checked', $(this).prop('checked'));
+				});

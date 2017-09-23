@@ -1,4 +1,5 @@
 let ObjectID = require('mongojs').ObjectID;
+let instadate = require('instadate');
 
 class Transaction {
     constructor() {
@@ -56,7 +57,14 @@ class Transaction {
                     date = data[i].dateTime.getFullYear() + '-' + (data[i].dateTime.getMonth() + 1) + '-' + (data[i].dateTime.getDate() - 1);
                 }
                 
-                if ((data[i].dateTime.getDate() - 1) === 0) {
+                if (((data[i].dateTime.getDate()-1) === 0) && (startDate.getMonth() !== data[i].dateTime.getMonth())) {
+                    if (hour < (6)) {
+                        date = data[i].dateTime.getFullYear() + '-' + (data[i].dateTime.getMonth()) + '-' + instadate.lastDateInMonth(startDate).getDate();
+                        if (!days[date]) {
+                            days[date] = [];
+                        }
+                        days[date].push(data[i]);
+                    }
                     continue;
                 }
                 
@@ -124,9 +132,12 @@ class Transaction {
         var groupedTransactions = {};
         var key, d;
         
+        console.log('Number of weeks: '+numberOfWeeks);
+        
         for (let j=0; j<numberOfWeeks; j++) {
-            d = new Date(startDate.getFullYear(), startDate.getMonth(), (startDate.getDate() + j * 7 - 1));
+            d = new Date(startDate.getFullYear(), startDate.getMonth(), (startDate.getDate() + j * 7));
             key = d.toDateString();
+            console.log('KeyDates: '+key);
             groupedTransactions[key] = 0;
         }
         

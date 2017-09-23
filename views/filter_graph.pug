@@ -4,6 +4,8 @@ block content
 	script(src='/chartjs/Chart.js')
 	
 	div(class="block")
+	
+	p !{JSON.stringify(datasets)}
 		
 		canvas#myChart
 			script.

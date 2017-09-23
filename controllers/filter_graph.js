@@ -14,25 +14,25 @@ let Day = require('../models/day.js');
 router.get('/', authenticate, (req, res, next) => {
     
     console.log("processing filter request");
-    var startDate = moment(req.query.startDate, "DD-MM-yyyy").toDate();
-    var endDate = moment(req.query.endDate, "DD-MM-yyyy").toDate();
+    var temp = req.query.startDate.split("-");
+    var startDate = new Date(temp[2], temp[1] - 1, temp[0]);
+    temp = req.query.endDate.split("-");
+    var endDate = new Date(temp[2], temp[1] - 1, temp[0]);
     
-    console.log("startDate", startDate);
-    console.log("endDate", endDate);
+    console.log("startDate = " + startDate);
+    console.log("endDate = " + endDate);
+    
+    //startDate.setMonth(startDate.getMonth()+1);
+    //endDate.setMonth(endDate.getMonth()+1);
     
     var groupBy = req.query.groupBy.toLowerCase();
     var chartType = req.query.chartType;
     
-    var venues = req.params.venues;
+    var venues = req.query.venues;
     
     if (startDate && endDate && groupBy && chartType) {
-        
-    //var startDate, endDate;
-    //startDate = new Date(startYear, startMonth - 1, startDay); //-1 from month to convert to zero-indexed months for processing
-    //endDate = new Date(endYear, endMonth - 1, endDay);
     
     var diffAndDates;
-    
     var query;
     
     switch(groupBy) {
@@ -46,7 +46,6 @@ router.get('/', authenticate, (req, res, next) => {
             diffAndDates = Day.getDifferenceInMonths(startDate, endDate);
             break;
         default:
-            console.log('Date Range fallthrough');
             diffAndDates = [];
             break;
     }
@@ -86,6 +85,8 @@ router.get('/', authenticate, (req, res, next) => {
             break;
         }
         
+        console.log(groupedTransactions);
+        
         Outlet.getNames(db, (err, outletNames) => {
             if (err) return;
             
@@ -94,11 +95,11 @@ router.get('/', authenticate, (req, res, next) => {
             var numbers = [];
             var labels = [];
             
-            var keys = Object.keys(data);
+            var keys = Object.keys(groupedTransactions);
             for (var i=0; i<keys.length; i++)
             {
                 var label = keys[i];
-                var number = (data)[keys[i]];
+                var number = ((groupedTransactions)[keys[i]]/100).toFixed(2);
                 numbers.push(number);
                 labels.push(label);
             }

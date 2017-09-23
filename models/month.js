@@ -75,6 +75,7 @@ class Month {
       let days = {};
       for (let i = 0; i < keys.length; i++) {
         let index = keys[i].split('-')[2];
+        console.log('Key '+i+': '+keys[i]);
         days[index] = data[keys[i]];
       }
       

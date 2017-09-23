@@ -24,21 +24,21 @@ router.post('/', (req, res) => {
     endDate = new Date(req.body.endDate);
     groupBy = req.body.groupBy;
     venues = req.body.venues;
+    console.log("venues: " + venues);
     startTime = req.body.startTime;
     endTime = req.body.endTime;
     
     switch(groupBy) {
-        case 'daily':
+        case 'Daily':
             diffAndDates = Day.getDifferenceInDays(startDate, endDate);
             break;
-        case 'weekly':
+        case 'Weekly':
             diffAndDates = Day.getDifferenceInWeeks(startDate, endDate);
             break;
-        case 'monthly':
+        case 'Monthly':
             diffAndDates = Day.getDifferenceInMonths(startDate, endDate);
             break;
         default:
-            console.log('Date Range fallthrough');
             diffAndDates = [];
             break;
     }
@@ -62,10 +62,26 @@ router.post('/', (req, res) => {
         if (err) return;
         
         // sort data into a returnable array (indexed from 0 to diffAndDates[0])
+        var groupedTransactions = {};
+        
+        switch(groupBy) {
+            case 'Daily':
+                groupedTransactions = Transaction.groupTransactionsByDay(diffAndDates[0], diffAndDates[1], diffAndDates[2], data);
+                break;
+            case 'Weekly':
+                groupedTransactions = Transaction.groupTransactionsByDay(diffAndDates[0], diffAndDates[1], diffAndDates[2], data);
+                break;
+            case 'Monthly':
+                groupedTransactions = Transaction.groupTransactionsByDay(diffAndDates[0], diffAndDates[1], diffAndDates[2], data);
+                break;
+            default:
+                groupedTransactions = {};
+                break;
+        }
         
         Outlet.getNames(db, (err, outletNames) => {
             if (err) return;
-            res.render('filter', {transactions: data, outletNames: outletNames, startDate: diffAndDates[1], endDate: diffAndDates[2]});  
+            res.render('filter', {transactions: groupedTransactions, outletNames: outletNames, startDate: diffAndDates[1], endDate: diffAndDates[2]});  
         });
     });
 });
