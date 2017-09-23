@@ -73,19 +73,19 @@ class Day {
   }
   
   static getDifferenceInMonths(startDate, endDate) {
-    var startMonth, endMonth, diff;
+    var startMonth, endMonth, diff, startYear, endYear;
     var diffAndDates = [];
     startMonth = startDate.getMonth();
-    endMonth = endDate.getMonth();
+    startYear = startDate.getFullYear();
+    endMonth = endDate.getMonth() + 1;
+    endYear = endDate.getFullYear();
     
     startDate = instadate.firstDateInMonth(startDate);
     endDate = instadate.lastDateInMonth(endDate);
     
-    if (startMonth > endMonth) {
-      diff = 11 - startMonth + endMonth +2;
-    } else {
-      diff = endMonth - startMonth - 1;
-    }
+    diff = (endYear - startYear) * 12;
+    diff -= startMonth;
+    diff += endMonth;
     
     diffAndDates = [diff, startDate, endDate];
     
