@@ -25,96 +25,182 @@ router.get('/', authenticate, (req, res, next) => {
     //startDate.setMonth(startDate.getMonth()+1);
     //endDate.setMonth(endDate.getMonth()+1);
     
-    var groupBy = req.query.groupBy.toLowerCase();
+    var groupBy = req.query.groupBy;
+    if (groupBy !== undefined && groupBy !== null) groupBy = groupBy.toLowerCase();
     var chartType = req.query.chartType;
     
     if (!(chartType === "line" || chartType === "bar"))
     {
-        chartType = bar; //default
+        chartType = "bar"; //default
     }
     
     var venues = req.query.venues;
     
-    if (startDate && endDate && groupBy && chartType) {
+    var formType = req.query.formType;
     
-    var diffAndDates;
-    var query;
-    
-    switch(groupBy) {
-        case 'daily':
-            diffAndDates = Day.getDifferenceInDays(startDate, endDate);
-            break;
-        case 'weekly':
-            diffAndDates = Day.getDifferenceInWeeks(startDate, endDate);
-            break;
-        case 'monthly':
-            diffAndDates = Day.getDifferenceInMonths(startDate, endDate);
-            break;
-        default:
-            diffAndDates = [];
-            break;
-    }
-    
-    if (venues) {
-        if (!Array.isArray(venues)) { //deal with the case when we only get one venue name
-            let temp = [ venues ];
-            venues = temp;
-        }
-        query = {
-            dateTime: { $gte: diffAndDates[1], $lt: diffAndDates[2] },
-            outletName: { $in: venues }
-        };
-    } else {
-        query =  {
-            dateTime: { $gte: diffAndDates[1], $lt: diffAndDates[2] }
-        };
-    }
-    
-    Transaction.getTransactions(db, query, (err, data) => {
-        if (err) return;
+    if (startDate && endDate && chartType && formType) {
         
-        // sort data into a returnable object with dates as keys (number of keys will be diffAndDates[0])
-        var groupedTransactions = {};
-        switch(groupBy) {
-        case 'daily':
-            groupedTransactions = Transaction.groupTransactionsByDay(diffAndDates[0], diffAndDates[1], diffAndDates[2], data);
-            break;
-        case 'weekly':
-            groupedTransactions = Transaction.groupTransactionsByWeek(diffAndDates[0], diffAndDates[1], diffAndDates[2], data);
-            break;
-        case 'monthly':
-            groupedTransactions = Transaction.groupTransactionsByMonth(diffAndDates[0], diffAndDates[1], diffAndDates[2], data);
-            break;
-        default:
-            groupedTransactions = {};
-            break;
-        }
-        
-        console.log(groupedTransactions);
-        
-        Outlet.getNames(db, (err, outletNames) => {
-            if (err) return;
-            
-            var datasets = [];
-            
-            var numbers = [];
-            var labels = [];
-            
-            var keys = Object.keys(groupedTransactions);
-            for (var i=0; i<keys.length; i++)
-            {
-                var label = keys[i];
-                var number = ((groupedTransactions)[keys[i]]/100).toFixed(2);
-                numbers.push(number);
-                labels.push(label);
+        if (formType == "aggregate")
+        {
+            var diffAndDates;
+            var query;
+
+            switch (groupBy) {
+                case 'daily':
+                    diffAndDates = Day.getDifferenceInDays(startDate, endDate);
+                    break;
+                case 'weekly':
+                    diffAndDates = Day.getDifferenceInWeeks(startDate, endDate);
+                    break;
+                case 'monthly':
+                    diffAndDates = Day.getDifferenceInMonths(startDate, endDate);
+                    break;
+                case 'yearly':
+                    diffAndDates = Day.getDifferenceInYears(startDate, endDate);
+                    break;
+                default:
+                    diffAndDates = [];
+                    break;
             }
+
+            if (venues) {
+                if (!Array.isArray(venues)) { //deal with the case when we only get one venue name
+                    let temp = [venues];
+                    venues = temp;
+                }
+                query = {
+                    dateTime: { $gte: diffAndDates[1], $lt: diffAndDates[2] },
+                    outletName: { $in: venues }
+                };
+            }
+            else {
+                query = {
+                    dateTime: { $gte: diffAndDates[1], $lt: diffAndDates[2] }
+                };
+            }
+
+            Transaction.getTransactions(db, query, (err, data) => {
+                if (err) return;
+
+                // sort data into a returnable object with dates as keys (number of keys will be diffAndDates[0])
+                var groupedTransactions = {};
+                switch (groupBy) {
+                    case 'daily':
+                        groupedTransactions = Transaction.groupTransactionsByDay(diffAndDates[0], diffAndDates[1], diffAndDates[2], data);
+                        break;
+                    case 'weekly':
+                        groupedTransactions = Transaction.groupTransactionsByWeek(diffAndDates[0], diffAndDates[1], diffAndDates[2], data);
+                        break;
+                    case 'monthly':
+                        groupedTransactions = Transaction.groupTransactionsByMonth(diffAndDates[0], diffAndDates[1], diffAndDates[2], data);
+                        break;
+                    case 'yearly':
+                        groupedTransactions = Transaction.groupTransactionsByYear(diffAndDates[0], diffAndDates[1], diffAndDates[2], data);
+                        break;
+                    default:
+                        groupedTransactions = {};
+                        break;
+                }
+
+                console.log(groupedTransactions);
+
+                Outlet.getNames(db, (err, outletNames) => {
+                    if (err) return;
+
+                    var datasets = [];
+
+                    var numbers = [];
+                    var labels = [];
+
+                    var keys = Object.keys(groupedTransactions);
+                    for (var i = 0; i < keys.length; i++) {
+                        var label = keys[i];
+                        var number = ((groupedTransactions)[keys[i]] / 100).toFixed(2);
+                        numbers.push(number);
+                        labels.push(label);
+                    }
+
+                    var timeframe = groupBy.charAt(0).toUpperCase() + groupBy.slice(1);
+                    datasets.push(createDataset("Total " + timeframe + " Revenue", numbers));
+
+                    res.render('filter_graph', { labels: labels, datasets: datasets, startDate: diffAndDates[1], endDate: diffAndDates[2], chartType: chartType });
+                });
+            });
             
-            var timeframe = groupBy.charAt(0).toUpperCase() + groupBy.slice(1);
-            datasets.push (createDataset("Total " + timeframe + " Revenue", numbers));
+        } else if (formType == "granular")
+        {
             
-            res.render('filter_graph', {labels: labels, datasets: datasets, startDate: diffAndDates[1], endDate: diffAndDates[2], chartType: chartType});  
-        });
-    });
+            var temp = req.query.startTime.split(":");
+            var startHour = temp[0];
+            var startMinute = temp[1];
+            
+            var temp = req.query.endTime.split(":");
+            var endHour = temp[0];
+            var endMinute = temp[1];
+            
+            var diffAndDates;
+            var query;
+            
+            var daysChosen = req.query.days;
+            if (!Array.isArray(daysChosen)) { //deal with the case when we only get one day
+                    let temp = [daysChosen];
+                    daysChosen = temp;
+            }
+            console.log(daysChosen);
+
+            diffAndDates = Day.getDifferenceInWeeks(startDate, endDate);
+
+            if (venues) {
+                if (!Array.isArray(venues)) { //deal with the case when we only get one venue name
+                    let temp = [venues];
+                    venues = temp;
+                }
+                query = {
+                    dateTime: { $gte: diffAndDates[1], $lt: diffAndDates[2] },
+                    outletName: { $in: venues }
+                };
+            }
+            else {
+                query = {
+                    dateTime: { $gte: diffAndDates[1], $lt: diffAndDates[2] }
+                };
+            }
+
+            Transaction.getTransactions(db, query, (err, data) => {
+                if (err) return;
+
+                // sort data into a returnable object with dates as keys (number of keys will be diffAndDates[0])
+                var groupedTransactions = {};
+                
+                groupedTransactions = Transaction.sortTransactionsForDaysOfTheWeek(diffAndDates[0], diffAndDates[1], diffAndDates[2], daysChosen, data);
+
+                console.log(groupedTransactions);
+
+                Outlet.getNames(db, (err, outletNames) => {
+                    if (err) return;
+
+                    var datasets = [];
+
+                    var numbers = [];
+                    var labels = [];
+
+                    var keys = Object.keys(groupedTransactions);
+                    for (var i = 0; i < keys.length; i++) {
+                        var label = keys[i];
+                        var number = ((groupedTransactions)[keys[i]] / 100).toFixed(2);
+                        numbers.push(number);
+                        labels.push(label);
+                    }
+
+                    datasets.push(createDataset("Revenue", numbers));
+
+                    res.render('filter_graph', { labels: labels, datasets: datasets, startDate: diffAndDates[1], endDate: diffAndDates[2], chartType: chartType });
+                });
+            });
+            
+        }
+    
+    
     
     } else {
         console.log("Invalid parameters for graph.");

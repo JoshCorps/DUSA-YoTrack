@@ -2,10 +2,13 @@ extend page
 block content
 
 	div(class="block")
-	
 		link(rel='stylesheet', href='//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css')
+		link(rel='stylesheet', href='https://cdn.rawgit.com/weareoutman/clockpicker/gh-pages/dist/jquery-clockpicker.min.css')
 		script(src='https://code.jquery.com/jquery-1.12.4.js')
 		script(src='https://code.jquery.com/ui/1.12.1/jquery-ui.js')
+		script(src='https://cdn.rawgit.com/weareoutman/clockpicker/gh-pages/dist/jquery-clockpicker.min.js')
+
+		
 		script.
 			$( function() {
 				$("#startDate").datepicker({
@@ -28,7 +31,7 @@ block content
 					changeYear: true,
 					maxDate: 0,
 					onClose: function(selectedDate) {
-				        $("#endDate").datepicker("option", "minDate", selectedDate);
+				        $("#endDate2").datepicker("option", "minDate", selectedDate);
 				    }
 				});
 			} );
@@ -53,7 +56,6 @@ block content
 				});
 			} );
 			
-
 			
 			$( function() {
 			$( "#tabs" ).tabs();
@@ -108,7 +110,7 @@ block content
 						input(type='radio', name='groupBy', value='Yearly')
 						|  Yearly 
 					
-					button(type="button", onclick='toggleAdvanced()') Show advanced options
+					button(type="button", onclick='toggleAdvanced("advancedDiv")') Show advanced options
 					#advancedDiv(style="display:none;")
 						| Chart Type   
 						select(name="chartType")
@@ -127,10 +129,11 @@ block content
 								br
 						
 					p()
+					input(type="hidden", name="formType", value="aggregate")
 					input(type="submit", value="Filter Data", class="button-primary")
 			#tabs-2
 			
-				form(action='/filter_granular_graph', method='GET')
+				form(action='/filter_graph', method='GET')
 					| Start Date: 
 					if (startDate === null)
 						input#startDate2(type='text', name='startDate') 
@@ -176,12 +179,25 @@ block content
 							td(style="text-align: center")
 								input(type="checkbox", name="days", value="0")
 					
-					p Start Time: 
+					| Start Time: 
+					input#startTime(name='startTime', type='text', value='00:00')
+					| End Time:
+					input#endTime(name='endTime', type='text', value='00:00')
 					
-					p End Time:
+					script.
+						$('#startTime').clockpicker({
+							autoclose: true,
+							default: "00:00"
+						});
+						$('#endTime').clockpicker({
+							autoclose: true,
+							default: "00:00"
+						});
+						
+					p()
 					
-					button(type="button", onclick='toggleAdvanced()') Show advanced options
-					#advancedDiv(style="display:none;")
+					button(type="button", onclick='toggleAdvanced("advancedDiv2")') Show advanced options
+					#advancedDiv2(style="display:none;")
 						| Chart Type   
 						select(name="chartType")
 							option(value="bar") Bar
@@ -199,11 +215,12 @@ block content
 								br
 						
 					p()
+					input(type="hidden", name="formType", value="granular")
 					input(type="submit", value="Filter Data", class="button-primary")
 					
 			script.
-				function toggleAdvanced() {
-					var x = document.getElementById('advancedDiv');
+				function toggleAdvanced(divName) {
+					var x = document.getElementById(divName);
 					if (x.style.display === 'none') {
 						x.style.display = 'block';
 					} else {
@@ -213,13 +230,15 @@ block content
 				
 			script.
 				function check_uncheck_checkbox(isChecked) {
-				if(isChecked) {
-				$('input[name="venues"]').each(function() {
-				this.checked = true;
-				});
-				} else {
-				$('input[name="venues"]').each(function() {
-				this.checked = false;
-				});
+					if(isChecked) {
+						$('input[name="venues"]').each(function() {
+							this.checked = true;
+						});
+					} else {
+						$('input[name="venues"]').each(function() {
+							this.checked = false;
+						});
+					}
 				}
-				}
+				
+				

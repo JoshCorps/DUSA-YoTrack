@@ -136,7 +136,7 @@ class Transaction {
         
         for (let j=0; j<numberOfWeeks; j++) {
             d = new Date(startDate.getFullYear(), startDate.getMonth(), (startDate.getDate() + j * 7));
-            key = d.toDateString();
+            key = "Week beginning " + d.toDateString();
             console.log('KeyDates: '+key);
             groupedTransactions[key] = 0;
         }
@@ -148,7 +148,7 @@ class Transaction {
             }
             day -= 1;
             d = new Date(transactions[i].dateTime.getFullYear(), transactions[i].dateTime.getMonth(), transactions[i].dateTime.getDate() - day);
-            key = d.toDateString();
+            key = "Week beginning " + d.toDateString();
             groupedTransactions[key] += transactions[i].totalAmount;
         }
         
@@ -161,19 +161,37 @@ class Transaction {
         
         for (let j=0; j<numberOfMonths; j++) {
             d = new Date(startDate.getFullYear(), (startDate.getMonth()+j), 1);
-            key = d.toDateString();
+            key = Transaction.getMonthNameString(d.getMonth()) + " " + d.getFullYear();
             groupedTransactions[key] = 0;
         }
         
         for (let i=0; i<transactions.length; i++) {
             d = new Date(transactions[i].dateTime.getFullYear(), transactions[i].dateTime.getMonth(), 1);
-            key = d.toDateString();
+            key = Transaction.getMonthNameString(d.getMonth()) + " " + d.getFullYear();
             groupedTransactions[key] += transactions[i].totalAmount;
         }
         
         return groupedTransactions;
     }
     
+    static groupTransactionsByYear(numberOfYears, startDate, endDate, transactions) {
+        var groupedTransactions = {};
+        var key;
+        
+        for (let j=0; j<numberOfYears; j++) {
+            key = startDate.getFullYear() + j;
+            groupedTransactions[key] = 0;
+        }
+        
+        for (let i=0; i<transactions.length; i++) {
+            key = transactions[i].dateTime.getFullYear();
+            groupedTransactions[key] += transactions[i].totalAmount;
+        }
+        
+        return groupedTransactions;
+    }
+    
+    // daysOfTheWeek is an array with indices of the days of the week to be included in the final data
     static sortTransactionsForDaysOfTheWeek(numberOfWeeks, startDate, endDate, daysOfWeek, transactions) {
         var sortedTransactions = {};
         var key, d;
@@ -252,6 +270,15 @@ class Transaction {
             callback(null);
         });
     }
+    
+    static getMonthNameString(monthNumber) {
+    var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    if (monthNumber >= 0 && monthNumber <= 11) {
+      return monthNames[monthNumber];
+    }
+    console.log("Error - month name could not be returned for monthNumber " + monthNumber);
+    return "Unknown Month";
+  }
 
 }
 

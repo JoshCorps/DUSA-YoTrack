@@ -117,6 +117,20 @@ class Day {
     
     return diffAndDates;
   }
+  
+  static getDifferenceInYears(startDate, endDate) {
+    var diff, startYear, endYear;
+    var diffAndDates = [];
+    
+    startDate = new Date(startDate.getFullYear(), 0, 1);
+    endDate = new Date(endDate.getFullYear(), 11, 31);
+    
+    diff = endDate.getFullYear() - startDate.getFullYear() + 1;
+    
+    diffAndDates = [diff, startDate, endDate];
+    
+    return diffAndDates;
+  }
 }
 
 module.exports = Day;

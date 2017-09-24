@@ -2,11 +2,12 @@ extend page
 
 block content
 	script(src='/chartjs/Chart.js')
+	script(src='https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.3/FileSaver.min.js')
 	
 	div(class="block")
 	
 		p !{JSON.stringify(datasets)}
-		
+		button#export Export
 		canvas#myChart
 			script.
 				var ctx = document.getElementById("myChart").getContext('2d');
@@ -37,5 +38,30 @@ block content
 				});
 				
 				
-				
-				
+	script.
+		// set background color of chart to white so it looks nicer when exporting.
+		var backgroundColor = 'white';
+		Chart.plugins.register({
+			beforeDraw: function(c) {
+				var ctx = c.chart.ctx;
+				ctx.fillStyle = backgroundColor;
+				ctx.fillRect(0, 0, c.chart.width, c.chart.height);
+			}
+		});
+		
+		// used to get url parameters for file name. From sitepoint.com/url-parameters-jquery/
+		$.urlParam = function (name) {
+			var results = new RegExp('[\\?&]' + name + '=([^&#]*)')
+			.exec(window.location.href);
+			return results[1] || 0;
+		}
+		
+		var canvas = $('#myChart').get(0);
+		
+		// saves chart
+		$('#export').click(function() {
+			canvas.toBlob(function(blob) {
+				saveAs(blob, $.urlParam('startDate') + "_" + $.urlParam('endDate') + 
+					"_" + $.urlParam('groupBy') + "_" + $.urlParam('chartType') + ".png");
+			});
+		});		
