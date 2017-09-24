@@ -7,124 +7,14 @@ block sidebar
 
 block content
 	script(src='/chartjs/Chart.js')
+	script(src="https://maps.googleapis.com/maps/api/js?sensor=false")
+	script(src='/hmap/heatmap.js')
+	script(src='/hmap/gmaps-heatmap.js')
+	
 	
 	div(class="block")
-		- var hourLabels = []
-		-
-			for (var h = 0; h < 24; h++)
-			{
-				//hourLabels.push(h);
-				var hourText = (startHour + h) % 24
-				if (hourText < 10) hourText = ("0" + hourText)
-				{
-					hourText = (""+hourText)+":00"
-					hourLabels.push(hourText)
-				}
-				
-			}
-		
-		- var allTotals = {};
-		- for (var i = 0; i < outlets.length; i++)
-			- allTotals[outlets[i]] = []
-			- allTotals[outlets[i]] = getHourlyTotals(outlets[i])
-		- //allTotals["Combined"] = []
-		- allTotals["Combined"] = getHourlyTotals(null, false) //allTotals["Combined"] = getHourlyTotals(null)
-		- //allTotals["Marketplace"] = getHourlyTotals("DUSA The Union - Marketplace", true)
-			
-		-
-			function getHourlyTotals(venueName) { 
-				var shouldMove = true; //shouldMove hours to their proper places
-				var total = [];
-				var keys = Object.keys(data);
-				var lastHour = -1; //initial value, we start processing with the 0 hours (midnight to 1)
-				for (var i = 0; i < keys.length; i++)
-				{
-					var totalAmount = 0;
-					var willInsert = false;
-					for (var e = 0; e < data[keys[i]].length; e++)
-					{
-						var thisPlace = data[keys[i]][e].outletName;
-						if (venueName === null || thisPlace === venueName)
-						{
-							var thisHour = data[keys[i]][e].dateTime.getHours();
-							var hourDifference = (thisHour - lastHour) % 24;
-							if (hourDifference > 1)
-							{
-								/*
-								for (var x = 1; x < hourDifference; x++)
-								{
-									total.push(0); //pad out the hours we have no data for
-								}
-								*/
-							}
-							lastHour = thisHour;
-							totalAmount += data[keys[i]][e].totalAmount;
-							willInsert = true;
-						}
-					}
-					//total.push((totalAmount/100).toFixed(2));
-					if (lastHour >= 0 && willInsert)
-					{
-						total[lastHour] = ((totalAmount/100).toFixed(2));
-					}
-					
-					//insert padding at end if last iteration
-					if (i === keys.length - 1 && lastHour < (startHour - 1) % 24) //This needs wrapping around if set to midnight, hence the mod.
-					{
-						var hourDifference = ((startHour - 1) - lastHour) % 24;
-						for (var x = 1; x < hourDifference; x++)
-						{
-							//total.push(0); //pad out the hours we have no data for
-						}
-					}
-				}
-				var movedHours = [];
-				for (var i = 6; i < 24; i++)
-				{	movedHours.push(total[i]) }
-				for (var i = 0; i < 6; i++)
-				{	movedHours.push(total[i]) }
-				
-				if (shouldMove)
-				{
-					total = movedHours;
-				}
-				return total;
-			};
-			
-			function createDataset(key, dataArray, id){
-				var dataset = {};
-				dataset.label = key; //location name
-				if (id < outlets.length)
-				{
-					dataset.backgroundColor = getUniqueColor(id);
-				} else {
-					dataset.backgroundColor = 'rgba(255, 103, 199, 0.85)';
-				}
+	
 
-				dataset.borderColor = 'rgba(0, 0, 0, 1)';
-				dataset.borderWidth = 0;
-				dataset.data = dataArray; //!{JSON.stringify( dataArray )}
-				
-				return dataset;
-			}
-			
-			function getUniqueColor(uniqueNumber)
-			{
-				var num1 = (50 + uniqueNumber * 70) % 256;
-				var num2 = (120 + uniqueNumber + 35) % 256;
-				var num3 = (210 + uniqueNumber * 55) % 256;
-				return 'rgba('+ num1 + ', ' + num2 + ', ' + num3 + ', 0.85)';
-			}
-			
-		-
-			var datasets = [];
-			var keys = Object.keys(allTotals);
-			for (var i=0; i < keys.length; i++)
-			{
-				var dataset = createDataset(keys[i], (allTotals[keys[i]]), i);
-				datasets.push(dataset);
-			}
-			
 		- for (var i = 0; i < outlets.length + 1; i++)
 			-if (i !== outlets.length)
 				- var showGraph = false;
@@ -172,8 +62,7 @@ block content
 				});
 				
 				
-				
-				
+		
 		script.
 			
 			
@@ -197,3 +86,47 @@ block content
 				myChart.data.datasets = data; //[dsAll[index]];
 				myChart.update();
 			}
+			
+			
+	div(id="map-canvas", style="height:500px")
+		
+	script.
+		window.onload=function() {
+		var mapOptions = {
+			zoom: 16,
+			center: new google.maps.LatLng(56.4577377,-2.9810413),
+			mapTypeId: google.maps.MapTypeId.MAP
+			};
+			
+		map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+		
+		heatmap = new HeatmapOverlay(map, 
+		  {
+			 // radius should be small ONLY if scaleRadius is true (or small radius is intended)
+			"radius": 0.0006,
+			"maxOpacity": 1, 
+			// scales the radius based on map zoom
+			"scaleRadius": true, 
+			// if set to false the heatmap uses the global maximum for colorization
+			// if activated: uses the data maximum within the current map boundaries 
+			//   (there will always be a red spot with useLocalExtremas true)
+			"useLocalExtrema": false,
+			// which field name in your data represents the latitude - default "lat"
+			latField: 'lat',
+			// which field name in your data represents the longitude - default "lng"
+			lngField: 'lng',
+			// which field name in your data represents the data value - default "value"
+			valueField: 'count'
+		  }
+		);
+		
+		var testData = {
+			max: 8, 
+			data: [{lat:56.4577377, lng:-2.9810413, count: 7}, {lat:56.4578377, lng:-2.9610413, count: 3}] 
+		};
+		
+		heatmap.setData(testData);
+		
+		};
+		
+		

@@ -149,6 +149,8 @@ router.get('/', authenticate, (req, res, next) => {
             console.log(daysChosen);
 
             diffAndDates = Day.getDifferenceInWeeks(startDate, endDate);
+            console.log('Date1: '+diffAndDates[1]+' Date2: '+diffAndDates[2]);
+            console.log('Difference in weeks: '+diffAndDates[0]);
 
             if (venues) {
                 if (!Array.isArray(venues)) { //deal with the case when we only get one venue name

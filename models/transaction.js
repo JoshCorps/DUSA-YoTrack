@@ -196,9 +196,20 @@ class Transaction {
         var sortedTransactions = {};
         var key, d;
         
+        for (let j=0; j<daysOfWeek.length; j++) {
+            daysOfWeek[j] = parseInt(daysOfWeek[j]);
+        }
+        
         for (let j=0; j<numberOfWeeks; j++) {
             for(let n=0; n<daysOfWeek.length; n++) {
-                d = new Date(startDate.getFullYear(), startDate.getMonth(), (startDate.getDate() + j*7 + daysOfWeek[n]));
+                var addToDay = j*7 + parseInt(daysOfWeek[n] - 1, 10);
+                
+                if (addToDay == 0) {
+                    d = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+                } else {
+                    d = new Date(startDate.getFullYear(), startDate.getMonth(), (startDate.getDate() + addToDay));
+                }
+                
                 key = d.toDateString();
                 sortedTransactions[key] = 0;
             }
@@ -209,13 +220,13 @@ class Transaction {
             if (day == 0) {
                 day = 7;
             }
-            day -= 1;
             if(daysOfWeek.indexOf(day) != -1) {
                 d = new Date(transactions[i].dateTime.getFullYear(), transactions[i].dateTime.getMonth(), transactions[i].dateTime.getDate());
                 key = d.toDateString();
                 sortedTransactions[key] += transactions[i].totalAmount;
             }
         }
+        console.log('Days of the week: '+daysOfWeek[0]+', '+daysOfWeek[1]);
         
         return sortedTransactions;
     }
