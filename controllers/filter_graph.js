@@ -28,6 +28,11 @@ router.get('/', authenticate, (req, res, next) => {
     var groupBy = req.query.groupBy.toLowerCase();
     var chartType = req.query.chartType;
     
+    if (!(chartType === "line" || chartType === "bar"))
+    {
+        chartType = bar; //default
+    }
+    
     var venues = req.query.venues;
     
     if (startDate && endDate && groupBy && chartType) {
@@ -104,9 +109,10 @@ router.get('/', authenticate, (req, res, next) => {
                 labels.push(label);
             }
             
-            datasets.push (createDataset("Total Revenue", numbers));
+            var timeframe = groupBy.charAt(0).toUpperCase() + groupBy.slice(1);
+            datasets.push (createDataset("Total " + timeframe + " Revenue", numbers));
             
-            res.render('filter_graph', {labels: labels, datasets: datasets, startDate: diffAndDates[1], endDate: diffAndDates[2]});  
+            res.render('filter_graph', {labels: labels, datasets: datasets, startDate: diffAndDates[1], endDate: diffAndDates[2], chartType: chartType});  
         });
     });
     

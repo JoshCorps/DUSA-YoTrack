@@ -1,73 +1,206 @@
 extend page
 block content
+
 	div(class="block")
+	
 		link(rel='stylesheet', href='//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css')
 		script(src='https://code.jquery.com/jquery-1.12.4.js')
 		script(src='https://code.jquery.com/ui/1.12.1/jquery-ui.js')
 		script.
 			$( function() {
-				$( "#startDate" ).datepicker({
-					dateFormat: 'dd-mm-yy'
+				$("#startDate").datepicker({
+					dateFormat: 'dd-mm-yy',
+					minDate: new Date('2015/08/01'),
+					changeMonth: true,
+					changeYear: true,
+					maxDate: 0,
+					onClose: function(selectedDate) {
+				        $("#endDate").datepicker("option", "minDate", selectedDate);
+				    }
 				});
 			} );
 			
 			$( function() {
-				$( "#endDate" ).datepicker({
-					dateFormat: 'dd-mm-yy'
+				$("#startDate2").datepicker({
+					dateFormat: 'dd-mm-yy',
+					minDate: new Date('2015/08/01'),
+					changeMonth: true,
+					changeYear: true,
+					maxDate: 0,
+					onClose: function(selectedDate) {
+				        $("#endDate").datepicker("option", "minDate", selectedDate);
+				    }
 				});
 			} );
 			
+			$( function() {
+				$("#endDate").datepicker({
+					dateFormat: 'dd-mm-yy',
+					minDate: new Date('2015/08/01'),
+					changeMonth: true,
+					changeYear: true,
+					maxDate: 0,
+				});
+			} );
 			
-		form(action='/filter_graph', method='GET')
-			| Start Date: 
-			if (startDate === null)
-				input#startDate(type='text', name='startDate') 
-			else
-				input#startDate(type='text', name='startDate', value=startDate)
-			| End Date
-			if (endDate === null)
-				input#endDate(type='text', name='endDate')
-			else
-				input#endDate(type='text', name='endDate', value=endDate)
+			$( function() {
+				$("#endDate2").datepicker({
+					dateFormat: 'dd-mm-yy',
+					minDate: new Date('2015/08/01'),
+					changeMonth: true,
+					changeYear: true,
+					maxDate: 0,
+				});
+			} );
 			
-			p Group By: 
-				input(type='radio', name='groupBy', value='Daily', checked)
-				|  Daily  
-				input(type='radio', name='groupBy', value='Weekly')
-				|  Weekly  
-				input(type='radio', name='groupBy', value='Monthly')
-				|  Monthly 
-				input(type='radio', name='groupBy', value='Yearly')
-				|  Yearly 
+
 			
-			button(type="button", onclick='toggleAdvanced()') Show advanced options
-			#advancedDiv(style="display:none;")
-				| Chart Type   
-				select(name="chartType")
-					option(value="line") Line
-					option(value="bar") Bar
-				br
-				input#ckbCheckAll(type='checkbox')
-				| Toggle All Venues
-				p#checkBoxes
-					input.checkBoxClass(type='checkbox')
-					br
-					input.checkBoxClass(type='checkbox')
-					br
-					input.checkBoxClass(type='checkbox')
-					br
-					input.checkBoxClass(type='checkbox')
-					br
-					input.checkBoxClass(type='checkbox')
-					br
-					- for (var i = 0, j = 0; i < outletNames.length; i++,j++)
-						- if (j % 3 === 0 && j !== 0)
-						input.checkBoxClass(type='checkbox', name='venues', value=outletNames[i])
-						|  #{outletNames[i]}  
+			$( function() {
+			$( "#tabs" ).tabs();
+			} );
+			
+		style.
+			td:nth-child(even) {
+			background-color: #f9f9f9;
+			}
+			td{
+				width:14.2%;
+			}
+			th:nth-child(even) {
+			background-color: #f9f9f9;
+			}
+			table, th, td {
+			border: 1px solid black;
+			text-align: center;
+			padding: 4px;
+			}
+			table th p
+			{
+				margin-bottom:0;
+			}
+		
+		#tabs
+			ul
+				li
+					a(href='#tabs-1') Aggregate
+				li
+					a(href='#tabs-2') Granular
+			#tabs-1
+				form(action='/filter_graph', method='GET')
+					| Start Date: 
+					if (startDate === null)
+						input#startDate(type='text', name='startDate') 
+					else
+						input#startDate(type='text', name='startDate', value=startDate)
+					|	End Date:
+					if (endDate === null)
+						input#endDate(type='text', name='endDate')
+					else
+						input#endDate(type='text', name='endDate', value=endDate)
+					
+					p Group Size: 
+						input(type='radio', name='groupBy', value='Daily', checked)
+						|  Daily  
+						input(type='radio', name='groupBy', value='Weekly')
+						|  Weekly  
+						input(type='radio', name='groupBy', value='Monthly')
+						|  Monthly 
+						input(type='radio', name='groupBy', value='Yearly')
+						|  Yearly 
+					
+					button(type="button", onclick='toggleAdvanced()') Show advanced options
+					#advancedDiv(style="display:none;")
+						| Chart Type   
+						select(name="chartType")
+							option(value="bar") Bar
+							option(value="line") Line
 						br
-				
-			input(type="submit", value="Filter Data", class="button-primary")
+						#divCheckAll
+							input#checkall(type='checkbox', name='checkall', onclick='check_uncheck_checkbox(this.checked);')
+							| Toggle All Venues
+						#divCheckboxList
+							br
+							- for (var i = 0, j = 0; i < outletNames.length; i++,j++)
+								- if (j % 3 === 0 && j !== 0)
+								input(type='checkbox', name='venues', value=outletNames[i])
+								|  #{outletNames[i]}  
+								br
+						
+					p()
+					input(type="submit", value="Filter Data", class="button-primary")
+			#tabs-2
 			
+				form(action='/filter_granular_graph', method='GET')
+					| Start Date: 
+					if (startDate === null)
+						input#startDate2(type='text', name='startDate') 
+					else
+						input#startDate2(type='text', name='startDate', value=startDate)
+					|  End Date:
+					if (endDate === null)
+						input#endDate2(type='text', name='endDate')
+					else
+						input#endDate2(type='text', name='endDate', value=endDate)
+						
+					p Days:
+					p()
+					table(style="table-layout: fixed;")
+						tr
+							th
+								p Monday
+							th
+								p Tuesday
+							th
+								p Wednesday
+							th
+								p Thursday
+							th
+								p Friday
+							th
+								p Saturday
+							th
+								p Sunday
+						tr(align="center")
+							td(style="text-align: center")
+								input(type="checkbox", name="days", value="1")
+							td(style="text-align: center")
+								input(type="checkbox", name="days", value="2")
+							td(style="text-align: center")
+								input(type="checkbox", name="days", value="3")
+							td(style="text-align: center")
+								input(type="checkbox", name="days", value="4")
+							td(style="text-align: center")
+								input(type="checkbox", name="days", value="5")
+							td(style="text-align: center")
+								input(type="checkbox", name="days", value="6")
+							td(style="text-align: center")
+								input(type="checkbox", name="days", value="0")
+					
+					p Start Time: 
+					
+					p End Time:
+					
+					button(type="button", onclick='toggleAdvanced()') Show advanced options
+					#advancedDiv(style="display:none;")
+						| Chart Type   
+						select(name="chartType")
+							option(value="bar") Bar
+							option(value="line") Line
+						br
+						#divCheckAll
+							input#checkall(type='checkbox', name='checkall', onclick='check_uncheck_checkbox(this.checked);')
+							| Toggle All Venues
+						#divCheckboxList
+							br
+							- for (var i = 0, j = 0; i < outletNames.length; i++,j++)
+								- if (j % 3 === 0 && j !== 0)
+								input(type='checkbox', name='venues', value=outletNames[i])
+								|  #{outletNames[i]}  
+								br
+						
+					p()
+					input(type="submit", value="Filter Data", class="button-primary")
+					
 			script.
 				function toggleAdvanced() {
 					var x = document.getElementById('advancedDiv');
@@ -79,7 +212,14 @@ block content
 				}
 				
 			script.
-				$(document).ready(function () {
-					$("#ckbCheckAll").click(function () {
-						$(".checkBoxClass").prop('checked', $(this).prop('checked'));
+				function check_uncheck_checkbox(isChecked) {
+				if(isChecked) {
+				$('input[name="venues"]').each(function() {
+				this.checked = true;
 				});
+				} else {
+				$('input[name="venues"]').each(function() {
+				this.checked = false;
+				});
+				}
+				}

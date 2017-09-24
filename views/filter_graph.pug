@@ -5,7 +5,7 @@ block content
 	
 	div(class="block")
 	
-	p !{JSON.stringify(datasets)}
+		p !{JSON.stringify(datasets)}
 		
 		canvas#myChart
 			script.
@@ -16,7 +16,7 @@ block content
 				var dsAll = !{JSON.stringify(datasets)};
 				
 				var myChart = new Chart(ctx, {
-					type: 'bar',
+					type: "#{chartType}",
 					data: {
 						labels: labels,
 						datasets: dsCombined
