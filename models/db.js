@@ -29,6 +29,11 @@ module.exports = () => {
       db.uploads = db.collection('uploads');
     });
     
+    db.createCollection('outlets', {}, () => {
+      console.log('Created/verified uploads collection');
+      db.outlets = db.collection('outlets');
+    });
+    
     db.createCollection('tribe_analyses', {}, () => {
       console.log('Created/verified tribe analyses collection');
       db.tribe_analyses = db.collection('tribe_analyses');

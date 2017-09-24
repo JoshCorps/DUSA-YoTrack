@@ -54,6 +54,7 @@ router.get('/:year/:month/:day', authenticate, (request, response, next) => {
     		}
     		allTotals["Combined"] = getHourlyTotals(null, data, startHour);
             
+            //reshape the the hourly totals above into the chart.js dataset format:
             var datasets = [];
 			var keys = Object.keys(allTotals);
 			for (var i=0; i < keys.length; i++)
@@ -61,18 +62,30 @@ router.get('/:year/:month/:day', authenticate, (request, response, next) => {
 				var dataset = createDataset(keys[i], (allTotals[keys[i]]), i, outlets);
 				datasets.push(dataset);
 			}
-            
-            response.render('day_view', {
-                'data': data,
-                'year': year,
-                'month': month,
-                'day': day,
-                'outlets': outlets,
-                'allTotals' : allTotals,
-                'hourLabels' : hourLabels,
-                'datasets' : datasets,
-                'startHour' : startHour 
-            });
+			
+			console.log("t1");
+			//heatmap data
+			Day.getHeatmap(db, outlets, data, true, function(err, heatmapData){
+			    if (err) {console.log("Error getting heatmap."); }
+			    else {
+			        
+			     response.render('day_view', {
+                    'data': data,
+                    'year': year,
+                    'month': month,
+                    'day': day,
+                    'outlets': outlets,
+                    'allTotals' : allTotals,
+                    'hourLabels' : hourLabels,
+                    'datasets' : datasets,
+                    'heatmapData' : heatmapData,
+                    'startHour' : startHour 
+                });
+			        
+			    }
+			});
+			
+
         });
     });
     
@@ -107,7 +120,6 @@ function getHourlyTotals(venueName, data, startHour) {
         //total.push((totalAmount/100).toFixed(2));
         if (lastHour >= 0 && willInsert) {
             total[lastHour] = ((totalAmount / 100).toFixed(2));
-            console.log("inserted at " + lastHour);
         }
 
         //insert padding at end if last iteration

@@ -3,6 +3,8 @@ class Outlet {
     constructor() {
         this.outletRef = undefined;
         this.outletName = undefined;
+        this.latitude = undefined;
+        this.longitude = undefined;
     }
     
     static getNames(db, callback)
@@ -23,6 +25,20 @@ class Outlet {
             callback(null, outletRefs);
         });
     }
+    
+    static getOutlet(db, name, callback)
+    {
+        db.outlets.findOne({"name": name}, function(err, doc) {
+            if (!err){
+                callback(null, doc);
+            }
+            else {
+                callback(err, null);
+            }
+    });
+    }
+    
+    
 }
 
 module.exports = Outlet;

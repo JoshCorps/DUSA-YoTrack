@@ -1,6 +1,7 @@
 //let startHour = require('./month.js').startHour;
 let instadate = require('instadate');
 let Transaction = require('./transaction');
+let Outlet = require('./outlet');
 
 let startHour = 6;
 
@@ -17,11 +18,6 @@ class Day {
     
     Transaction.getTransactionsForDay(db, startDate, endDate, (err, data) => {
         let hours = {};
-        
-        /*
-        for(let j=0; j<24; j++) {
-          hours[j] = [];
-        }*/
         
         for (var i = 0; i < data.length; i++) {
             if(data[i])
@@ -130,6 +126,111 @@ class Day {
     diffAndDates = [diff, startDate, endDate];
     
     return diffAndDates;
+  }
+  
+  static getHeatmap(db, outlets, data, isActivity, callback){
+    
+    var highestTotal = 0;
+    var totals = {};
+    for (var o = 0; o<outlets.length; o++)
+    {
+      var venueName = outlets[o];
+      var total = 0;
+      var keys = Object.keys(data);
+      var lastHour = -1; //initial value, we start processing with the 0 hours (midnight to 1)
+      for (var i = 0; i < keys.length; i++) { //for each hour in the transaction data we're given
+          var totalAmount = 0;
+          var willInsert = false;
+          for (var e = 0; e < data[keys[i]].length; e++) { //foreach transaction in hour
+              var thisPlace = data[keys[i]][e].outletName;
+              if (venueName === null || thisPlace === venueName) {
+                  var thisHour = data[keys[i]][e].dateTime.getHours();
+                  var hourDifference = (thisHour - lastHour) % 24;
+                  lastHour = thisHour;
+                  
+                  if (isActivity)
+                  {
+                    total += 1;
+                  } else {
+                    totalAmount += data[keys[i]][e].totalAmount;
+                  }
+                  
+                  willInsert = true;
+              }
+          }
+          if (lastHour >= 0 && willInsert) {
+              total += totalAmount;
+          }
+      }
+      totals[venueName] = total;
+      if (total > highestTotal) highestTotal = total;
+    }
+    
+    //now that we've processed the data, we just need to put it in a proper heatmap format. (specify the max and each point)
+    
+    var heatmapData = {};
+    
+    heatmapData.max = highestTotal;
+    heatmapData.data = [];
+    
+    var fetchCount = 0;
+      console.log("t2");
+    var keys = Object.keys(totals);
+    for (let i = 0; i < keys.length; i++) {
+      console.log("fetching data for location: " + keys[i]);
+      let dataPoint = {};
+      var coords = Day.getCoordinatesByOutletName(db, keys[i], function(err, data){
+        if (!err) //only show locations with a physical location, those without will have an error here.
+        {
+          //console.log("data returned from function", data);
+          dataPoint.lat = data.latitude;
+          dataPoint.lng = data.longitude;
+          dataPoint.count = totals[keys[i]];
+          dataPoint.name = keys[i];
+          //console.log("dataPoint", dataPoint);
+          if (dataPoint.count > 0)
+          {
+            console.log("t3", dataPoint);
+            heatmapData.data.push(dataPoint);
+          }
+        }
+        fetchCount++;
+        if (fetchCount === keys.length)
+        {
+          console.log("done fetching, returning: " + JSON.stringify(heatmapData));
+          callback(null, heatmapData);
+        }
+      });
+    }
+    
+    
+  }
+  
+  static getCoordinatesByOutletName(db, name, callback){
+    var lat = 0;
+    var lng = 0;
+    
+    Outlet.getOutlet(db, name, function(err, data){
+      if (err) {
+        console.log("Error occurred while finding outlet.");
+        callback("error"); return;
+        return;
+      } else {
+        //console.log("outlet (data)", data);
+        if (data !== null && data !== undefined)
+        {
+          lat = data.latitude;
+          lng = data.longitude;
+          var result = {"latitude": lat, "longitude": lng};
+          //console.log("result", result);
+          callback(null, result); return;
+        } else {
+          callback("null outlet returned"); return;
+        }
+
+      }
+    });
+    
   }
 }
 

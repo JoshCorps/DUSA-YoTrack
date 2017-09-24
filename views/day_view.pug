@@ -1,8 +1,8 @@
 extend page
 
 block sidebar
-	section
-		p Test 1
+	//section
+		//p Test 1
 
 
 block content
@@ -87,8 +87,23 @@ block content
 				myChart.update();
 			}
 			
-			
-	div(id="map-canvas", style="height:500px")
+			function showHeatmap()
+			{
+				var x = document.getElementById("map-canvas");
+				var btn = document.getElementById("heatmapToggle");
+				if (x.style.height === "0px") {
+					x.style.height = "500px";
+					btn.innerHTML = "Hide Activity Heatmap";
+				} else {
+					x.style.height = "0px";
+					btn.innerHTML = "Show Activity Heatmap";
+				}
+				
+			}
+	
+	div(id="map-canvas", style="height:500px;")
+		
+	button(id="heatmapToggle", type="button", "onclick"="showHeatmap()", style="margin:0 auto; display:block;")= "Hide Activity Heatmap"
 		
 	script.
 		window.onload=function() {
@@ -102,30 +117,24 @@ block content
 		
 		heatmap = new HeatmapOverlay(map, 
 		  {
-			 // radius should be small ONLY if scaleRadius is true (or small radius is intended)
 			"radius": 0.0006,
 			"maxOpacity": 1, 
-			// scales the radius based on map zoom
 			"scaleRadius": true, 
-			// if set to false the heatmap uses the global maximum for colorization
-			// if activated: uses the data maximum within the current map boundaries 
-			//   (there will always be a red spot with useLocalExtremas true)
-			"useLocalExtrema": false,
-			// which field name in your data represents the latitude - default "lat"
+			"useLocalExtrema": true,
 			latField: 'lat',
-			// which field name in your data represents the longitude - default "lng"
 			lngField: 'lng',
-			// which field name in your data represents the data value - default "value"
 			valueField: 'count'
 		  }
 		);
+		
+		var heatmapData = !{JSON.stringify(heatmapData)};
 		
 		var testData = {
 			max: 8, 
 			data: [{lat:56.4577377, lng:-2.9810413, count: 7}, {lat:56.4578377, lng:-2.9610413, count: 3}] 
 		};
 		
-		heatmap.setData(testData);
+		heatmap.setData(heatmapData);
 		
 		};
 		

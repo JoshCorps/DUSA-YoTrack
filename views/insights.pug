@@ -1,10 +1,48 @@
 extend page
 block content
 
+    link(rel='stylesheet', href='//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css')
+    script(src='https://code.jquery.com/jquery-1.12.4.js')
+    script(src='https://code.jquery.com/ui/1.12.1/jquery-ui.js')
+    
+    script.
+        $( function() {
+            $("#startDate").datepicker({
+                dateFormat: 'dd-mm-yy',
+                minDate: new Date('2015/08/01'),
+                changeMonth: true,
+                changeYear: true,
+                maxDate: 0,
+                onClose: function(selectedDate) {
+                    $("#endDate").datepicker("option", "minDate", selectedDate);
+                }
+            });
+        });
+        
+        $( function() {
+            $("#endDate").datepicker({
+                dateFormat: 'dd-mm-yy',
+                minDate: new Date('2015/08/01'),
+                changeMonth: true,
+                changeYear: true,
+                maxDate: 0,
+            });
+        });
+
     div(class="block")
+        
+        
         form(action="/insights" method="post")
-            input(id="start" type="date")
-            input(id="end" type="date")
+            | Start Date: 
+            if(startDate)
+                input#startDate(type='text', name='startDate', value=startDate, autocomplete='off')
+            else
+                input#startDate(type='text', name='startDate', autocomplete='off')
+            |  End Date: 
+            if(endDate)
+                input#endDate(name="endDate" type="text", value=endDate, autocomplete='off')
+            else
+                input#endDate(name="endDate" type="text", autocomplete='off')
             input(type='submit', value='Analyse')
     
     - if (insight)

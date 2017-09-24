@@ -90,15 +90,9 @@ block content
 			#tabs-1
 				form(action='/filter_graph', method='GET')
 					| Start Date: 
-					if (startDate === null)
-						input#startDate(type='text', name='startDate') 
-					else
-						input#startDate(type='text', name='startDate', value=startDate)
+					input#startDate(type='text', name='startDate', autocomplete='off') 
 					|	End Date:
-					if (endDate === null)
-						input#endDate(type='text', name='endDate')
-					else
-						input#endDate(type='text', name='endDate', value=endDate)
+					input#endDate(type='text', name='endDate', autocomplete='off')
 					
 					p Group Size: 
 						input(type='radio', name='groupBy', value='Daily', checked)
@@ -135,15 +129,9 @@ block content
 			
 				form(action='/filter_graph', method='GET')
 					| Start Date: 
-					if (startDate === null)
-						input#startDate2(type='text', name='startDate') 
-					else
-						input#startDate2(type='text', name='startDate', value=startDate)
+					input#startDate2(type='text', name='startDate', autocomplete='off') 
 					|  End Date:
-					if (endDate === null)
-						input#endDate2(type='text', name='endDate')
-					else
-						input#endDate2(type='text', name='endDate', value=endDate)
+					input#endDate2(type='text', name='endDate', autocomplete='off')
 						
 					p Days:
 					p()
@@ -180,9 +168,9 @@ block content
 								input(type="checkbox", name="days", value="0")
 					
 					| Start Time: 
-					input#startTime(name='startTime', type='text', value='00:00')
+					input#startTime(name='startTime', type='text', value='00:00', autocomplete='off')
 					| End Time:
-					input#endTime(name='endTime', type='text', value='00:00')
+					input#endTime(name='endTime', type='text', value='00:00', autocomplete='off')
 					
 					script.
 						$('#startTime').clockpicker({
