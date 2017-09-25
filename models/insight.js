@@ -176,10 +176,6 @@ class Insight {
             timeConstraints['6pm to 9pm'] = [].concat(hourConstraints[18] || []).concat(hourConstraints[19] || []).concat(hourConstraints[20] || []);
             timeConstraints['9pm to 12am'] = [].concat(hourConstraints[21] || []).concat(hourConstraints[22] || []).concat(hourConstraints[23] || []);
 
-            console.log(timeConstraints['12am to 3am']);
-            
-            console.log(timeConstraints['12pm to 3pm'])
-
             console.log('trace 6');
             // now do an intersection of every permutation
             let intersectionTimeShop = [];
@@ -283,13 +279,6 @@ class Insight {
                         
                         arr = timeShop.data.filter((n) => dayShop.data.includes(n));
                         if (arr.length > 0) {
-                            if (timeShop.shop === 'Library' && dayShop.shop === 'Library') {
-                                console.log(dayShop.shop);
-                                console.log(dayShop.date);
-                                console.log(timeShop.shop);
-                                console.log(timeShop.time);
-                            }
-                            
                             if (timeShop.shop === dayShop.shop) {
                                 intersections.push({
                                     'shop': timeShop.shop,

@@ -251,8 +251,8 @@ class Transaction {
     
     static getTimeInFourDigits(hours, minutes) {
         let time = '0000';
-        console.log('Minutes: '+minutes);
-        console.log('Hours: '+hours);
+        //console.log('Minutes: '+minutes);
+        //console.log('Hours: '+hours);
         time = hours;
         if (minutes == 0) {
             time = time + '00';

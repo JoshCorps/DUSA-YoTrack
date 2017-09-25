@@ -35,6 +35,7 @@ router.get('/', authenticate, (req, res, next) => {
     }
     
     var venues = req.query.venues;
+    console.log("venues: " + JSON.stringify(venues))
     
     var formType = req.query.formType;
     
@@ -146,7 +147,6 @@ router.get('/', authenticate, (req, res, next) => {
             }
 
             diffAndDates = Day.getDifferenceInWeeks(startDate, endDate);
-
             if (venues) {
                 if (!Array.isArray(venues)) { //deal with the case when we only get one venue name
                     let temp = [venues];

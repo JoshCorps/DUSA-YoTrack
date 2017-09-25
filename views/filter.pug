@@ -143,7 +143,7 @@ block content
 								-for (var e = i; e < i + 4; e++) 
 									- if (outletNames[e])
 										div(class="three columns")
-											input(type='checkbox', name='venues')
+											input(type='checkbox', name='venues', value=outletNames[e])
 											|  #{outletNames[e]}
 					
 					br 
@@ -227,9 +227,10 @@ block content
 							br
 							- for (var i = 0, j = 0; i < outletNames.length; i++,j++)
 								- if (j % 3 === 0 && j !== 0)
+									br
 								input(type='checkbox', name='venues', value=outletNames[i])
 								|  #{outletNames[i]}  
-								br
+								
 						
 					p()
 					input(type="hidden", name="formType", value="granular")
