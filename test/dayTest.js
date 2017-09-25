@@ -5,7 +5,7 @@ var expect = chai.expect;
 chai.use(require('chai-datetime'));
 
 describe('Day Module test', () => {
-   it('should not throw an error', (err, done) => 
+   it('should not throw an error', (done) => 
    {
         Day.getDay(db, 2015, 11, 27, (err, data) => {
             console.log("err: " + err);
@@ -42,7 +42,7 @@ describe('Day Module test', () => {
         expect(diff[2]).to.equalDate(expEndDate);
         
         diff = Day.getDifferenceInMonths(startDate2, endDate2);
-        expect(diff[0]).to.equal(5);
+        expect(diff[0]).to.equal(7);
         expect(diff[1]).to.equalDate(expStartDate2);
         expect(diff[2]).to.equalDate(expEndDate2);
    });

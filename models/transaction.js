@@ -132,8 +132,6 @@ class Transaction {
         var groupedTransactions = {};
         var key, d;
         
-        console.log('Number of weeks: '+numberOfWeeks);
-        
         for (let j=0; j<numberOfWeeks; j++) {
             d = new Date(startDate.getFullYear(), startDate.getMonth(), (startDate.getDate() + j * 7));
             key = "Week beginning " + d.toDateString();
@@ -192,7 +190,7 @@ class Transaction {
     }
     
     // daysOfTheWeek is an array with indices of the days of the week to be included in the final data
-    static sortTransactionsForDaysOfTheWeek(numberOfWeeks, startDate, endDate, daysOfWeek, transactions) {
+    static sortTransactionsForDaysOfTheWeek(numberOfWeeks, startDate, endDate, startTime, endTime, daysOfWeek, transactions) {
         var sortedTransactions = {};
         var key, d;
         
@@ -221,14 +219,42 @@ class Transaction {
                 day = 7;
             }
             if(daysOfWeek.indexOf(day) != -1) {
-                d = new Date(transactions[i].dateTime.getFullYear(), transactions[i].dateTime.getMonth(), transactions[i].dateTime.getDate());
-                key = d.toDateString();
-                sortedTransactions[key] += transactions[i].totalAmount;
+                var transactionTime = Transaction.getTimeInFourDigits(transactions[i].dateTime.getHours(), transactions[i].dateTime.getMinutes());
+                var add = false;
+                
+                if ((endTime == 0) && (startTime == 0)) {
+                     add = true;
+                 } else {
+                    if (endTime < startTime) {
+                        if ((transactionTime > startTime) || (transactionTime < endTime)) {
+                            add = true;
+                        }
+                    } else {
+                        if ((transactionTime > startTime) && (transactionTime < endTime)) {
+                            add = true;
+                        }
+                    }
+                 }
+                 if (add == true) {
+                     d = new Date(transactions[i].dateTime.getFullYear(), transactions[i].dateTime.getMonth(), transactions[i].dateTime.getDate(), (transactions[i].dateTime.getHours() - 6));
+                    key = d.toDateString();
+                    sortedTransactions[key] += transactions[i].totalAmount;
+                 }
             }
         }
-        console.log('Days of the week: '+daysOfWeek[0]+', '+daysOfWeek[1]);
         
         return sortedTransactions;
+    }
+    
+    static getTimeInFourDigits(hours, minutes) {
+        let time = '0000';
+        time = hours;
+        if (minutes < 10) {
+            time = time + '' + 0 + '' + minutes;
+        } else {
+            time = time + '' + minutes;
+        }
+        return parseInt(time, 10);
     }
     
     static insertTransactions(db, transactions, callback) {

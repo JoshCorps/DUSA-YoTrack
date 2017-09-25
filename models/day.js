@@ -12,6 +12,16 @@ class Day {
         this.hours = [];
     }
     
+    static getDayName(dayNumber){
+      var dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      if (dayNumber >= 0 && dayNumber <= 6)
+      {
+        return dayNames[dayNumber];
+      }
+      console.log("Cannot find dayName for dayNumber: " + dayNumber);
+      return "Unknown Day";
+    }
+    
   static getDay(db, year, month, day, callback) {
     let startDate = new Date(year, (month - 1), day, startHour);
     let endDate = instadate.addDays(startDate, 1);
@@ -174,7 +184,6 @@ class Day {
     heatmapData.data = [];
     
     var fetchCount = 0;
-      console.log("t2");
     var keys = Object.keys(totals);
     for (let i = 0; i < keys.length; i++) {
       console.log("fetching data for location: " + keys[i]);

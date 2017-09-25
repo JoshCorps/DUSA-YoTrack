@@ -68,7 +68,7 @@ router.post('/', (request, response, next) => {
         'firstName': firstName,
         'lastName': lastName,
         'email': email,
-        'accountType': ' standard',
+        'accountType': 'basic',
         'isApproved': false
     });
     user.setPassword(password, false);

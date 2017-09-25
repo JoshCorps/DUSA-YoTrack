@@ -35,14 +35,14 @@ block content
         form(action="/insights" method="post")
             | Start Date: 
             if(startDate)
-                input#startDate(type='text', name='startDate', value=startDate, autocomplete='off')
+                input#startDate(type='text', name='startDate', value=startDate, autocomplete='off', readonly="true")
             else
-                input#startDate(type='text', name='startDate', autocomplete='off')
+                input#startDate(type='text', name='startDate', autocomplete='off', readonly="true")
             |  End Date: 
             if(endDate)
-                input#endDate(name="endDate" type="text", value=endDate, autocomplete='off')
+                input#endDate(name="endDate" type="text", value=endDate, autocomplete='off', readonly="true")
             else
-                input#endDate(name="endDate" type="text", autocomplete='off')
+                input#endDate(name="endDate" type="text", autocomplete='off', readonly="true")
             input(type='submit', value='Analyse')
     
     - if (insight)

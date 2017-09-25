@@ -9,7 +9,8 @@ describe('outletTest', () => {
         {
             console.log("****************" + err);
             if(err) return;
-            console.log("****************" + data)
+            expect(data).to.not.be.null;
         })
+        done();
     });
 })

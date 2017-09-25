@@ -1,0 +1,24 @@
+extend page
+block content
+    - var accountTypes = ["master", "intermediate", "basic"]
+    div(class="block")
+        if (accounts.length > 0)
+            form(action="/manage_accounts" method="post")
+                - for (var i = 0; i < accounts.length; i++)
+                    - var account = accounts[i]
+                    li= account.email
+                    select(name='users['+i+'][accountType]')
+                        - for (var j = 0; j < accountTypes.length; j++)
+                            - if (accountTypes[j] === account.accountType)
+                                option(value=accountTypes[j] selected=true) #{accountTypes[j]}
+                            - else 
+                                option(value=accountTypes[j]) #{accountTypes[j]}
+                    |   Change Permission   
+                    input(type='radio', name='users['+i+'][option]' value='changePermission')
+                    |   Delete   
+                    input(type='radio', name='users['+i+'][option]', value='delete')
+                    input(type="hidden", name='users['+i+'][email]', value=account.email)
+                input(type='submit', value='Approve/Decline Accounts')
+            
+        else
+            p No accounts to approve

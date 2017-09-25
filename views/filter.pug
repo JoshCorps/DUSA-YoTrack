@@ -89,40 +89,64 @@ block content
 					a(href='#tabs-2') Granular
 			#tabs-1
 				form(action='/filter_graph', method='GET')
-					| Start Date: 
-					input#startDate(type='text', name='startDate', autocomplete='off') 
-					|	End Date:
-					input#endDate(type='text', name='endDate', autocomplete='off')
+					div(class="flex justify-content-space-between")
+						div(class="six columns")
+							label(for="startDate") Start Date
+							input#startDate(type='text', class="u-full-width", name='startDate', autocomplete='off') 
+						div(class="six columns")
+							label(for="endDate") End Date
+							input#endDate(type='text', class="u-full-width", name='endDate', autocomplete='off')
 					
-					p Group Size: 
-						input(type='radio', name='groupBy', value='Daily', checked)
-						|  Daily  
-						input(type='radio', name='groupBy', value='Weekly')
-						|  Weekly  
-						input(type='radio', name='groupBy', value='Monthly')
-						|  Monthly 
-						input(type='radio', name='groupBy', value='Yearly')
-						|  Yearly 
+					br
 					
-					button(type="button", onclick='toggleAdvanced("advancedDiv")') Show advanced options
-					#advancedDiv(style="display:none;")
-						| Chart Type   
-						select(name="chartType")
-							option(value="bar") Bar
-							option(value="line") Line
-						br
-						#divCheckAll
-							input#checkall(type='checkbox', name='checkall', onclick='check_uncheck_checkbox(this.checked);')
-							| Toggle All Venues
-						#divCheckboxList
-							br
-							- for (var i = 0, j = 0; i < outletNames.length; i++,j++)
-								- if (j % 3 === 0 && j !== 0)
-								input(type='checkbox', name='venues', value=outletNames[i])
-								|  #{outletNames[i]}  
-								br
+					div(class="flex")
+						label Group Size
+					
+					div(class="flex justify-content-space-between")
+						div(class="three columns")
+							input(type='radio', name='groupBy', value='Daily', checked)
+							|  Daily  
+						div(class="three columns")
+							input(type='radio', name='groupBy', value='Weekly')
+							|  Weekly  
+						div(class="three columns")
+							input(type='radio', name='groupBy', value='Monthly')
+							|  Monthly 
+						div(class="three columns")
+							input(type='radio', name='groupBy', value='Yearly')
+							|  Yearly 
+							
+					br
+					
+					div(class="flex")
+						label Chart Type
 						
-					p()
+					div(class="flex")
+						div(class="six columns")
+							select(name="chartType", class="u-full-width")
+								option(value="bar") Bar
+								option(value="line") Line
+					
+					br
+					
+					div(class="flex")
+						label Venues
+					
+					div(class="flex")
+						input#checkall(type='checkbox', name='checkall', onclick='check_uncheck_checkbox(this.checked);') 
+						| Toggle All Venues
+					
+					-for (var i = 0; i < outletNames.length; i++)
+						if (i % 4 === 0)
+							br
+							div(class="flex")
+								-for (var e = i; e < i + 4; e++) 
+									- if (outletNames[e])
+										div(class="three columns")
+											input(type='checkbox', name='venues', value=outletNames[e])
+											|  #{outletNames[e]}
+					
+					br 
 					input(type="hidden", name="formType", value="aggregate")
 					input(type="submit", value="Filter Data", class="button-primary")
 			#tabs-2

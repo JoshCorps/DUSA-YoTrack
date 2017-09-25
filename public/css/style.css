@@ -62,18 +62,25 @@ header nav ul li a:hover {
     color: white;
 }
 
+header nav a {
+    text-decoration: none;
+    color: white !important;
+}
+
 header nav .title {
     text-transform: uppercase;
+    text-decoration: none;
     font-weight: 700;
     letter-spacing: 1px;
     padding: 7px 12px;
     margin: 0;
     font-size: 1.5em;
     line-height: 1em;
+    color: white !important;
 }
 
 header nav .title .pink {
-    color: #ff67c7;
+    color: #ff67c7 !important;
 }
 
 header nav .title .light {
@@ -153,6 +160,7 @@ main aside nav ul li a p {
     display: block;
     margin: 0;
     padding: 0;
+    position: relative;
 }
 
 main aside nav ul li a i {
@@ -172,6 +180,22 @@ main aside nav ul li a span {
     line-height: 1em;
 }
 
+
+main aside nav ul li a .notification {
+    position: absolute;
+    display: block;
+    text-align: center;
+    top: 20px;
+    left: 20px;
+    min-width: 2em;
+    height: 2em;
+    font-weight: 700;
+    background: red;
+    color: white;
+    padding: 5px;
+    border-radius: 50%;
+}
+
 main aside section {
     border-left: 1px solid rgb(195, 195, 195);
     width: 25vw;
@@ -187,7 +211,22 @@ main aside section ul {
 
 main aside section ul li {
     margin: 0;
-    padding: 0;
+    padding: 1em 2em;
+    border-bottom: 1px solid rgb(195, 195, 195);
+    cursor: pointer;
+}
+
+.outlets {
+    cursor: initial;
+    color: black;
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 0.85em;
+    padding: 0.5em 2em;
+}
+
+.toggle {
+    background: rgb(235, 238, 250);
 }
 
 main article {
@@ -352,4 +391,14 @@ main article {
  
 ::-webkit-scrollbar-thumb {
     background: #ff67c7;
+}
+
+/* OVERRIDES */
+.ui-widget {
+    font-family: inherit !important;
+}
+
+.ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active, a.ui-button:active, .ui-button:active, .ui-button.ui-state-active:hover {
+    border: 1px solid #ff67c7 !important;
+    background: #ff67c7 !important;
 }

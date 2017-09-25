@@ -131,12 +131,10 @@ router.get('/', authenticate, (req, res, next) => {
         {
             
             var temp = req.query.startTime.split(":");
-            var startHour = temp[0];
-            var startMinute = temp[1];
+            var startTime = Transaction.getTimeInFourDigits(temp[0], temp[1]);
             
             var temp = req.query.endTime.split(":");
-            var endHour = temp[0];
-            var endMinute = temp[1];
+            var endTime = Transaction.getTimeInFourDigits(temp[0], temp[1]);
             
             var diffAndDates;
             var query;
@@ -146,11 +144,8 @@ router.get('/', authenticate, (req, res, next) => {
                     let temp = [daysChosen];
                     daysChosen = temp;
             }
-            console.log(daysChosen);
 
             diffAndDates = Day.getDifferenceInWeeks(startDate, endDate);
-            console.log('Date1: '+diffAndDates[1]+' Date2: '+diffAndDates[2]);
-            console.log('Difference in weeks: '+diffAndDates[0]);
 
             if (venues) {
                 if (!Array.isArray(venues)) { //deal with the case when we only get one venue name
@@ -174,7 +169,7 @@ router.get('/', authenticate, (req, res, next) => {
                 // sort data into a returnable object with dates as keys (number of keys will be diffAndDates[0])
                 var groupedTransactions = {};
                 
-                groupedTransactions = Transaction.sortTransactionsForDaysOfTheWeek(diffAndDates[0], diffAndDates[1], diffAndDates[2], daysChosen, data);
+                groupedTransactions = Transaction.sortTransactionsForDaysOfTheWeek(diffAndDates[0], diffAndDates[1], diffAndDates[2], startTime, endTime, daysChosen, data);
 
                 console.log(groupedTransactions);
 
@@ -185,16 +180,23 @@ router.get('/', authenticate, (req, res, next) => {
 
                     var numbers = [];
                     var labels = [];
-
-                    var keys = Object.keys(groupedTransactions);
-                    for (var i = 0; i < keys.length; i++) {
-                        var label = keys[i];
-                        var number = ((groupedTransactions)[keys[i]] / 100).toFixed(2);
-                        numbers.push(number);
-                        labels.push(label);
+                    
+                    for(let j=0; j<daysChosen.length; j++) {
+                        numbers[j] = [];
                     }
 
-                    datasets.push(createDataset("Revenue", numbers));
+                    var keys = Object.keys(groupedTransactions);
+                    for (var i = 0; i < (keys.length/daysChosen.length); i++) {
+                        var label = 'Week '+parseInt(i+1);
+                        for(let j=0; j<daysChosen.length; j++) {
+                            var number = ((groupedTransactions)[keys[i+j]] / 100).toFixed(2);
+                            numbers[j].push(number);
+                        }
+                        labels.push(label);
+                    }
+                    for(let j=0; j<daysChosen.length; j++) {
+                        datasets.push(createDataset(Day.getDayName(daysChosen[j]), numbers[j], j));
+                    }
 
                     res.render('filter_graph', { labels: labels, datasets: datasets, startDate: diffAndDates[1], endDate: diffAndDates[2], chartType: chartType });
                 });
@@ -211,10 +213,10 @@ router.get('/', authenticate, (req, res, next) => {
     }
 });
 
-function createDataset(key, dataArray) {
+function createDataset(key, dataArray, index) {
     var dataset = {};
     dataset.label = key; //location name
-    dataset.backgroundColor = 'rgba(255, 103, 199, 0.85)';
+    dataset.backgroundColor = getUniqueColor(index);
 
     dataset.borderColor = 'rgba(0, 0, 0, 1)';
     dataset.borderWidth = 0;

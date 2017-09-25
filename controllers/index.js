@@ -3,6 +3,9 @@
 let express = require('express');
 let router = express.Router();
 
+let User = require('../models/user.js');
+let db = require('../models/db.js')();
+
 let authenticate = (req, res, next) => {
     // if the user is logged in, proceed.
     if (req.isAuthenticated()) {
@@ -46,6 +49,27 @@ router.use((req, res, next) => {
     next();
 });
 
+router.use((req, res, next) => {
+    // check user is authenticated
+    if (!req.isAuthenticated()) {
+        return next();
+    }
+    
+    // check user is actually a master
+    if (req.user.accountType !== 'master') {
+        return next();
+    }
+    
+    User.getUnapprovedUsers(db, (err, users) => {
+        if (err) {
+            return next();
+        }
+        
+        res.locals.totalUnapprovedUsers = users.length;
+        return next();
+    });
+});
+
 // load other routes
 router.use('/login', require('./login'));
 router.use('/register', require('./register'));
@@ -59,6 +83,7 @@ router.use('/insights', require('./insights'));
 router.use('/day_view', require('./day_view'));
 router.use('/filter', require('./filter'));
 router.use('/filter_graph', require('./filter_graph'));
+router.use('/manage_accounts', require('./manage_accounts'));
 
 // serve index page
 router.get('/', authenticate, (req, res) => {

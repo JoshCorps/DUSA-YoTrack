@@ -1,37 +1,92 @@
 extend page
 
 block sidebar
-	//section
-		//p Test 1
-
+	section
+		ul(id="items")
+			li(class="outlets") Outlets
 
 block content
 	script(src='/chartjs/Chart.js')
 	script(src="https://maps.googleapis.com/maps/api/js?sensor=false")
 	script(src='/hmap/heatmap.js')
 	script(src='/hmap/gmaps-heatmap.js')
-	
+	script.
+		'use strict';
+	-
+		function ordinal_suffix_of(i) {
+		    var j = i % 10,
+		        k = i % 100;
+		    if (j == 1 && k != 11) {
+		        return i + "st";
+		    }
+		    if (j == 2 && k != 12) {
+		        return i + "nd";
+		    }
+		    if (j == 3 && k != 13) {
+		        return i + "rd";
+		    }
+		    return i + "th";
+		}
+		var monthNames = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];
 	
 	div(class="block")
-	
-
-		- for (var i = 0; i < outlets.length + 1; i++)
-			-if (i !== outlets.length)
-				- var showGraph = false;
-				- for (var e = 0; e < datasets[i].data.length; e++)
-					- if (datasets[i].data[e])
-						- showGraph = true;
-				-if (showGraph)
-					button(type="button", "onclick"="updateChart("+i+")")= outlets[i]
-				- else
-					// button(type="button", "onclick"="updateChart("+i+")")= outlets[i] +  "(N)"
-			-else
-				script.
-					window.combinedIndex = #{i};
-				button(type="button", "onclick"="updateChart("+i+")")= "Combined"
+		div(class="flex justify-content-space-between")
+			h1(class="flex-grow")= ordinal_suffix_of(day) + " of " + monthNames[month - 1] + " " + year
+			- var today = new Date(year, month, day);
+			- var yesterday = new Date(year, month, +day - 1);
+			- var tomorrow = new Date(year, month, +day + 1);
 			
-		
-		
+            
+			div(class="flex justify-content-space-between")
+				a(class="button right-gap", href="/day_view/" + yesterday.getFullYear() + "/" + yesterday.getMonth() + "/" + yesterday.getDate())
+					i(class="fa fa-arrow-left", aria-hidden="true")
+					| 
+					= ordinal_suffix_of(yesterday.getDate()) + ' of ' + monthNames[yesterday.getMonth() - 1] + ' ' + yesterday.getFullYear()
+				a(class="button", href="/day_view/" + tomorrow.getFullYear() + "/" + tomorrow.getMonth() + "/" + tomorrow.getDate())
+					i(class="fa fa-arrow-right", aria-hidden="true")
+					| 
+					= ordinal_suffix_of(tomorrow.getDate()) + " of " + monthNames[tomorrow.getMonth() - 1] + " " + tomorrow.getFullYear()
+					
+		script.
+			var items = document.getElementById('items');
+			var outlets = !{JSON.stringify(outlets)}
+			var datasets = !{JSON.stringify(datasets)}
+			
+			console.log(outlets);
+			
+			for (var i = 0; i < outlets.length + 1; i++) {
+				if (i !== outlets.length) {
+					console.log(i);
+					var showGraph = false;
+					for (var e = 0; e < datasets[i].data.length; e++) {
+						if (datasets[i].data[e]) {
+							showGraph = true;
+						}
+					}
+					if (showGraph) {
+						var node = document.createElement('li');
+						var textnode = document.createTextNode(outlets[i]);
+						node.setAttribute('index', i);
+						node.appendChild(textnode);
+						node.onclick = (a, b) => { updateChart(a.target.getAttribute('index')); 
+						a.target.classList.toggle('toggle');}
+						items.appendChild(node);
+					}
+				} else {
+					window.combinedIndex = i;
+					var node = document.createElement('li');
+					var textnode = document.createTextNode("Combined Results");
+					node.setAttribute('index', i);
+					node.appendChild(textnode);
+					node.classList.toggle('toggle');
+					node.onclick = (a) => { 
+						updateChart(a.target.getAttribute('index')); 
+						a.target.classList.toggle('toggle');
+					}
+					items.appendChild(node);
+				}
+			}
+			
 		canvas#myChart
 			script.
 				var ctx = document.getElementById("myChart").getContext('2d');
@@ -70,9 +125,7 @@ block content
 			dataToggle[combinedIndex] = true;
 			function updateChart(index)
 			{
-				console.log(index);
 				dataToggle[index] = !dataToggle[index];
-				console.log(dataToggle[index]);
 				
 				let data = [];
 				let toggles = Object.keys(dataToggle);
@@ -101,9 +154,11 @@ block content
 				
 			}
 	
-	div(id="map-canvas", style="height:500px;")
+	div(class="block")
+		div(id="map-canvas", style="height:500px;")
 		
-	button(id="heatmapToggle", type="button", "onclick"="showHeatmap()", style="margin:0 auto; display:block;")= "Hide Activity Heatmap"
+	//-
+		button(id="heatmapToggle", type="button", "onclick"="showHeatmap()", style="margin:0 auto; display:block;")= "Hide Activity Heatmap"
 		
 	script.
 		window.onload=function() {

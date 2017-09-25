@@ -117,8 +117,6 @@ class Insight {
                 return callback(err);
             }
 
-            console.log('trace ', 1);
-
             let data = [];
             let resultKeys = Object.keys(results);
 
@@ -127,7 +125,6 @@ class Insight {
                     data.push(results[resultKeys[i]][e]);
                 }
             }
-            console.log('trace ', 2);
 
             // now, sort each transaction into a set of constraints by users.
             let hourConstraints = {};
@@ -157,7 +154,6 @@ class Insight {
                 dateConstraints = push(dateConstraints, date, user);
                 shopConstraints = push(shopConstraints, shop, user);
             }
-            console.log('trace ', 3);
 
             // before continuing, merge hours into groups of 3 hours
             timeConstraints['12am to 3am'] = [].concat(hourConstraints[0] || []).concat(hourConstraints[1] || []).concat(hourConstraints[2] || []);
@@ -177,7 +173,6 @@ class Insight {
             let timeKeys = Object.keys(timeConstraints);
             let dateKeys = Object.keys(dateConstraints);
             let shopKeys = Object.keys(shopConstraints);
-            console.log('trace ', 4);
 
             // remove duplicate users
             for (let a = 0; a < timeKeys.length; a++) {
@@ -210,7 +205,6 @@ class Insight {
                         }
                     }
 
-                    console.log('trace ', 5);
                     cb();
                 },
                 /*
@@ -248,7 +242,6 @@ class Insight {
                             }
                         }
                     }
-                    console.log('trace ', 7);
                     cb();
                 }
             ], (err, results) => {

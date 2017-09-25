@@ -77,6 +77,37 @@ class User {
     });
   }
  
+ static changePermission(db, users, callback)
+ {
+   for(let i=0; i<users.length; i++) {
+      db.users.update({email: users[i].email}, {$set: {'accountType': users[i].accountType}}, (err, res) => {
+        if (err) {
+          callback(err);
+        }
+      });
+   }
+ }
+ 
+ // maybe refacter into getUnapprovedUsers with param for isApproved: true/false
+ static getApprovedUsers(db, callback)
+ {
+   db.users.find({'isApproved': true}, (err, userData) => {
+     if (err) {
+      callback(err);
+      return;
+     }
+    var users = [];
+    if (userData) {
+      for(let i = 0; i < userData.length; i++)
+      {
+        var user = new User(userData[i]);
+        users.push(user);
+      }
+    }
+    callback (null, users);
+   });
+ }
+ 
   static getUnapprovedUsers(db, callback) {
     //get list of unapproved users from db
     db.users.find({'isApproved': false}, (err, userData) => {

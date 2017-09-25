@@ -6,7 +6,6 @@ block content
 	
 	div(class="block")
 	
-		p !{JSON.stringify(datasets)}
 		button#export Export
 		canvas#myChart
 			script.
@@ -20,7 +19,7 @@ block content
 					type: "#{chartType}",
 					data: {
 						labels: labels,
-						datasets: dsCombined
+						datasets: dsAll
 					},
 					options: {
 						scales: {
