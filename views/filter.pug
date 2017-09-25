@@ -84,9 +84,9 @@ block content
 		#tabs
 			ul
 				li
-					a(href='#tabs-1') Aggregate
+					a(href='#tabs-1') Aggregate Filtering
 				li
-					a(href='#tabs-2') Granular
+					a(href='#tabs-2') Granular Filtering
 			#tabs-1
 				form(action='/filter_graph', method='GET')
 					div(class="flex justify-content-space-between")
@@ -143,7 +143,7 @@ block content
 								-for (var e = i; e < i + 4; e++) 
 									- if (outletNames[e])
 										div(class="three columns")
-											input(type='checkbox', name='venues', value=outletNames[e])
+											input(type='checkbox', name='venues')
 											|  #{outletNames[e]}
 					
 					br 
@@ -152,49 +152,54 @@ block content
 			#tabs-2
 			
 				form(action='/filter_graph', method='GET')
-					| Start Date: 
-					input#startDate2(type='text', name='startDate', autocomplete='off') 
-					|  End Date:
-					input#endDate2(type='text', name='endDate', autocomplete='off')
-						
-					p Days:
-					p()
-					table(style="table-layout: fixed;")
-						tr
-							th
-								p Monday
-							th
-								p Tuesday
-							th
-								p Wednesday
-							th
-								p Thursday
-							th
-								p Friday
-							th
-								p Saturday
-							th
-								p Sunday
-						tr(align="center")
-							td(style="text-align: center")
-								input(type="checkbox", name="days", value="1")
-							td(style="text-align: center")
-								input(type="checkbox", name="days", value="2")
-							td(style="text-align: center")
-								input(type="checkbox", name="days", value="3")
-							td(style="text-align: center")
-								input(type="checkbox", name="days", value="4")
-							td(style="text-align: center")
-								input(type="checkbox", name="days", value="5")
-							td(style="text-align: center")
-								input(type="checkbox", name="days", value="6")
-							td(style="text-align: center")
-								input(type="checkbox", name="days", value="0")
+					div(class="flex justify-content-space-between")
+						div(class="six columns")
+							label(for="startDate") Start Date
+							input#startDate2(type='text', class="u-full-width", name='startDate', autocomplete='off') 
+						div(class="six columns")
+							label(for="endDate") End Date
+							input#endDate2(type='text', class="u-full-width", name='endDate', autocomplete='off')
 					
-					| Start Time: 
-					input#startTime(name='startTime', type='text', value='00:00', autocomplete='off')
-					| End Time:
-					input#endTime(name='endTime', type='text', value='00:00', autocomplete='off')
+					br
+					
+					div(class="flex")
+						label Day of the Week
+					
+					div(class="flex justify-content-space-between")
+						div(class="three columns")
+							input(type="checkbox", name="days", value="1")
+							|  Monday
+						div(class="three columns")
+							input(type="checkbox", name="days", value="2")
+							|  Tuesday
+						div(class="three columns")
+							input(type="checkbox", name="days", value="3")
+							|  Wednesday
+						div(class="three columns")
+							input(type="checkbox", name="days", value="4")
+							|  Thursday
+							
+					br
+					div(class="flex justify-content-space-between")
+						div(class="three columns")
+							input(type="checkbox", name="days", value="5")
+							|  Friday
+						div(class="three columns")
+							input(type="checkbox", name="days", value="6")
+							|  Saturday
+						div(class="three columns")
+							input(type="checkbox", name="days", value="7")
+							|  Sunday
+						div(class="three columns")
+							
+					br
+					div(class="flex justify-content-space-between")
+						div(class="six columns")
+							label(for="startDate") Start Time
+							input#startTime(name='startTime', class="u-full-width", type='text', value='00:00', autocomplete='off')
+						div(class="six columns")
+							label(for="endDate") End Time
+							input#endTime(name='endTime', class="u-full-width", type='text', value='00:00', autocomplete='off')
 					
 					script.
 						$('#startTime').clockpicker({

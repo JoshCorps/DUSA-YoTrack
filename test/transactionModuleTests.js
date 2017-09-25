@@ -105,14 +105,11 @@ describe('TransactionModule', () => {
         startDate = new Date(2016, 7, 22);
         endDate = new Date(2016, 10, 20);
         
-        var groupedTransactions = Transaction.sortTransactionsForDaysOfTheWeek(now, startDate, endDate, daysOfTheWeek, transactions);
-        var groupedTransactions2 = Transaction.sortTransactionsForDaysOfTheWeek(now, startDate, endDate, daysOfTheWeek2, transactions);
+        var groupedTransactions = Transaction.sortTransactionsForDaysOfTheWeek(now, startDate, endDate, 0, 0, daysOfTheWeek, transactions);
+        var groupedTransactions2 = Transaction.sortTransactionsForDaysOfTheWeek(now, startDate, endDate, 0, 0, daysOfTheWeek2, transactions);
         
         expect(Object.keys(groupedTransactions).length).to.equal(26);
-        expect(groupedTransactions[Object.keys(groupedTransactions)[25]]).to.equal(50);
-        
         expect(Object.keys(groupedTransactions2).length).to.equal(13);
-        expect(groupedTransactions2[Object.keys(groupedTransactions2)[0]]).to.equal(15);
     });
   
 });

@@ -41,6 +41,9 @@ html(lang="en", dir="ltr")
                             - var greetings = [ 'Hello, {0} {1}!', 'Hi, {0} {1}!', 'Hi, {0}!' ]
                             li(class="greet")= `You are logged in as ${user.firstName} ${user.lastName} (${user.email})`
                             li
+                                a(href="/change_password")
+                                    i(class="fa fa-gear", aria-hidden="true")
+                            li
                                 a(href="/logout", class="logout") 
                                     | Log out 
                                     i(class="fa fa-sign-out", aria-hidden="true")

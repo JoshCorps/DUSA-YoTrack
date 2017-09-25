@@ -134,7 +134,7 @@ class Transaction {
         
         for (let j=0; j<numberOfWeeks; j++) {
             d = new Date(startDate.getFullYear(), startDate.getMonth(), (startDate.getDate() + j * 7));
-            key = "Week beginning " + d.toDateString();
+            key = "w/c " + d.toDateString();
             console.log('KeyDates: '+key);
             groupedTransactions[key] = 0;
         }
@@ -146,7 +146,7 @@ class Transaction {
             }
             day -= 1;
             d = new Date(transactions[i].dateTime.getFullYear(), transactions[i].dateTime.getMonth(), transactions[i].dateTime.getDate() - day);
-            key = "Week beginning " + d.toDateString();
+            key = "w/c " + d.toDateString();
             groupedTransactions[key] += transactions[i].totalAmount;
         }
         
@@ -213,8 +213,11 @@ class Transaction {
             }
         }
         
+        console.log('Starttime: '+startTime+' EndTime: '+endTime);
+        
         for (let i=0; i<transactions.length; i++) {
-            var day = transactions[i].dateTime.getDay();
+            var keyDate = new Date(transactions[i].dateTime.getFullYear(), transactions[i].dateTime.getMonth(), transactions[i].dateTime.getDate(), (transactions[i].dateTime.getHours() - 6));
+            var day = keyDate.getDay();
             if (day == 0) {
                 day = 7;
             }
@@ -236,7 +239,7 @@ class Transaction {
                     }
                  }
                  if (add == true) {
-                     d = new Date(transactions[i].dateTime.getFullYear(), transactions[i].dateTime.getMonth(), transactions[i].dateTime.getDate(), (transactions[i].dateTime.getHours() - 6));
+                    d = new Date(transactions[i].dateTime.getFullYear(), transactions[i].dateTime.getMonth(), transactions[i].dateTime.getDate(), (transactions[i].dateTime.getHours() - 6));
                     key = d.toDateString();
                     sortedTransactions[key] += transactions[i].totalAmount;
                  }
@@ -248,8 +251,12 @@ class Transaction {
     
     static getTimeInFourDigits(hours, minutes) {
         let time = '0000';
+        console.log('Minutes: '+minutes);
+        console.log('Hours: '+hours);
         time = hours;
-        if (minutes < 10) {
+        if (minutes == 0) {
+            time = time + '00';
+        }else if (minutes < 10) {
             time = time + '' + 0 + '' + minutes;
         } else {
             time = time + '' + minutes;

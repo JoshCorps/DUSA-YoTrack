@@ -36,6 +36,8 @@ class Insight {
             
             let count = data.length;
             
+            console.log('trace 15');
+            
             // take the top 20%, middle 5% and bottom 5%;
             let topPull = 20;
             let topIndex = ~~((count / 100) * topPull);
@@ -57,6 +59,8 @@ class Insight {
             let bottomDetails = [];
             
             // time, date, shop, shopTime, shopDate, data
+            
+            console.log('trace 16');
             
             // now process
             for (let i = 0; i < top.length; i++) {
@@ -117,6 +121,8 @@ class Insight {
                 return callback(err);
             }
 
+            console.log('trace 1');
+
             let data = [];
             let resultKeys = Object.keys(results);
 
@@ -126,11 +132,14 @@ class Insight {
                 }
             }
 
+            console.log('trace 2');
+            
             // now, sort each transaction into a set of constraints by users.
             let hourConstraints = {};
             let timeConstraints = {};
             let dateConstraints = {};
             let shopConstraints = {};
+            console.log('trace 3');
 
             let push = (arr, index, user) => {
                 if (!arr[index]) {
@@ -140,6 +149,7 @@ class Insight {
                 arr[index].push(user);
                 return arr;
             }
+            console.log('trace 4');
 
             let dateNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -154,6 +164,7 @@ class Insight {
                 dateConstraints = push(dateConstraints, date, user);
                 shopConstraints = push(shopConstraints, shop, user);
             }
+            console.log('trace 5');
 
             // before continuing, merge hours into groups of 3 hours
             timeConstraints['12am to 3am'] = [].concat(hourConstraints[0] || []).concat(hourConstraints[1] || []).concat(hourConstraints[2] || []);
@@ -165,6 +176,11 @@ class Insight {
             timeConstraints['6pm to 9pm'] = [].concat(hourConstraints[18] || []).concat(hourConstraints[19] || []).concat(hourConstraints[20] || []);
             timeConstraints['9pm to 12am'] = [].concat(hourConstraints[21] || []).concat(hourConstraints[22] || []).concat(hourConstraints[23] || []);
 
+            console.log(timeConstraints['12am to 3am']);
+            
+            console.log(timeConstraints['12pm to 3pm'])
+
+            console.log('trace 6');
             // now do an intersection of every permutation
             let intersectionTimeShop = [];
             let intersectionTimeDay = [];
@@ -173,18 +189,21 @@ class Insight {
             let timeKeys = Object.keys(timeConstraints);
             let dateKeys = Object.keys(dateConstraints);
             let shopKeys = Object.keys(shopConstraints);
+            console.log('trace 7');
 
             // remove duplicate users
             for (let a = 0; a < timeKeys.length; a++) {
                 timeConstraints[timeKeys[a]] = Insight.unique_fast(timeConstraints[timeKeys[a]]);
             }
+            console.log('trace 8');
             for (let a = 0; a < dateKeys.length; a++) {
                 dateConstraints[dateKeys[a]] = Insight.unique_fast(dateConstraints[dateKeys[a]]);
             }
+            console.log('trace 9');
             for (let a = 0; a < shopKeys.length; a++) {
                 shopConstraints[shopKeys[a]] = Insight.unique_fast(shopConstraints[shopKeys[a]]);
             }
-            console.log('trace ', 4, 'a');
+            console.log('trace 10');
 
             async.parallel([
                 (cb) => {
@@ -204,6 +223,7 @@ class Insight {
                             }
                         }
                     }
+            console.log('trace 11');
 
                     cb();
                 },
@@ -243,6 +263,7 @@ class Insight {
                         }
                     }
                     cb();
+            console.log('trace 12');
                 }
             ], (err, results) => {
                 let intersections = [];
@@ -262,6 +283,13 @@ class Insight {
                         
                         arr = timeShop.data.filter((n) => dayShop.data.includes(n));
                         if (arr.length > 0) {
+                            if (timeShop.shop === 'Library' && dayShop.shop === 'Library') {
+                                console.log(dayShop.shop);
+                                console.log(dayShop.date);
+                                console.log(timeShop.shop);
+                                console.log(timeShop.time);
+                            }
+                            
                             if (timeShop.shop === dayShop.shop) {
                                 intersections.push({
                                     'shop': timeShop.shop,
@@ -281,6 +309,7 @@ class Insight {
                         }
                     }
                 }
+            console.log('trace 13');
                 
                 //intersections = intersections.concat(intersectionTimeShop).concat(intersectionDayShop);
                 intersections.sort((a, b) => {
@@ -292,6 +321,7 @@ class Insight {
                         return 0;
                     }
                 })
+            console.log('trace 14');
                 
                 let insights = intersections;
                 /*{

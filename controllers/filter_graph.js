@@ -170,9 +170,7 @@ router.get('/', authenticate, (req, res, next) => {
                 var groupedTransactions = {};
                 
                 groupedTransactions = Transaction.sortTransactionsForDaysOfTheWeek(diffAndDates[0], diffAndDates[1], diffAndDates[2], startTime, endTime, daysChosen, data);
-
-                console.log(groupedTransactions);
-
+                console.log(JSON.stringify(groupedTransactions));
                 Outlet.getNames(db, (err, outletNames) => {
                     if (err) return;
 
@@ -186,14 +184,13 @@ router.get('/', authenticate, (req, res, next) => {
                     }
 
                     var keys = Object.keys(groupedTransactions);
-                    for (var i = 0; i < (keys.length/daysChosen.length); i++) {
-                        var label = 'Week '+parseInt(i+1);
+                    for (var i = 0; i < keys.length; i+=daysChosen.length) {
                         for(let j=0; j<daysChosen.length; j++) {
                             var number = ((groupedTransactions)[keys[i+j]] / 100).toFixed(2);
                             numbers[j].push(number);
                         }
-                        labels.push(label);
                     }
+                    labels = setDataLabels(keys,daysChosen,diffAndDates[1]);
                     for(let j=0; j<daysChosen.length; j++) {
                         datasets.push(createDataset(Day.getDayName(daysChosen[j]), numbers[j], j));
                     }
@@ -213,10 +210,37 @@ router.get('/', authenticate, (req, res, next) => {
     }
 });
 
+function setDataLabels(keys, daysChosen, startDate) {
+    let labels = [];
+    let temp = [];
+    temp = startDate.toDateString().split(" ");
+    let label = temp[1]+' '+temp[2]+' '+temp[3];
+    startDate.setDate(startDate.getDate()+6);
+    temp = startDate.toDateString().split(" ");
+    label = label +' - '+ temp[1]+' '+temp[2]+' '+temp[3];
+    labels.push(label);
+    for (var i = daysChosen.length; i < keys.length; i+=daysChosen.length) {
+        startDate.setDate(startDate.getDate() + 1);
+        temp = startDate.toDateString().split(" ");
+        let label = temp[1]+' '+temp[2]+' '+temp[3];
+        startDate.setDate(startDate.getDate()+6);
+        temp = startDate.toDateString().split(" ");
+        label = label+' - '+temp[1]+' '+temp[2]+' '+temp[3];
+        labels.push(label);
+    }
+    return labels;
+}
+
 function createDataset(key, dataArray, index) {
     var dataset = {};
     dataset.label = key; //location name
-    dataset.backgroundColor = getUniqueColor(index);
+    
+    if (index === undefined || index === null)
+    {
+        dataset.backgroundColor = 'rgba(255, 103, 199, 0.85)';
+    }else{
+        dataset.backgroundColor = getUniqueColor(index);
+    }
 
     dataset.borderColor = 'rgba(0, 0, 0, 1)';
     dataset.borderWidth = 0;
