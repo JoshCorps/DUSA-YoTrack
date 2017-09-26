@@ -9,10 +9,12 @@ block content
 		script(src='https://cdn.rawgit.com/fgelinas/timepicker/master/jquery.ui.timepicker.js')
 		link(rel='stylesheet', href='https://cdn.rawgit.com/fgelinas/timepicker/master/jquery.ui.timepicker.css')
 		link(rel='stylesheet', href='//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css')
+		script(src='https://cdn.rawgit.com/lkfnn/jquery-hunterTimePicker/master/js/jquery-timepicker.js')
+		link(rel='stylesheet', href='https://cdn.rawgit.com/lkfnn/jquery-hunterTimePicker/master/css/timePicker.css')
+			
+		script(src='https://cdn.rawgit.com/vitalets/combodate/master/src/combodate.js')
+		script(src='https://cdn.rawgit.com/moment/moment/develop/min/moment.min.js')
 
-
-
-		
 		script.
 			$( function() {
 				$("#startDate").datepicker({
@@ -213,23 +215,25 @@ block content
 					div(class="flex justify-content-space-between")
 						div(class="six columns")
 							label(for="startDate") Start Time
-							input#startTime(name='startTime', class="u-full-width", type='text', value='00:00',autocomplete='off', readonly="true")
+							input#startTime(type='text', data-format='HH:mm', data-template='HH : mm', name='startTime', value='00:00')
+
 						div(class="six columns")
 							label(for="endDate") End Time
-							input#endTime(name='endTime', class="u-full-width", type='text', value='00:00', autocomplete='off', readonly="true")
+							input#endTime(type='text', data-format='HH:mm', data-template='HH : mm', name='endTime', value='00:00')
 					
 					script.
-						$('.startTime').timepicker({
 						
+						$(function(){
+						$('#startTime').combodate({
+						firstItem: 'none',
+						minuteStep: 5,
 						});
-						
-						$('#startTime').clockpicker({
-							autoclose: true,
-							default: "00:00"
 						});
-						$('#endTime').clockpicker({
-							autoclose: true,
-							default: "00:00"
+						$(function(){
+						$('#endTime').combodate({
+						firstItem: 'none',
+						minuteStep: 5,
+						});
 						});
 						
 					br

@@ -2,7 +2,7 @@ extend page
 block content
     div(class="block")
         h1 Upload History
-        if (uploads.length != 0)
+        if (uploads.length > 0)
             div(class="flex justify-content-space-between")
                 div(class="four columns")
                     p  
@@ -15,6 +15,7 @@ block content
                         strong Delete?
             
             form(action="/upload_history" method="post")
+                - uploads = uploads.sort((a, b) => { return (a.date < b.date); });
                 - for (var i = 0; i < uploads.length; i++)
                     - var upload = uploads[i]
                     //-
@@ -24,12 +25,16 @@ block content
                     
                     div(class="flex justify-content-space-between")
                         div(class="four columns")
-                            p= upload.date.toDateString()
+                            <span style="display:inline-block">
+                                label(for=upload._id style='font-weight: 400')
+                                    | #{upload.date.toDateString()}
                         div(class="six columns")
-                            p= upload.startDate.toDateString() + ' - ' + upload.endDate.toDateString()
+                            <span style="display:inline-block">
+                                label(for=upload._id style='font-weight: 400')
+                                    | #{upload.startDate.toDateString() + ' - ' + upload.endDate.toDateString()}
                         div(class="two columns")
-                            input(type='checkbox', name='uploads', data-inline='true', value=upload._id)
-            
+                            input(type='checkbox', name='uploads', data-inline='true', value=upload._id, id=upload._id)
+                    br
                 input(type='submit', value='Delete selected uploads')
             
         else

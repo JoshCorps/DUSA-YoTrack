@@ -17,16 +17,15 @@ describe('changePermission()', () => {
         user.setPassword("password", false);
         User.create(db, user, (err, data) => {
             if (err) return;
-            console.log(data)
+            done();
         });
-        done();
     });
     
     after((done) => {
         User.deleteUsersByEmails(db, ["changePermission@test.com"], (err) => {
             if(err) return;
+            done();
         });
-        done();
     });
     
     
@@ -35,11 +34,11 @@ describe('changePermission()', () => {
         User.changePermission(db, user, (err, data) => {
             if(err) return;
             User.getUserByEmail(db, "changePermission@test.com", (err, callback) => {
-               if(err) return;
-               expect(callback.accountType).equal("master");
+                if(err) return;
+                expect(callback.accountType).equal("master");
+                done();
             });
         });
-        done();
-    });
+    }).timeout(4000);
     
 });

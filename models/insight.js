@@ -39,15 +39,15 @@ class Insight {
             console.log('trace 15');
             
             // take the top 20%, middle 5% and bottom 5%;
-            let topPull = 20;
+            let topPull = 4;
             let topIndex = ~~((count / 100) * topPull);
             
-            let middlePull = 10;
+            let middlePull = 2;
             let halfCount = ~~(count / 2);
             let halfAmount = ~~((count / 100) * (middlePull / 2));
             let middleIndex = halfCount - halfAmount;
             
-            let bottomPull = 5;
+            let bottomPull = 1;
             let bottomIndex = count - ~~((count / 100) * bottomPull)
             
             let top = data.slice(0, topIndex);
@@ -69,7 +69,7 @@ class Insight {
                 if (item.shop) {
                     topDetails.push(`<strong>${item.shop}</strong> is popular on ${item.date} at ${item.time}; there are ${item.data.length} recurring customers.`);
                 } else {
-                    topDetails.push(`There is an overlap of ${item.data.length} customers that visit <strong>${item.shopDate}</strong> on ${item.date} and <strong>${item.shopTime}</strong> at ${item.time}`);
+                    topDetails.push(`There is a significant overlap of ${item.data.length} customers that visit <strong>${item.shopDate}</strong> on ${item.date} and <strong>${item.shopTime}</strong> at ${item.time}. An advertising campaign given the context of the two locations would potentially have large outreach. `);
                 }
             }
             
@@ -80,7 +80,7 @@ class Insight {
                 if (item.shop) {
                     middleDetails.push(`<strong>${item.shop}</strong> performs averagely on ${item.date} at ${item.time}; there are ${item.data.length} recurring customers.`);
                 } else {
-                    middleDetails.push(`There is an overlap of ${item.data.length} customers that visit <strong>${item.shopDate}</strong> on ${item.date} and <strong>${item.shopTime}</strong> at ${item.time}`);
+                    middleDetails.push(`There is a small but notable overlap of ${item.data.length} customers that visit <strong>${item.shopDate}</strong> on ${item.date} and <strong>${item.shopTime}</strong> at ${item.time} which could be the focus of a targeted advertising campaign.`);
                 }
             }
             
@@ -89,7 +89,7 @@ class Insight {
                 
                 if (item.shop) {
                     if (item.time) {
-                        bottomDetails.push(`<strong>${item.shop}</strong> is unpopular on ${item.date} at ${item.time}.`);
+                        bottomDetails.push(`<strong>${item.shop}</strong> is unpopular on ${item.date} at ${item.time}. A small but non-zero number of purchases were made by ${item.data.length} customer(s). Operations can be optimised by dedicating less resources to this location at this time period.`);
                     }
                 } else {
                     bottomDetails.push(`Customers that make a purchase at <strong>${item.shopDate}</strong> on ${item.date} tend to not make a purchase at <strong>${item.shopTime}</strong>`);
@@ -152,7 +152,6 @@ class Insight {
             console.log('trace 4');
 
             let dateNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-            let times = [];
 
             for (var i = 0; i < data.length; i++) {
                 let transaction = data[i];
@@ -164,14 +163,10 @@ class Insight {
                 hourConstraints = push(hourConstraints, time, user);
                 dateConstraints = push(dateConstraints, date, user);
                 shopConstraints = push(shopConstraints, shop, user);
-                
-                if (shop === 'Library') {
-                    times.push(data[i].dateTime);
-                }
             }
-            console.log(JSON.stringify(times));
+            
             console.log('trace 5');
-
+            
             // before continuing, merge hours into groups of 3 hours
             timeConstraints['12am to 3am'] = [].concat(hourConstraints[0] || []).concat(hourConstraints[1] || []).concat(hourConstraints[2] || []);
             timeConstraints['3am to 6am'] = [].concat(hourConstraints[3] || []).concat(hourConstraints[4] || []).concat(hourConstraints[5] || []);
@@ -278,7 +273,7 @@ class Insight {
                     }
                     
                     for (let e = 0; e < intersectionDayShop.length; e++) {
-                        let dayShop = intersectionDayShop[i];
+                        let dayShop = intersectionDayShop[e];
                         if (!dayShop) {
                             continue;
                         }

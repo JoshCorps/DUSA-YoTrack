@@ -120,6 +120,7 @@ function insertTransactions(transactions) {
                 var promise = new Promise(function (resolve, reject) {
                     var upload = new Upload();
                     upload.date = new Date();
+                    console.log(upload.date);
                     upload.startDate = startDate;
                     upload.endDate = endDate;
                     upload.transactionIDs = transactionIDs;
@@ -150,6 +151,7 @@ function insertTransactions(transactions) {
                 
                 var upload = new Upload();
                 upload.date = new Date();
+                console.log(upload.date);
                 upload.startDate = startDate;
                 upload.endDate = endDate;
                 upload.transactionIDs = transactionIDs;
@@ -299,16 +301,20 @@ function convertExcelToTransactions(filename, extractionDetails, workbookNumber,
                 return;
             }
             else {
-                checkForDuplicates(transactions[0], req);
-                
-                if (transactions.length > 20000) {
-                    req.flash("success", "The data has been successfully uploaded. Since your dataset is large, please allow some time for the server to process the data.");
-                }
-                else {
-                    req.flash("success", "The data has been successfully uploaded.");
-                }
-                //res.redirect('/');
-                callback(transactions);
+                checkForDuplicates(transactions[0], req, (err, action) => {
+                    if (action) {
+                        req.flash("error", "A spreadsheet you recently uploaded contains transactions that coincide with the dates in another upload. If the sheet has been uploaded erroneously, you can undo the upload from the Upload History page.");
+                    }
+                    
+                    if (transactions.length > 20000) {
+                        req.flash("success", "The data has been successfully uploaded. Since your dataset is large, please allow some time for the server to process the data.");
+                    }
+                    else {
+                        req.flash("success", "The data has been successfully uploaded.");
+                    }
+                    //res.redirect('/');
+                    callback(transactions);
+                });
             }
         });
 
@@ -328,21 +334,26 @@ function formatDate(str) {
     return date;
 }
 
-function checkForDuplicates(transaction, req)
+function checkForDuplicates(transaction, req, cb)
 {
     var startDate = transaction.dateTime;
-    var endDate = instadate.addMinute(transaction.dateTime, 1);
+    var endDate = instadate.addMinutes(transaction.dateTime, 1);
     Transaction.getTransactionsByDateRange(db, startDate, endDate, function(err, data){
         if (err)
         {
             console.log("Error retrieving data");
+            cb(err);
         }
         else {
             if (data !== null && data !== undefined)
             {
                 //we found another transaction around the same time that was already uploaded.
                 //WARN the user.
-                req.flash("A spreadsheet you recently uploaded contains transactions that coincide with the dates in another upload. If the sheet has been uploaded erroneously, you can undo the upload from the Upload History page.");
+                console.log("Possible duplicate upload found.");
+                //console.log(req);
+                cb(null, true);
+            } else {
+                cb(null, false);
             }
         }
     });

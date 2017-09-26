@@ -13,7 +13,7 @@ let Day = require('../models/day.js');
 
 router.get('/', authenticate, (req, res, next) => {
     
-    console.log("processing filter request");
+    //console.log("processing filter request");
     var temp = req.query.startDate.split("-");
     var startDate = new Date(temp[2], temp[1] - 1, temp[0]);
     temp = req.query.endDate.split("-");
@@ -29,7 +29,6 @@ router.get('/', authenticate, (req, res, next) => {
     }
     
     var venues = req.query.venues;
-    console.log("venues: " + JSON.stringify(venues))
     
     var formType = req.query.formType;
     
@@ -123,7 +122,7 @@ router.get('/', authenticate, (req, res, next) => {
             
         } else if (formType == "granular")
         {
-            
+            //console.log("startTime: " + req.query.startTime)
             var temp = req.query.startTime.split(":");
             var startTime = Transaction.getTimeInFourDigits(temp[0], temp[1]);
             
@@ -163,7 +162,7 @@ router.get('/', authenticate, (req, res, next) => {
                 var groupedTransactions = {};
                 
                 groupedTransactions = Transaction.sortTransactionsForDaysOfTheWeek(diffAndDates[0], diffAndDates[1], diffAndDates[2], startTime, endTime, daysChosen, data);
-                console.log(JSON.stringify(groupedTransactions));
+                //console.log(JSON.stringify(groupedTransactions));
                 Outlet.getNames(db, (err, outletNames) => {
                     if (err) return;
 
@@ -197,7 +196,7 @@ router.get('/', authenticate, (req, res, next) => {
     
     
     } else {
-        console.log("Invalid parameters for graph.");
+        //console.log("Invalid parameters for graph.");
         req.flash("Cannot create graph - missing/invalid parameters.");
         res.redirect("/");
     }

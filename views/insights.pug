@@ -50,6 +50,7 @@ block content
             - if (insight.top.length === 0 && insight.middle.length === 0 && insight.bottom.length === 0)
                 p No insight data could be generated. There is not enough data within the date ranges you have given.
             - else
+                p Insights are a way to observe the performance of every outlet and figure out where there may be trends and patterns within an aggregate scope of all customers within the given time range. While Insights are a useful tool for figuring where more/less resources can be allocated and where a targeted advertising campaign would be effective, they do not provide context by themselves and should be used to aid in analysis of an outlet.
                 - for (let i = 0; i < insight.top.length; i++)
                     - let item = insight.top[i];
                     p(style="color: #27ae60")

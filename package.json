@@ -13,7 +13,7 @@
     "passport": "latest",
     "morgan": "latest",
     "body-parser": "latest",
-    "minify": "latest",
+    "express-minify": "latest",
     "compression": "latest",
     "express-session": "latest",
     "connect-mongo": "latest",

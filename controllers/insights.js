@@ -38,7 +38,7 @@ router.post('/', authenticate, (request, response, next) => {
     var startDate = start.split("-");
     var endDate = end.split("-");
     
-    console.log(request.body);
+    //console.log(request.body);
     
     response.redirect(`/insights/${startDate[2]}/${startDate[1]}/${startDate[0]}/${endDate[2]}/${endDate[1]}/${endDate[0]}`);
 });

@@ -3,27 +3,31 @@ var expect = chai.expect;
 let Outlet = require('../models/outlet.js');
 let db = require('../models/db.js')();
 
-describe('outletTest', () => {
-    it('getNames()', (done) => {
-        Outlet.getNames(db, (err, data) => 
+describe('outletTest', function() {
+    
+    it('getNames()', function(done) {
+        Outlet.getNames(db, function(err, data) 
         {
             if(err) return;
             expect(data).to.not.be.null;
-        });
-        done();
-    });
-    
-    it('getRefs()', () => {
-        Outlet.getRefs(db, (err, data) => {
-            if(err) return;
-            expect(data).to.not.be.null;
+            done();
         });
     });
     
-    it('getOutlet()', () => {
-       Outlet.getOutlet(db, "Library", (err, data) =>{
+    it('getRefs()', function(done) {
+        Outlet.getRefs(db, function(err, data) {
             if(err) return;
             expect(data).to.not.be.null;
+            done();
+        });
+    });
+    
+    it('getOutlet()', function(done) {
+       Outlet.getOutlet(db, "Library", function(err, data) {
+            if(err) return;
+            expect(data).to.not.be.null;
+            done();
        });
     });
-})
+
+});

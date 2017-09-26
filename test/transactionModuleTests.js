@@ -5,11 +5,11 @@ var Upload = require('../models/upload.js');
 var Transaction = require('../models/transaction.js');
 let db = require('../models/db.js')();
 
-describe('TransactionModule', () => {
+describe('TransactionModule', function() {
     var trans1, trans2, trans3, trans4, trans5, trans6, trans7, trans8;
     var date1, date2, date3, date4, date5, date6;
     
-    before(() => {
+    before(function(done) {
         date1 = new Date(2016, 7, 23);
         date2 = new Date(2016, 7, 28);
         date3 = new Date(2016, 8, 2);
@@ -48,9 +48,10 @@ describe('TransactionModule', () => {
         trans8 = new Transaction();
         trans8.totalAmount = 25;
         trans8.dateTime = date6;
+        done();
     });
 
-    it('groupTransactionsByDay() should return total amount spend each day for specified date range', () => {
+    it('groupTransactionsByDay() should return total amount spend each day for specified date range', function(done) {
         
         var transactions = [trans1, trans2, trans3, trans4];
         var nod, startDate, endDate;
@@ -63,9 +64,10 @@ describe('TransactionModule', () => {
         
         expect(Object.keys(groupedTransactions).length).to.equal(11);
         expect(groupedTransactions[Object.keys(groupedTransactions)[10]]).to.equal(45);
+        done();
     });
 
-    it('groupTransactionsByWeek() should return total amount spend each day for specified date range', () => {
+    it('groupTransactionsByWeek() should return total amount spend each day for specified date range', function(done) {
         var transactions = [trans1, trans2, trans3, trans4];
         var now, startDate, endDate;
         now = 2;
@@ -79,9 +81,10 @@ describe('TransactionModule', () => {
         
         expect(Object.keys(groupedTransactions).length).to.equal(2);
         expect(groupedTransactions[Object.keys(groupedTransactions)[0]]).to.equal(25);
+        done();
     });
 
-    it('groupTransactionsByMonth() should return total amount spend each day for specified date range', () => {
+    it('groupTransactionsByMonth() should return total amount spend each day for specified date range', function(done) {
         var transactions = [trans1, trans2, trans3, trans4, trans5, trans6, trans7, trans8];
         var nom, startDate, endDate;
         nom = 4;
@@ -93,9 +96,10 @@ describe('TransactionModule', () => {
         
         expect(Object.keys(groupedTransactions).length).to.equal(4);
         expect(groupedTransactions[Object.keys(groupedTransactions)[3]]).to.equal(50);
+        done();
     });
 
-    it('sortTransactionsForDaysOfTheWeek() should return total amount spend each selected day of the week for specified date range', () => {
+    it('sortTransactionsForDaysOfTheWeek() should return total amount spend each selected day of the week for specified date range', function(done) {
         var transactions = [trans1, trans2, trans3, trans4, trans5, trans6, trans7, trans8];
         var now, startDate, endDate;
         var daysOfTheWeek = [1, 2]; // 0 for Monday, 1 for Tuesday
@@ -110,6 +114,7 @@ describe('TransactionModule', () => {
         
         expect(Object.keys(groupedTransactions).length).to.equal(26);
         expect(Object.keys(groupedTransactions2).length).to.equal(13);
+        done();
     });
   
 });

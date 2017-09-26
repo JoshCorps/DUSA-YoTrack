@@ -21,7 +21,7 @@ describe('deleteUsersByEmails()', () => {
         User.deleteUsersByEmails(db, ['deleteByEmail@test.com'], (err, data) => {
             expect(err, "Error: " + err).to.be.null;
             expect(data.n, "Number of rows deleted should be 1").equal(1);
+            done();
         });
-        done();
-    });
+    }).timeout(4000);
 })

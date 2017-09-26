@@ -3,9 +3,9 @@ var expect = chai.expect;
 var User = require('../../models/user.js');
 let db = require('../../models/db.js')();
 
-describe('changePassword', () => {
+describe('changePassword', function() {
     var user;
-    before((done) => {
+    before(function(done) {
         user = new User({
             'firstName': "test",
             'lastName': "test",
@@ -14,28 +14,28 @@ describe('changePassword', () => {
             'isApproved': true
         }); 
         user.setPassword("password", false);
-        User.create(db, user, (err, data) => {
+        User.create(db, user, function(err, data) {
             console.log("data " + data)
             if (err) return;
+            done();
         });
-        done();
     });
     
-    after((done) => {
-        User.deleteUsersByEmails(db, ["changePassword@test.com"], (err) => {
+    after(function(done) {
+        User.deleteUsersByEmails(db, ["changePassword@test.com"], function(err) {
             if(err) return;
+            done();
         });
-        done();
     });
     
-    it('changePassword() should change the password of changePassword@test.com', (done) => {
+    it('changePassword() should change the password of changePassword@test.com', function(done) {
         user.setPassword("changedPassword", false);
-        user.update(db,user, (err, user) => 
+        user.update(db,user, function(err, user) 
         {
             expect(err).equal(null);
+            // expect(user.checkPassword("password")).equal(false);
+            // expect(user.checkPassword("changedPassword")).equal(true);
+            done();
         });
-        expect(user.checkPassword("password")).equal(false);
-        expect(user.checkPassword("changedPassword")).equal(true);
-        done();
     });
 })

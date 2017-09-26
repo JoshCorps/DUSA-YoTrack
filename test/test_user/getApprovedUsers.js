@@ -30,9 +30,10 @@ describe('GetApprovedUsersTests', () => {
        
     });
     
-    after(() => {
+    after((done) => {
         User.deleteUsersByEmails(db, ["approvedUser@test.com", "unapprovedUser@test.com"], (err) => {
             if(err) return;
+            done();
         });
     });
     
@@ -47,7 +48,7 @@ describe('GetApprovedUsersTests', () => {
                 expect(emails).to.not.include('unapprovedUser@test.com');
                 done();
         });
-    });
+    }).timeout(5000);
     
     it("getApprovedUsers() with parameter 'false' should return unapproved users", (done) => {
         User.getApprovedUsers(db, false, (err, unapprovedUsers) => {
@@ -55,11 +56,10 @@ describe('GetApprovedUsersTests', () => {
             let emails = [];
             for(let i=0; i<unapprovedUsers.length; i++) {
                 emails.push(unapprovedUsers[i].email);
-                console.log('Pushin email: '+unapprovedUsers[i].email);
             }
             expect(emails).to.be.an('array').that.includes('unapprovedUser@test.com');
             expect(emails).to.not.include('approvedUser@test.com');
             done();
         });
-    });
+    }).timeout(5000);
 })

@@ -12,14 +12,16 @@ class Day {
         this.hours = [];
     }
     
-    static getDayName(dayNumber){
+    static getDayName(dayNumber, canThrow){
       var dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
       if (dayNumber >= 0 && dayNumber <= 6)
       {
         return dayNames[dayNumber];
       }
       console.log("Cannot find dayName for dayNumber: " + dayNumber);
-      throw new Error("DayNumber out of bounds");
+      
+      if (canThrow)
+        throw new Error("DayNumber out of bounds");
       return "Unknown Day";
     }
     
@@ -208,7 +210,7 @@ class Day {
           //console.log("dataPoint", dataPoint);
           if (dataPoint.count > 0)
           {
-            console.log("t3", dataPoint);
+            //console.log("t3", dataPoint);
             heatmapData.data.push(dataPoint);
           }
         }

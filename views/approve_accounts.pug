@@ -27,11 +27,15 @@ block content
                                 option(value='intermediate') Intermediate
                                 option(value='basic' selected=true) Basic
                         div(class="two columns")
-                            input(type='radio', checked, name='users['+i+'][isApproved]' value='true')
-                            | Approve
+                            span(style='display:inline-block')
+                                label(style='font-weight: 400')
+                                    input(type='radio', checked, name='users['+i+'][isApproved]' value='true')
+                                    | Approve
                         div(class="two columns")
-                            input(type='radio', checked, name='users['+i+'][isApproved]' value='false')
-                            | Decline
+                            span(style='display:inline-block')
+                                label(style='font-weight: 400')
+                                    input(type='radio', checked, name='users['+i+'][isApproved]' value='false')
+                                    | Decline
                     input(type="hidden", name='users['+i+'][email]', value=account.email)
             
                 input(type='submit', value='Approve/Decline Accounts')
