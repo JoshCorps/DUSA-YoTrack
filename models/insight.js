@@ -152,6 +152,7 @@ class Insight {
             console.log('trace 4');
 
             let dateNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            let times = [];
 
             for (var i = 0; i < data.length; i++) {
                 let transaction = data[i];
@@ -163,7 +164,12 @@ class Insight {
                 hourConstraints = push(hourConstraints, time, user);
                 dateConstraints = push(dateConstraints, date, user);
                 shopConstraints = push(shopConstraints, shop, user);
+                
+                if (shop === 'Library') {
+                    times.push(data[i].dateTime);
+                }
             }
+            console.log(JSON.stringify(times));
             console.log('trace 5');
 
             // before continuing, merge hours into groups of 3 hours

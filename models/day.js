@@ -19,6 +19,7 @@ class Day {
         return dayNames[dayNumber];
       }
       console.log("Cannot find dayName for dayNumber: " + dayNumber);
+      throw new Error("DayNumber out of bounds");
       return "Unknown Day";
     }
     
@@ -43,7 +44,6 @@ class Day {
     });
   }
     
-    
     static getDayTransactionTotals(db, year, month, day, callback) {
       Day.getDay(db, year, month, day, (err, data) => {
         if (err) {
@@ -67,6 +67,8 @@ class Day {
       });
   }
   
+  // returns difference in days between two dates and the given startDate and endDate
+  // reformatted to start at 6 am the given day and ending 6am day after the last day
   static getDifferenceInDays(startDate, endDate) {
     var diffAndDates = [];
     startDate.setHours(startHour, 0, 0);
@@ -78,6 +80,8 @@ class Day {
     return diffAndDates;
   }
   
+  // returns difference in months between two dates and the given startDate and endDate
+  // reformatted to start from the beginning of the startDate month to the end of endData month
   static getDifferenceInMonths(startDate, endDate) {
     var startMonth, endMonth, diff, startYear, endYear;
     var diffAndDates = [];
@@ -98,12 +102,15 @@ class Day {
     return diffAndDates;
   }
   
+  // returns difference in weeks between two dates and the given startDate and endDate
+  // reformatted to start from Monday of first week and end at Sunday of the last week
   static getDifferenceInWeeks(startDate, endDate) {
     var dayDiff, diff, offset1, offset2;
     var diffAndDates = [];
     offset1 = startDate.getDay();
     offset2 = endDate.getDay();
     
+    // change date indexing so that Monday is moved to index 0 and Sunday to 6
     if (offset1 == 0) {
       offset1 = 7;
     }
@@ -117,13 +124,15 @@ class Day {
     endDate.setDate(endDate.getDate() + (6-offset2));
     
     dayDiff = Day.getDifferenceInDays(startDate, endDate)[0];
+    // divide the difference by 7 to get weekly difference
+    // dayDiff should always be divisible by 7 because of the previous formatting of dates
     diff = dayDiff/7;
-    
     diffAndDates = [diff, startDate, endDate];
-    
     return diffAndDates;
   }
   
+  // returns difference in years between two dates and the given startDate and endDate
+  // reformatted to start from beginning of first year and ending at the end of the last year
   static getDifferenceInYears(startDate, endDate) {
     var diff, startYear, endYear;
     var diffAndDates = [];

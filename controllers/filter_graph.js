@@ -19,12 +19,6 @@ router.get('/', authenticate, (req, res, next) => {
     temp = req.query.endDate.split("-");
     var endDate = new Date(temp[2], temp[1] - 1, temp[0]);
     
-    console.log("startDate = " + startDate);
-    console.log("endDate = " + endDate);
-    
-    //startDate.setMonth(startDate.getMonth()+1);
-    //endDate.setMonth(endDate.getMonth()+1);
-    
     var groupBy = req.query.groupBy;
     if (groupBy !== undefined && groupBy !== null) groupBy = groupBy.toLowerCase();
     var chartType = req.query.chartType;
@@ -46,6 +40,7 @@ router.get('/', authenticate, (req, res, next) => {
             var diffAndDates;
             var query;
 
+            // get an array containing the difference between given dates and the right startDate and endDate
             switch (groupBy) {
                 case 'daily':
                     diffAndDates = Day.getDifferenceInDays(startDate, endDate);
@@ -102,8 +97,6 @@ router.get('/', authenticate, (req, res, next) => {
                         groupedTransactions = {};
                         break;
                 }
-
-                console.log(groupedTransactions);
 
                 Outlet.getNames(db, (err, outletNames) => {
                     if (err) return;
@@ -205,8 +198,8 @@ router.get('/', authenticate, (req, res, next) => {
     
     } else {
         console.log("Invalid parameters for graph.");
-        res.redirect("/");
         req.flash("Cannot create graph - missing/invalid parameters.");
+        res.redirect("/");
     }
 });
 

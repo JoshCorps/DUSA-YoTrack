@@ -15,6 +15,7 @@ describe('changePassword', () => {
         }); 
         user.setPassword("password", false);
         User.create(db, user, (err, data) => {
+            console.log("data " + data)
             if (err) return;
         });
         done();

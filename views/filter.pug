@@ -2,11 +2,15 @@ extend page
 block content
 
 	div(class="block")
-		link(rel='stylesheet', href='//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css')
 		link(rel='stylesheet', href='https://cdn.rawgit.com/weareoutman/clockpicker/gh-pages/dist/jquery-clockpicker.min.css')
 		script(src='https://code.jquery.com/jquery-1.12.4.js')
 		script(src='https://code.jquery.com/ui/1.12.1/jquery-ui.js')
 		script(src='https://cdn.rawgit.com/weareoutman/clockpicker/gh-pages/dist/jquery-clockpicker.min.js')
+		script(src='https://cdn.rawgit.com/fgelinas/timepicker/master/jquery.ui.timepicker.js')
+		link(rel='stylesheet', href='https://cdn.rawgit.com/fgelinas/timepicker/master/jquery.ui.timepicker.css')
+		link(rel='stylesheet', href='//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css')
+
+
 
 		
 		script.
@@ -92,10 +96,10 @@ block content
 					div(class="flex justify-content-space-between")
 						div(class="six columns")
 							label(for="startDate") Start Date
-							input#startDate(type='text', class="u-full-width", name='startDate', autocomplete='off') 
+							input#startDate(type='text', class="u-full-width", name='startDate', autocomplete='off', readonly="true") 
 						div(class="six columns")
 							label(for="endDate") End Date
-							input#endDate(type='text', class="u-full-width", name='endDate', autocomplete='off')
+							input#endDate(type='text', class="u-full-width", name='endDate', autocomplete='off', readonly="true")
 					
 					br
 					
@@ -104,17 +108,21 @@ block content
 					
 					div(class="flex justify-content-space-between")
 						div(class="three columns")
-							input(type='radio', name='groupBy', value='Daily', checked)
-							|  Daily  
+							label(style='font-weight: 400')
+								input(type='radio', name='groupBy', value='Daily', checked)
+								|  Daily  
 						div(class="three columns")
-							input(type='radio', name='groupBy', value='Weekly')
-							|  Weekly  
+							label(style='font-weight: 400')
+								input(type='radio', name='groupBy', value='Weekly')
+								|  Weekly  
 						div(class="three columns")
-							input(type='radio', name='groupBy', value='Monthly')
-							|  Monthly 
+							label(style='font-weight: 400')
+								input(type='radio', name='groupBy', value='Monthly')
+								|  Monthly 
 						div(class="three columns")
-							input(type='radio', name='groupBy', value='Yearly')
-							|  Yearly 
+							label(style='font-weight: 400')
+								input(type='radio', name='groupBy', value='Yearly')
+								|  Yearly 
 							
 					br
 					
@@ -133,8 +141,9 @@ block content
 						label Venues
 					
 					div(class="flex")
-						input#checkall(type='checkbox', name='checkall', onclick='check_uncheck_checkbox(this.checked);') 
-						| Toggle All Venues
+						label(style='font-weight: 400')
+							input#checkall(type='checkbox', name='checkall', onclick='check_uncheck_checkbox(this.checked);') 
+							| Toggle All Venues
 					
 					-for (var i = 0; i < outletNames.length; i++)
 						if (i % 4 === 0)
@@ -143,8 +152,9 @@ block content
 								-for (var e = i; e < i + 4; e++) 
 									- if (outletNames[e])
 										div(class="three columns")
-											input(type='checkbox', name='venues', value=outletNames[e])
-											|  #{outletNames[e]}
+											label(style='font-weight: 400')
+												input(type='checkbox', name='venues', value=outletNames[e])
+												|  #{outletNames[e]}
 					
 					br 
 					input(type="hidden", name="formType", value="aggregate")
@@ -155,10 +165,10 @@ block content
 					div(class="flex justify-content-space-between")
 						div(class="six columns")
 							label(for="startDate") Start Date
-							input#startDate2(type='text', class="u-full-width", name='startDate', autocomplete='off') 
+							input#startDate2(type='text', class="u-full-width", name='startDate', autocomplete='off', readonly="true") 
 						div(class="six columns")
 							label(for="endDate") End Date
-							input#endDate2(type='text', class="u-full-width", name='endDate', autocomplete='off')
+							input#endDate2(type='text', class="u-full-width", name='endDate', autocomplete='off', readonly="true")
 					
 					br
 					
@@ -167,41 +177,52 @@ block content
 					
 					div(class="flex justify-content-space-between")
 						div(class="three columns")
-							input(type="checkbox", name="days", value="1")
-							|  Monday
+							label(style='font-weight: 400')
+								input(type="checkbox", name="days", value="1")
+								|  Monday
 						div(class="three columns")
-							input(type="checkbox", name="days", value="2")
-							|  Tuesday
+							label(style='font-weight: 400')
+								input(type="checkbox", name="days", value="2")
+								|  Tuesday
 						div(class="three columns")
-							input(type="checkbox", name="days", value="3")
-							|  Wednesday
+							label(style='font-weight: 400')
+								input(type="checkbox", name="days", value="3")
+								|  Wednesday
 						div(class="three columns")
-							input(type="checkbox", name="days", value="4")
-							|  Thursday
+							label(style='font-weight: 400')
+								input(type="checkbox", name="days", value="4")
+								|  Thursday
 							
 					br
 					div(class="flex justify-content-space-between")
 						div(class="three columns")
-							input(type="checkbox", name="days", value="5")
-							|  Friday
+							label(style='font-weight: 400')
+								input(type="checkbox", name="days", value="5")
+								|  Friday
 						div(class="three columns")
-							input(type="checkbox", name="days", value="6")
-							|  Saturday
+							label(style='font-weight: 400')
+								input(type="checkbox", name="days", value="6")
+								|  Saturday
 						div(class="three columns")
-							input(type="checkbox", name="days", value="7")
-							|  Sunday
+							label(style='font-weight: 400')
+								input(type="checkbox", name="days", value="7")
+								|  Sunday
 						div(class="three columns")
 							
 					br
 					div(class="flex justify-content-space-between")
 						div(class="six columns")
 							label(for="startDate") Start Time
-							input#startTime(name='startTime', class="u-full-width", type='text', value='00:00', autocomplete='off')
+							input#startTime(name='startTime', class="u-full-width", type='text', value='00:00',autocomplete='off', readonly="true")
 						div(class="six columns")
 							label(for="endDate") End Time
-							input#endTime(name='endTime', class="u-full-width", type='text', value='00:00', autocomplete='off')
+							input#endTime(name='endTime', class="u-full-width", type='text', value='00:00', autocomplete='off', readonly="true")
 					
 					script.
+						$('.startTime').timepicker({
+						
+						});
+						
 						$('#startTime').clockpicker({
 							autoclose: true,
 							default: "00:00"
@@ -211,28 +232,40 @@ block content
 							default: "00:00"
 						});
 						
-					p()
+					br
 					
-					button(type="button", onclick='toggleAdvanced("advancedDiv2")') Show advanced options
-					#advancedDiv2(style="display:none;")
-						| Chart Type   
-						select(name="chartType")
-							option(value="bar") Bar
-							option(value="line") Line
-						br
-						#divCheckAll
-							input#checkall(type='checkbox', name='checkall', onclick='check_uncheck_checkbox(this.checked);')
-							| Toggle All Venues
-						#divCheckboxList
-							br
-							- for (var i = 0, j = 0; i < outletNames.length; i++,j++)
-								- if (j % 3 === 0 && j !== 0)
-									br
-								input(type='checkbox', name='venues', value=outletNames[i])
-								|  #{outletNames[i]}  
-								
+					div(class="flex")
+						label Chart Type
 						
-					p()
+					div(class="flex")
+						div(class="six columns")
+							select(name="chartType", class="u-full-width")
+								option(value="bar") Bar
+								option(value="line") Line
+					
+					br
+					
+					div(class="flex")
+						label Venues
+					
+					div(class="flex")
+						label(style='font-weight: 400')
+							input#checkall(type='checkbox', name='checkall', onclick='check_uncheck_checkbox(this.checked);') 
+							| Toggle All Venues
+					
+					-for (var i = 0; i < outletNames.length; i++)
+						if (i % 4 === 0)
+							br
+							div(class="flex")
+								-for (var e = i; e < i + 4; e++) 
+									- if (outletNames[e])
+										div(class="three columns")
+											label(style='font-weight: 400')
+												input(type='checkbox', name='venues', value=outletNames[e])
+												|  #{outletNames[e]}
+					
+					br 
+					
 					input(type="hidden", name="formType", value="granular")
 					input(type="submit", value="Filter Data", class="button-primary")
 					

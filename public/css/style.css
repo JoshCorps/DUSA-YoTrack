@@ -240,6 +240,7 @@ main article {
     box-shadow: 1px 1px 2px rgba(195, 195, 195, 0.8);
     border-radius: 5px;
     border: 1px solid rgba(195, 195, 195, 0.8);
+    color: black;
 }
 
 .block h1 {
@@ -247,6 +248,10 @@ main article {
     letter-spacing: 1px;
     font-weight: 700;
     margin-bottom: 0.5em;
+}
+
+.block p {
+    line-height: 1.5;
 }
 
 .greet {
@@ -342,7 +347,6 @@ main article {
     line-height: 2em;
     text-shadow: 0 0 1px rgba(0, 0, 0, 0.8);
     font-weight: 700;
-    color: #fff;
 }
 
 .calendar .no-day {
@@ -359,6 +363,10 @@ main article {
     background: #333;
     border: 1px solid #333;
     color: #fff;
+}
+
+.calendar-footer {
+    color: black;
 }
 
 .right-gap {

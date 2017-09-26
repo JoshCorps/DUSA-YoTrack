@@ -7,6 +7,7 @@ let authenticate = require('./index').authenticate;
 //const uuidv1 = require('uuid/v1');
 var XLSX = require('xlsx-extract').XLSX;
 var Promise = require('promise');
+var instadate = require('instadate');
 
 //models
 let db = require('../models/db.js')();
@@ -173,7 +174,7 @@ function afterFinalUploadCreated() {
     console.log("Final upload created.");
 }
 
-
+//holds details (such as a fieldName and a formatting strategy, in the form of a function) with which to analyse each column
 class columnExtractionDetails {
     constructor(fieldName, title, formatFunc){
         this.fieldName = fieldName;
@@ -298,6 +299,8 @@ function convertExcelToTransactions(filename, extractionDetails, workbookNumber,
                 return;
             }
             else {
+                checkForDuplicates(transactions[0]);
+                
                 if (transactions.length > 20000) {
                     req.flash("success", "The data has been successfully uploaded. Since your dataset is large, please allow some time for the server to process the data.");
                 }
@@ -323,6 +326,26 @@ function formatDate(str) {
     //format in spreadsheets: dd/MM/yyyy hh:mm
     var date = moment(str, "DD/MM/yyyy hh:mm").toDate();
     return date;
+}
+
+function checkForDuplicates(transaction)
+{
+    var startDate = transaction.dateTime;
+    var endDate = instadate.addMinute(transaction.dateTime, 1);
+    Transaction.getTransactionsByDateRange(db, startDate, endDate, function(err, data){
+        if (err)
+        {
+            console.log("Error retrieving data");
+        }
+        else {
+            if (data !== null && data !== undefined)
+            {
+                //we found another transaction around the same time that was already uploaded.
+                //WARN the user.
+                req.flash("A spreadsheet you recently uploaded contains transactions for a time period that already has transactions. If the sheet has been uploaded erroneously, you can undo the upload from the Upload History page.");
+            }
+        }
+    });
 }
 
 function removeElementsWithUndefinedProperties(objects) {

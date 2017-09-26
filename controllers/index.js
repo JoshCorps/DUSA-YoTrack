@@ -60,7 +60,7 @@ router.use((req, res, next) => {
         return next();
     }
     
-    User.getUnapprovedUsers(db, (err, users) => {
+    User.getApprovedUsers(db, false, (err, users) => {
         if (err) {
             return next();
         }

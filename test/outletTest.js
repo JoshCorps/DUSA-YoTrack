@@ -7,10 +7,23 @@ describe('outletTest', () => {
     it('getNames()', (done) => {
         Outlet.getNames(db, (err, data) => 
         {
-            console.log("****************" + err);
             if(err) return;
             expect(data).to.not.be.null;
-        })
+        });
         done();
+    });
+    
+    it('getRefs()', () => {
+        Outlet.getRefs(db, (err, data) => {
+            if(err) return;
+            expect(data).to.not.be.null;
+        });
+    });
+    
+    it('getOutlet()', () => {
+       Outlet.getOutlet(db, "Library", (err, data) =>{
+            if(err) return;
+            expect(data).to.not.be.null;
+       });
     });
 })

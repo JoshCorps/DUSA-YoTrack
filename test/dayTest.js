@@ -14,6 +14,30 @@ describe('Day Module test', () => {
         done();
    });
    
+    it('getDayName() should return the correct day name for each dayNumber', () => {
+       var num = 0;
+        expect(Day.getDayName(num)).to.equal("Sunday");
+        num = 1;
+        expect(Day.getDayName(num)).to.equal("Monday");
+        num = 2;
+        expect(Day.getDayName(num)).to.equal("Tuesday");
+        num = 3;
+        expect(Day.getDayName(num)).to.equal("Wednesday");
+        num = 4;
+        expect(Day.getDayName(num)).to.equal("Thursday");
+        num = 5;
+        expect(Day.getDayName(num)).to.equal("Friday");
+        num = 6;
+        expect(Day.getDayName(num)).to.equal("Saturday");
+   });
+   
+    it('getDayName() should throw an error for invalid dayNumber values', () => {
+       var num = -1; //below lower limit
+        expect(Day.getDayName.bind(Day, num)).to.throw("DayNumber out of bounds");
+        num = 7; //above upper limit
+        expect(Day.getDayName.bind(Day, num)).to.throw("DayNumber out of bounds");
+   });
+   
    it('getDifferenceInDays() should return difference from 6am to 6am of given dates', () => {
        var startDate, endDate, diff;
        startDate = new Date(2016, 1, 18);

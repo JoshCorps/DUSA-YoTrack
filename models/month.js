@@ -35,6 +35,7 @@ class Month {
     });
   }
   
+  // return an object containing dates as keys and color codes based on the total revenue or that date
   static getColorsForDays(days) {
       let total = 0;
       let nullDays = 0;
@@ -75,20 +76,11 @@ class Month {
       let days = {};
       for (let i = 0; i < keys.length; i++) {
         let index = keys[i].split('-')[2];
-        console.log('Key '+i+': '+keys[i]);
         days[index] = data[keys[i]];
       }
       
       callback(err, days);
     });
-  }
-
-  static getMonthName(monthNumber, callback) {
-    var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    if (monthNumber >= 0 && monthNumber <= 11) {
-      callback(null, monthNames[monthNumber]);
-    }
-    callback("Error: monthNumber not in range.");
   }
 
 }

@@ -42,7 +42,7 @@ app.use(session({
 	resave: true,
 	rolling: true,
 	saveUninitialized: false,
-	cookie: { maxAge: 1000 * 60 * 60 * 24 },
+	cookie: { maxAge: 1000 * 60 * 60 * 2 },
 	store: new MongoStore({ url: 'mongodb://root:password@ds133054.mlab.com:33054/industrial-project?maxPoolSize=100' })
 })); 
 app.use(passport.initialize());

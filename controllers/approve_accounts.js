@@ -8,7 +8,7 @@ let authenticate = require('./index').authenticate;
 
 router.get('/', authenticate, (req, res, next) => {
     req.flash();
-    User.getUnapprovedUsers(db, (err, users) => {
+    User.getApprovedUsers(db, false, (err, users) => {
       if(err) {
           // handle error somehow
       }
@@ -28,6 +28,7 @@ router.post('/', authenticate, (req, res, next) => {
     var approved = [];
     var declined = [];
     var users = Array.prototype.slice.call(req.body.users);
+    
     for(let i=0; i<users.length; i++) {
         if (users[i].isApproved == 'true') {
             approved.push(users[i]);

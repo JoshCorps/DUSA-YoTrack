@@ -109,16 +109,19 @@ class Transaction {
         });
     }
     
+    // returns a groupedTransactions object with the totals of each day summed under a key
     static groupTransactionsByDay(numberOfDays, startDate, endDate, transactions) {
         var groupedTransactions = {};
         var key, d;
         
+        // create keys
         for (let j=0; j<numberOfDays; j++) {
             d = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + j);
             key = d.toDateString();
             groupedTransactions[key] = 0;
         }
         
+        // add data to keys
         for (let i=0; i<transactions.length; i++) {
             d = new Date(transactions[i].dateTime.getFullYear(), transactions[i].dateTime.getMonth(), transactions[i].dateTime.getDate());
             key = d.toDateString();
@@ -128,10 +131,12 @@ class Transaction {
         return groupedTransactions;
     }
     
+    // returns a groupedTransactions object with the totals of each week summed under a key
     static groupTransactionsByWeek(numberOfWeeks, startDate, endDate, transactions) {
         var groupedTransactions = {};
         var key, d;
         
+        // create keys
         for (let j=0; j<numberOfWeeks; j++) {
             d = new Date(startDate.getFullYear(), startDate.getMonth(), (startDate.getDate() + j * 7));
             key = "w/c " + d.toDateString();
@@ -139,6 +144,7 @@ class Transaction {
             groupedTransactions[key] = 0;
         }
         
+        // add data to keys
         for (let i=0; i<transactions.length; i++) {
             var day = transactions[i].dateTime.getDay();
             if(day == 0) {
@@ -153,16 +159,19 @@ class Transaction {
         return groupedTransactions;
     }
     
+    // returns a groupedTransactions object with the totals of each month summed under a key
     static groupTransactionsByMonth(numberOfMonths, startDate, endDate, transactions) {
         var groupedTransactions = {};
         var key, d;
         
+        // create keys
         for (let j=0; j<numberOfMonths; j++) {
             d = new Date(startDate.getFullYear(), (startDate.getMonth()+j), 1);
             key = Transaction.getMonthNameString(d.getMonth()) + " " + d.getFullYear();
             groupedTransactions[key] = 0;
         }
         
+        // add data to keys
         for (let i=0; i<transactions.length; i++) {
             d = new Date(transactions[i].dateTime.getFullYear(), transactions[i].dateTime.getMonth(), 1);
             key = Transaction.getMonthNameString(d.getMonth()) + " " + d.getFullYear();
@@ -172,6 +181,7 @@ class Transaction {
         return groupedTransactions;
     }
     
+    // returns a groupedTransactions object with the totals of each year summed under a key
     static groupTransactionsByYear(numberOfYears, startDate, endDate, transactions) {
         var groupedTransactions = {};
         var key;
@@ -194,10 +204,12 @@ class Transaction {
         var sortedTransactions = {};
         var key, d;
         
+        // set all days of the week to integers to be able to compare them later
         for (let j=0; j<daysOfWeek.length; j++) {
             daysOfWeek[j] = parseInt(daysOfWeek[j]);
         }
         
+        // create keys to the sortedTransactions object for all the possible days
         for (let j=0; j<numberOfWeeks; j++) {
             for(let n=0; n<daysOfWeek.length; n++) {
                 var addToDay = j*7 + parseInt(daysOfWeek[n] - 1, 10);
@@ -213,18 +225,20 @@ class Transaction {
             }
         }
         
-        console.log('Starttime: '+startTime+' EndTime: '+endTime);
-        
         for (let i=0; i<transactions.length; i++) {
             var keyDate = new Date(transactions[i].dateTime.getFullYear(), transactions[i].dateTime.getMonth(), transactions[i].dateTime.getDate(), (transactions[i].dateTime.getHours() - 6));
+            // move index so that Sunday is 7 (and Monday still starts at 1)
             var day = keyDate.getDay();
             if (day == 0) {
                 day = 7;
             }
+            
+            // check if index of the fay of the transactions is in the array of required days
             if(daysOfWeek.indexOf(day) != -1) {
                 var transactionTime = Transaction.getTimeInFourDigits(transactions[i].dateTime.getHours(), transactions[i].dateTime.getMinutes());
                 var add = false;
                 
+                // check the given time constraints
                 if ((endTime == 0) && (startTime == 0)) {
                      add = true;
                  } else {
@@ -238,6 +252,8 @@ class Transaction {
                         }
                     }
                  }
+                 // add transaction to the key if it is withing the specified time
+                 // keys are previously created and the key made from transaction date should match one of them
                  if (add == true) {
                     d = new Date(transactions[i].dateTime.getFullYear(), transactions[i].dateTime.getMonth(), transactions[i].dateTime.getDate(), (transactions[i].dateTime.getHours() - 6));
                     key = d.toDateString();
@@ -249,10 +265,9 @@ class Transaction {
         return sortedTransactions;
     }
     
+    // returns time as an integer between 0 and 2300
     static getTimeInFourDigits(hours, minutes) {
         let time = '0000';
-        //console.log('Minutes: '+minutes);
-        //console.log('Hours: '+hours);
         time = hours;
         if (minutes == 0) {
             time = time + '00';

@@ -10,7 +10,7 @@ let User = require('../models/user.js');
 
 router.get('/', authenticate, (req, res, next) => {
     req.flash();
-    User.getApprovedUsers(db, (err, users) => {
+    User.getApprovedUsers(db, true, (err, users) => {
        if (err)
        {
            //handle err ****

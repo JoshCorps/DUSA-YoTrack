@@ -1,7 +1,7 @@
 {
   "name": "industrial-project",
   "version": "1.0.0",
-  "description": ",-----.,--.                  ,--. ,---.   ,--.,------.  ,------.     '  .--./|  | ,---. ,--.,--. ,-|  || o   \\  |  ||  .-.  \\ |  .---'     |  |    |  || .-. ||  ||  |' .-. |`..'  |  |  ||  |  \\  :|  `--,      '  '--'\\|  |' '-' ''  ''  '\\ `-' | .'  /   |  ||  '--'  /|  `---.      `-----'`--' `---'  `----'  `---'  `--'    `--'`-------' `------'     -----------------------------------------------------------------",
+  "description": "",
   "main": "app.js",
   "dependencies": {
     "chart.js": "^2.7.0",
@@ -9,7 +9,23 @@
     "express-fileupload": "^0.2.0",
     "file-type": "^6.1.0",
     "moment": "^2.18.1",
-    "nodemailer": "^4.1.0"
+    "nodemailer": "^4.1.0",
+    "passport": "latest",
+    "morgan": "latest",
+    "body-parser": "latest",
+    "minify": "latest",
+    "compression": "latest",
+    "express-session": "latest",
+    "connect-mongo": "latest",
+    "cookie-parser": "latest",
+    "passport-local": "latest",
+    "async-lock": "latest",
+    "excel": "latest",
+    "xlsx-extract": "latest",
+    "instadate": "latest",
+    "mongojs": "latest",
+    "sha512": "latest",
+    "random-id": "latest"
   },
   "devDependencies": {
     "chai": "^4.1.2"

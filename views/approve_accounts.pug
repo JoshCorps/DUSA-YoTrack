@@ -3,19 +3,35 @@ block content
 
     div(class="block")
         if  (accounts.length != 0)
+            div(class="flex justify-content-space-between")
+                div(class="four columns")
+                    p  
+                        strong Email Address
+                div(class="four columns")
+                    p
+                        strong Account Type
+                div(class="four columns")
+                    p
+                        strong Action
             
             form(action="/approve_accounts" method="post")
                 - for (var i = 0; i < accounts.length; i++)
                     - var account = accounts[i]
-                    li= account.email
-                    select(name='users['+i+'][accountType]')
-                        option(value='master') Master
-                        option(value='intermediate') Intermediate
-                        option(value='basic' selected=true) Basic
-                    input(type='radio', checked, name='users['+i+'][isApproved]' value='true')
-                    | Approve
-                    input(type='radio', checked, name='users['+i+'][isApproved]' value='false')
-                    | Decline
+                    
+                    div(class="flex justify-content-space-between")
+                        div(class="four columns")
+                            p= account.email
+                        div(class="four columns")
+                            select(name='users['+i+'][accountType]')
+                                option(value='master') Master
+                                option(value='intermediate') Intermediate
+                                option(value='basic' selected=true) Basic
+                        div(class="two columns")
+                            input(type='radio', checked, name='users['+i+'][isApproved]' value='true')
+                            | Approve
+                        div(class="two columns")
+                            input(type='radio', checked, name='users['+i+'][isApproved]' value='false')
+                            | Decline
                     input(type="hidden", name='users['+i+'][email]', value=account.email)
             
                 input(type='submit', value='Approve/Decline Accounts')

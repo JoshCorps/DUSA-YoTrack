@@ -63,4 +63,11 @@ block content
 				saveAs(blob, $.urlParam('startDate') + "_" + $.urlParam('endDate') + 
 					"_" + $.urlParam('groupBy') + "_" + $.urlParam('chartType') + ".png");
 			});
-		});		
+		});
+		
+		$('#export2').click(function() {
+			canvas.toBlob(function(blob) {
+				saveAs(blob, $.urlParam('startDate') + "_" + $.urlParam('endDate') + 
+					"_" + $.urlParam('groupBy') + "_" + $.urlParam('chartType') + ".png");
+			});
+		});
