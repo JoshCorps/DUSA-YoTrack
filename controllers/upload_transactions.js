@@ -299,7 +299,7 @@ function convertExcelToTransactions(filename, extractionDetails, workbookNumber,
                 return;
             }
             else {
-                checkForDuplicates(transactions[0]);
+                checkForDuplicates(transactions[0], req);
                 
                 if (transactions.length > 20000) {
                     req.flash("success", "The data has been successfully uploaded. Since your dataset is large, please allow some time for the server to process the data.");
