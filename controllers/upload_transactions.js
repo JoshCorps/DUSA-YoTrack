@@ -328,7 +328,7 @@ function formatDate(str) {
     return date;
 }
 
-function checkForDuplicates(transaction)
+function checkForDuplicates(transaction, req)
 {
     var startDate = transaction.dateTime;
     var endDate = instadate.addMinute(transaction.dateTime, 1);
@@ -342,7 +342,7 @@ function checkForDuplicates(transaction)
             {
                 //we found another transaction around the same time that was already uploaded.
                 //WARN the user.
-                req.flash("A spreadsheet you recently uploaded contains transactions for a time period that already has transactions. If the sheet has been uploaded erroneously, you can undo the upload from the Upload History page.");
+                req.flash("A spreadsheet you recently uploaded contains transactions that coincide with the dates in another upload. If the sheet has been uploaded erroneously, you can undo the upload from the Upload History page.");
             }
         }
     });
