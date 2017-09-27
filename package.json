@@ -27,7 +27,8 @@
     "sha512": "latest",
     "random-id": "latest",
     "promise": "latest",
-    "async": "latest"
+    "async": "latest",
+    "pug": "latest"
   },
   "devDependencies": {
     "chai": "^4.1.2"
