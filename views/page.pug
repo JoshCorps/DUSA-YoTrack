@@ -106,6 +106,14 @@ html(lang="en", dir="ltr")
                                     strong= message
                                 a(onclick="$('#flash-error-" + index + "').fadeOut();")
                                     i(class="fa fa-times", aria-hidden="true")
+                    if (messages.warning)
+                        for message, index in messages.warning
+                            div(class="flash warning", id="flash-warning-" + index)
+                                i(class="fa fa-lightbulb-o", aria-hidden="true")
+                                p
+                                    strong= message
+                                a(onclick="$('#flash-warning-" + index + "').fadeOut();")
+                                    i(class="fa fa-times", aria-hidden="true")
                     if (messages.success)
                         for message, index in messages.success
                             div(class="flash success", id="flash-success-" + index)

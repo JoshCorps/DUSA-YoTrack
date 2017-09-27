@@ -73,8 +73,8 @@ router.post('/', authenticate, (req, res, next) => {
         workbookNumber = 0;
     }
 
-    req.flash('success', 'Your file was uploaded and is now being processed. Please allow some time for the data to be processed.');
-    res.redirect('/');
+    //req.flash('success', 'Your file was uploaded and is now being processed. Please allow some time for the data to be processed.');
+    //res.redirect('/');
     
     console.log("workbookNumber: " + workbookNumber);
 
@@ -303,17 +303,19 @@ function convertExcelToTransactions(filename, extractionDetails, workbookNumber,
             else {
                 checkForDuplicates(transactions[0], req, (err, action) => {
                     if (action) {
-                        req.flash("error", "A spreadsheet you recently uploaded contains transactions that coincide with the dates in another upload. If the sheet has been uploaded erroneously, you can undo the upload from the Upload History page.");
+                        req.flash("warning", "A spreadsheet you recently uploaded contains transactions that coincide with the dates in another upload. If the sheet has been uploaded erroneously, you can undo the upload from the Upload History page.");
                     }
-                    
-                    if (transactions.length > 20000) {
-                        req.flash("success", "The data has been successfully uploaded. Since your dataset is large, please allow some time for the server to process the data.");
+                    else 
+                    {
+                        if (transactions.length > 20000) {
+                            req.flash("success", "The data has been successfully uploaded. Since your dataset is large, please allow some time for the server to process the data.");
+                        }
+                        else {
+                            req.flash("success", "The data has been successfully uploaded. Please allow a few seconds for it to be processed.");
+                        }
                     }
-                    else {
-                        req.flash("success", "The data has been successfully uploaded.");
-                    }
-                    //res.redirect('/');
-                    callback(transactions);
+                        res.redirect('/');
+                        callback(transactions);
                 });
             }
         });
