@@ -15,10 +15,6 @@ router.get('/', authenticate, (req, res, next) => {
     
     req.flash();
     Upload.getAllUploads(db, (err, data) => {
-        data.sort((a, b) => {
-            console.log('a: ', a.date, ', b: ', b.date);
-            return (a.date < b.date);
-        });
         if(err) {
             // handle error
         }

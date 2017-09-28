@@ -23,13 +23,13 @@ class Upload {
     }
     
     static getAllUploads(db, callback) {
-        db.uploads.find((err, data) => {
+        db.uploads.find().sort({date: -1}).toArray((err, data) => {
            if (err) {
                callback(err, null);
                return;
            }
            callback(null, data);
-        }).sort({date: -1});
+        });
     }
     
     static deleteUploads(db, upload_ids, callback) {
