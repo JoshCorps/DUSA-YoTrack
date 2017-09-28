@@ -8,6 +8,7 @@ let authenticate = require('./index').authenticate;
 var XLSX = require('xlsx-extract').XLSX;
 var Promise = require('promise');
 var instadate = require('instadate');
+let authenticateByPermission = require('./index').authenticateByPermission;
 
 //models
 let db = require('../models/db.js')();
@@ -16,11 +17,18 @@ let Upload = require('../models/upload');
 let moment = require('moment');
 
 router.get('/', authenticate, (request, response, next) => {
+    if (!authenticateByPermission(request, 'master')) {
+        return response.redirect('/');   
+    }
+    
     request.flash();
     response.render('upload_transactions');
 });
 
 router.post('/', authenticate, (req, res, next) => {
+    if (!authenticateByPermission(req, 'master')) {
+        return res.redirect('/');   
+    }
     
     let fileUpload = require('express-fileupload');
     
@@ -39,7 +47,7 @@ router.post('/', authenticate, (req, res, next) => {
     console.log("File size: " + fileSizeInMB);
 
     /*
-    //mimetype check
+    //mimetype check - not necessary thanks to the excel parser notifying us of errors if anything is wrong
     if (spreadsheet.mimetype === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
         req.flash("The file is not in .xlsx format. Please ensure your file is properly.");
         res.redirect("/");
@@ -166,13 +174,8 @@ function afterUploadCreated(err)
     if (err) {console.log("Error processing batch."); return;}
 }
 
-function seqFactory(newTrans) {
-    return function() {
-        insertTransactions(newTrans);
-    }
-}
-
-function afterFinalUploadCreated() {
+function afterFinalUploadCreated(err) {
+    if (err) {console.log("Error processing final batch."); return;}
     console.log("Final upload created.");
 }
 
@@ -193,9 +196,8 @@ function convertExcelToTransactions(filename, extractionDetails, workbookNumber,
     var rowIndex = -1;
     var detailsFound = false;
     var titleScanLimit = 20; //we must encounter the title within this number of rows from the start
-
     var transactions = [];
-    //
+    
     new XLSX().extract(filename, { sheet_id: workbookNumber }) // or sheet_name or sheet_nr 
         .on('sheet', function(sheet) {
             //nothing
@@ -228,16 +230,6 @@ function convertExcelToTransactions(filename, extractionDetails, workbookNumber,
                     }
                 }
 
-
-                /*
-                if (!detailsFound && rowIndex > titleScanLimit)
-                {
-                    res.flash("Could not find transaction data in the uploaded file.");
-                    res.redirect("/");
-                    return;
-                }
-                */
-
             }
             else { //if details have already been found
                 for (var i = 0; i < row.length; i++) {
@@ -267,7 +259,6 @@ function convertExcelToTransactions(filename, extractionDetails, workbookNumber,
                             //add the object
                             (transactions[transactions.length - 1])[details.fieldName] = value;
                         }
-
                     }
 
 
@@ -283,8 +274,6 @@ function convertExcelToTransactions(filename, extractionDetails, workbookNumber,
                     }
                 }
             }
-
-
         })
         .on('cell', function(cell) {
             //console.log('cell', cell); //cell is a value or null 
@@ -303,7 +292,9 @@ function convertExcelToTransactions(filename, extractionDetails, workbookNumber,
             else {
                 checkForDuplicates(transactions[0], req, (err, action) => {
                     if (action) {
-                        req.flash("warning", "A spreadsheet you recently uploaded contains transactions that coincide with the dates in another upload. If the sheet has been uploaded erroneously, you can undo the upload from the Upload History page.");
+                        req.flash("warning", "The spreadsheet you recently uploaded contains transactions that coincide with the dates in another upload. If the sheet has been uploaded by mistake, you can undo the upload from the Upload History page.");
+                        console.log("date clash");
+                        res.redirect('/');
                     }
                     else 
                     {
@@ -313,8 +304,9 @@ function convertExcelToTransactions(filename, extractionDetails, workbookNumber,
                         else {
                             req.flash("success", "The data has been successfully uploaded. Please allow a few seconds for it to be processed.");
                         }
-                    }
+                        console.log("no date clash");
                         res.redirect('/');
+                    }
                         callback(transactions);
                 });
             }
@@ -347,10 +339,11 @@ function checkForDuplicates(transaction, req, cb)
             cb(err);
         }
         else {
-            if (data !== null && data !== undefined)
+            if (data !== null && data !== undefined && Object.keys(data).length !== 0)
             {
                 //we found another transaction around the same time that was already uploaded.
                 //WARN the user.
+                console.log ("Clashing data", data)
                 console.log("Possible duplicate upload found.");
                 //console.log(req);
                 cb(null, true);

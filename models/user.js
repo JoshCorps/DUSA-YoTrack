@@ -52,6 +52,10 @@ class User {
     return (this.accountType == 'master');
   }
   
+  isIntermediateAccount() {
+    return (this.accountType == 'intermediate');
+  }
+  
   static create(db, data, callback) {
     let user;
     if (data instanceof User) {

@@ -181,43 +181,44 @@ block content
 				
 			}
 	
-	div(class="block")
-		div(id="map-canvas", style="height:500px;")
+	//-
+		div(class="block")
+			div(id="map-canvas", style="height:500px;")
 		
 	//-
 		button(id="heatmapToggle", type="button", "onclick"="showHeatmap()", style="margin:0 auto; display:block;")= "Hide Activity Heatmap"
 		
-	script.
-		window.onload=function() {
-		var mapOptions = {
-			zoom: 16,
-			center: new google.maps.LatLng(56.4577377,-2.9810413),
-			mapTypeId: google.maps.MapTypeId.MAP
+		script.
+			window.onload=function() {
+			var mapOptions = {
+				zoom: 16,
+				center: new google.maps.LatLng(56.4577377,-2.9810413),
+				mapTypeId: google.maps.MapTypeId.MAP
+				};
+				
+			map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+			
+			heatmap = new HeatmapOverlay(map, 
+			  {
+				"radius": 0.0006,
+				"maxOpacity": 1, 
+				"scaleRadius": true, 
+				"useLocalExtrema": true,
+				latField: 'lat',
+				lngField: 'lng',
+				valueField: 'count'
+			  }
+			);
+			
+			var heatmapData = !{JSON.stringify(heatmapData)};
+			
+			var testData = {
+				max: 8, 
+				data: [{lat:56.4577377, lng:-2.9810413, count: 7}, {lat:56.4578377, lng:-2.9610413, count: 3}] 
 			};
 			
-		map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-		
-		heatmap = new HeatmapOverlay(map, 
-		  {
-			"radius": 0.0006,
-			"maxOpacity": 1, 
-			"scaleRadius": true, 
-			"useLocalExtrema": true,
-			latField: 'lat',
-			lngField: 'lng',
-			valueField: 'count'
-		  }
-		);
-		
-		var heatmapData = !{JSON.stringify(heatmapData)};
-		
-		var testData = {
-			max: 8, 
-			data: [{lat:56.4577377, lng:-2.9810413, count: 7}, {lat:56.4578377, lng:-2.9610413, count: 3}] 
-		};
-		
-		heatmap.setData(heatmapData);
-		
-		};
+			heatmap.setData(heatmapData);
+			
+			};
 		
 		

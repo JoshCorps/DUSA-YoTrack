@@ -2,23 +2,45 @@ extend page
 block content
     - var accountTypes = ["master", "intermediate", "basic"]
     div(class="block")
+        h1 Manage Accounts
         if (accounts.length > 0)
+            div(class="flex justify-content-space-between")
+                    div(class="four columns")
+                        p  
+                            strong Email Address
+                    div(class="four columns")
+                        p
+                            strong Account Type
+                    div(class="four columns")
+                        p
+                            strong Action
+                
             form(action="/manage_accounts" method="post")
                 - for (var i = 0; i < accounts.length; i++)
                     - var account = accounts[i]
-                    li= account.email
-                    select(name='users['+i+'][accountType]')
-                        - for (var j = 0; j < accountTypes.length; j++)
-                            - if (accountTypes[j] === account.accountType)
-                                option(value=accountTypes[j] selected=true) #{accountTypes[j]}
-                            - else 
-                                option(value=accountTypes[j]) #{accountTypes[j]}
-                    |   Change Permission   
-                    input(type='radio', name='users['+i+'][option]' value='changePermission')
-                    |   Delete   
-                    input(type='radio', name='users['+i+'][option]', value='delete')
+                    
+                    div(class="flex justify-content-space-between")
+                        div(class="four columns")
+                            p= account.email
+                        div(class="four columns")
+                            select(name='users['+i+'][accountType]', class="u-full-width")
+                                - for (var j = 0; j < accountTypes.length; j++)
+                                    - if (accountTypes[j] === account.accountType)
+                                        option(value=accountTypes[j] selected=true) #{accountTypes[j]}
+                                    - else 
+                                        option(value=accountTypes[j]) #{accountTypes[j]}
+                        div(class="two columns")
+                            span(style='display:inline-block')
+                                label(style='font-weight: 400')
+                                    |   Change Permission   
+                                    input(type='radio', name='users['+i+'][option]' value='changePermission')
+                        div(class="two columns")
+                            span(style='display:inline-block')
+                                label(style='font-weight: 400')
+                                    |   Delete   
+                                    input(type='radio', name='users['+i+'][option]', value='delete')
                     input(type="hidden", name='users['+i+'][email]', value=account.email)
-                input(type='submit', value='Approve/Decline Accounts')
+                input(type='submit', value='Edit/Delete accounts')
             
         else
             p No accounts to approve

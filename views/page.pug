@@ -62,29 +62,32 @@ html(lang="en", dir="ltr")
                                 p
                                     i(class="fa fa-sun-o", aria-hidden="true")
                                     span Daily View
-                        li 
-                            a(href="/filter")
-                                p
-                                    i(class="fa fa-search", aria-hidden="true")
-                                    span Filter
-                        if (user.isMasterAccount())
+                        if (user.isMasterAccount() || user.isIntermediateAccount())
+                            li 
+                                a(href="/filter")
+                                    p
+                                        i(class="fa fa-search", aria-hidden="true")
+                                        span Filter
+                        if (user.isMasterAccount() || user.isIntermediateAccount())
                             li 
                                 a(href="/insights")
                                     p
                                         i(class="fa fa-rocket", aria-hidden="true")
                                         span Insights
-                                        
+                        if (user.isMasterAccount())
                             li 
                                 a(href="/upload_transactions")
                                     p
                                         i(class="fa fa-upload", aria-hidden="true")
                                         span Upload Data
+                        if (user.isMasterAccount())
                                         
                             li 
                                 a(href="/upload_history")
                                     p
                                         i(class="fa fa-history", aria-hidden="true")
                                         span Upload History
+                        if (user.isMasterAccount())
                                         
                             li 
                                 a(href="/approve_accounts")
@@ -93,7 +96,13 @@ html(lang="en", dir="ltr")
                                             span(class="notification")= totalUnapprovedUsers
                                         i(class="fa fa-thumbs-o-up", aria-hidden="true")
                                         span Account Approval
-                
+                        if (user.isMasterAccount())
+                            li 
+                                a(href="/manage_accounts")
+                                    p
+                                        i(class="fa fa-users", aria-hidden="true")
+                                        span Manage Accounts
+                                        
                 block sidebar
                 
             article

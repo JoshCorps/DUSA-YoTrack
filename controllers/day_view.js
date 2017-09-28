@@ -27,9 +27,9 @@ router.get('/:year/:month/:day', authenticate, (request, response, next) => {
     var outlets = [];
 
     Day.getDay(db, year, month, day, (err, data) => {
-        //if (err) console.log("Could not get days.");
+        if (err) console.log("Could not get days.");
         Outlet.getNames(db, (err, outlets) => {
-            //if (err) { console.log("Could not get outlet names."); }
+            if (err) { console.log("Could not get outlet names."); }
             
             var startHour = 6; //TODO: Make the same as Month - passing month.startHour doesn't work.
             
@@ -43,7 +43,6 @@ router.get('/:year/:month/:day', authenticate, (request, response, next) => {
 					hourText = (""+hourText)+":00"
 					hourLabels.push(hourText)
 				}
-				
 			}
 			
     		var allTotals = {};
@@ -67,7 +66,6 @@ router.get('/:year/:month/:day', authenticate, (request, response, next) => {
 			//heatmap data
 			Day.getHeatmap(db, outlets, data, true, function(err, heatmapData){
 			    if (err) {console.log("Error getting heatmap."); }
-			    else {
 			        
 			     response.render('day_view', {
                     'data': data,
@@ -81,8 +79,6 @@ router.get('/:year/:month/:day', authenticate, (request, response, next) => {
                     'heatmapData' : heatmapData,
                     'startHour' : startHour 
                 });
-			        
-			    }
 			});
 			
 

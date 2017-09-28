@@ -3,12 +3,17 @@
 let express = require('express');
 let router = express.Router();
 let authenticate = require('./index').authenticate;
+let authenticateByPermission = require('./index').authenticateByPermission;
 
 //models
 let db = require('../models/db.js')();
 let User = require('../models/user.js');
 
 router.get('/', authenticate, (req, res, next) => {
+    if (!authenticateByPermission(req, 'master')) {
+        return res.redirect('/');   
+    }
+    
     req.flash();
     User.getApprovedUsers(db, true, (err, users) => {
        if (err)
@@ -34,6 +39,10 @@ router.get('/', authenticate, (req, res, next) => {
 });
 
 router.post('/', authenticate, (req, res, next) => {
+    if (!authenticateByPermission(req, 'master')) {
+        return res.redirect('/');   
+    }
+    
     var changePerms = [];
     var deleted = [];
     var users = Array.prototype.slice.call(req.body.users);

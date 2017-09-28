@@ -22,6 +22,28 @@ let authenticate = (req, res, next) => {
 };
 module.exports.authenticate = authenticate;
 
+let authenticateByPermission = (req, requiredPermission) => {
+    let auth = false;
+    if (requiredPermission === 'master') {
+        auth = (req.user.accountType === 'master');
+    } else if (requiredPermission === 'intermediate') {
+        auth = (req.user.accountType === 'master' || req.user.accountType === 'intermediate');
+    } else if (requiredPermission === 'basic') {
+        auth = (requiredPermission === 'master' || requiredPermission === 'intermediate' || requiredPermission === 'basic');
+    } else {
+        // invalid permission specified, deny by default
+        auth = false;
+    }
+    
+    if (!auth) {
+        req.flash('error', 'You are not permitted to view this page.');
+    }
+    
+    return auth;
+}
+
+module.exports.authenticateByPermission = authenticateByPermission;
+
 // set locals before doing anything
 router.use((req, res, next) => {
     if (req.user) {

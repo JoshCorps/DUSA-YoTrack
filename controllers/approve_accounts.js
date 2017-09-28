@@ -5,8 +5,13 @@ let router = express.Router();
 let User = require('../models/user.js');
 let db = require('../models/db.js')();
 let authenticate = require('./index').authenticate;
+let authenticateByPermission = require('./index').authenticateByPermission;
 
 router.get('/', authenticate, (req, res, next) => {
+    if (!authenticateByPermission(req, 'master')) {
+        return res.redirect('/');   
+    }
+    
     req.flash();
     User.getApprovedUsers(db, false, (err, users) => {
       if(err) {
@@ -25,6 +30,10 @@ router.get('/', authenticate, (req, res, next) => {
 });
 
 router.post('/', authenticate, (req, res, next) => {
+    if (!authenticateByPermission(req, 'master')) {
+        return res.redirect('/');   
+    }
+    
     var approved = [];
     var declined = [];
     var users = Array.prototype.slice.call(req.body.users);

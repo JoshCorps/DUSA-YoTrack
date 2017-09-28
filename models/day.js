@@ -234,7 +234,6 @@ class Day {
       if (err) {
         console.log("Error occurred while finding outlet.");
         callback("error"); return;
-        return;
       } else {
         //console.log("outlet (data)", data);
         if (data !== null && data !== undefined)

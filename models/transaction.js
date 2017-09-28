@@ -290,7 +290,6 @@ class Transaction {
         console.log("About to insert " + transactions.length + " transactions.");
         db.transactions.insert(transactions, (err) => {
             if (err) {
-                //TODO: Handle error
                 console.log("Could not insert data.");
             }
             else {

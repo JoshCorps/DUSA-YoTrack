@@ -29,7 +29,7 @@ class Upload {
                return;
            }
            callback(null, data);
-        });
+        }).sort({date: -1});
     }
     
     static deleteUploads(db, upload_ids, callback) {

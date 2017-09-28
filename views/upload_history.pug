@@ -15,7 +15,6 @@ block content
                         strong Delete?
             
             form(action="/upload_history" method="post")
-                - uploads = uploads.sort((a, b) => { return (a.date < b.date); });
                 - for (var i = 0; i < uploads.length; i++)
                     - var upload = uploads[i]
                     //-

@@ -3,12 +3,17 @@
 let express = require('express');
 let router = express.Router();
 let authenticate = require('./index').authenticate;
+let authenticateByPermission = require('./index').authenticateByPermission;
 
 // models
 let db = require('../models/db.js')();
 let Insight = require('../models/insight');
 
 router.get('/:startYear?/:startMonth?/:startDay?/:endYear?/:endMonth?/:endDay?', authenticate, (req, res, next) => {
+    if (!authenticateByPermission(req, 'intermediate')) {
+        return res.redirect('/');   
+    }
+    
     req.flash();
     
     var startYear = req.params.startYear;
@@ -32,6 +37,10 @@ router.get('/:startYear?/:startMonth?/:startDay?/:endYear?/:endMonth?/:endDay?',
 });
 
 router.post('/', authenticate, (request, response, next) => {
+    if (!authenticateByPermission(request, 'intermediate')) {
+        return response.redirect('/');   
+    }
+    
     var start = request.body.startDate;
     var end = request.body.endDate;
     

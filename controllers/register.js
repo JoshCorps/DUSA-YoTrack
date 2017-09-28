@@ -45,9 +45,9 @@ router.post('/', (request, response, next) => {
             response.redirect('/login');
             return;
         }
-        if (password.length < 8) //add more reqs
-        {
-            request.flash('error', "Password requirements not met");
+        
+        if (!password.match(/^(?=.*\d)(?=.*[A-Z])[0-9a-zA-Z]{8,}$/)) {
+            request.flash('error', "Password requirements not met: Password should contain at least 1 number, 1 uppercase letter and be at least 8 characters long");
             response.redirect('/login');
             return;
         }
