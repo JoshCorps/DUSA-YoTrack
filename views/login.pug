@@ -63,6 +63,13 @@ html(lang="en", dir="ltr")
             div(class="row")
               div(class="twelve columns")
                 input(type='submit',  class="u-full-width button-primary", value='Log In')
+            hr
+            p Passwords must:
+            ul
+              li have at least 1 uppercase character
+              li have at least 1 number
+              li be at least 8 characters long
+              
         div(class="gap")
         form(action='/register', method='POST')
           div(class="item-wrapper")
@@ -78,7 +85,7 @@ html(lang="en", dir="ltr")
                 input(type='email',  class="u-full-width", placeholder='Enter your Email Address', name='email', required)
             div(class="row login-field")
               div(class="twelve columns")
-                input(type='password',  class="u-full-width", placeholder='Enter your Password', name='password')
+                input(type='password',  class="u-full-width", placeholder='Enter your Password', name='password', required)
             div(class="row login-field")
               div(class="twelve columns")
                 input(type='password',  class="u-full-width", placeholder='Confirm your Password', name='repeatPassword', required)

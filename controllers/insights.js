@@ -44,6 +44,10 @@ router.post('/', authenticate, (request, response, next) => {
     var start = request.body.startDate;
     var end = request.body.endDate;
     
+    if (!start || !end) {
+        return response.redirect('/insights');
+    }
+    
     var startDate = start.split("-");
     var endDate = end.split("-");
     

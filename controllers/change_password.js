@@ -24,7 +24,7 @@ router.post('/', authenticate, (req, res, next) => {
     {
         req.flash('error', 'The new passwords do not match. Please try again.');
         return res.redirect('/change_password');
-    } else if (newPass.length < 8)
+    } else if (!newPass.match(/^(?=.*\d)(?=.*[A-Z])[0-9a-zA-Z]{8,}$/)) // regular expression for password requirements
     {
         req.flash('error', 'The new password does not meet the requirements'); //list requirements
         return res.redirect('/change_password');

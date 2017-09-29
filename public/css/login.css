@@ -96,3 +96,17 @@ form {
     left: 50%;
     transform: translateX(-50%) translateY(-50%);
 }
+
+.item-wrapper p {
+    margin: 0;
+}
+
+.item-wrapper li {
+    margin: 0;
+}
+
+hr {
+    border: none;
+    height: 1px;
+    background: rgb(235, 235, 235);
+}
