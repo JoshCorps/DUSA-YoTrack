@@ -123,7 +123,7 @@ class Transaction {
         
         // add data to keys
         for (let i=0; i<transactions.length; i++) {
-            d = new Date(transactions[i].dateTime.getFullYear(), transactions[i].dateTime.getMonth(), transactions[i].dateTime.getDate());
+            d = new Date(transactions[i].dateTime.getFullYear(), transactions[i].dateTime.getMonth(), transactions[i].dateTime.getDate(), (transactions[i].dateTime.getHours() - 6));
             key = d.toDateString();
             groupedTransactions[key] += transactions[i].totalAmount;
         }
