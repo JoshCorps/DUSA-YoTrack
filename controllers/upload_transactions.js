@@ -63,7 +63,8 @@ router.post('/', authenticate, (req, res, next) => {
         return;
     }
 
-    const fileName = '/home/ubuntu/workspace/spreadsheets/file.xlsx';
+    //const fileName = '/home/ubuntu/workspace/spreadsheets/file.xlsx';
+    const fileName = '/Users/joshcorps/Dev/Industrial-Team-Project-Team-1/spreadsheets/file.xlsx';
 
     spreadsheet.mv(fileName, function(err) {
         if (err)
@@ -211,11 +212,11 @@ function convertExcelToTransactions(filename, extractionDetails, workbookNumber,
                 if (rowIndex <= titleScanLimit) {
                     for (var e = 0; e < extractionDetails.length; e++) {
                         for (var i = 0; i < row.length; i++) {
-                            //console.log("Processed row #" + rowIndex + " contaning " + row[i]);
+                            console.log("Processed row #" + rowIndex + " contaning " + row[i]);
                             if (row[i] !== null && row[i] !== undefined && ("" + row[i]).toLowerCase() === extractionDetails[e].title.toLowerCase()) {
                                 extractionDetails[e].x = i;
                                 extractionDetails[e].found = true;
-                                //console.log("Found heading: " + row[i]);
+                                console.log("Found heading: " + row[i]);
                                 break;
                             }
                         }

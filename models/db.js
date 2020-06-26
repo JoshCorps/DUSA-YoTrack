@@ -7,7 +7,7 @@ module.exports = () => {
   // if a database object doesn't exist yet, create it
   if (!db) {
     console.log('Connecting to database.');
-    db = mongojs('mongodb://root:password@ds133054.mlab.com:33054/industrial-project?maxPoolSize=100');
+    db = mongojs('mongodb://root:password1@ds239578.mlab.com:39578/industrial?maxPoolSize=100');
      
     db.createCollection('users', {}, () => {
       // assign the user collection to this object so we can reuse it

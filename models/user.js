@@ -29,8 +29,8 @@ class User {
     // set a new random salt
     this.salt = randomID(16);
     // hash password + salt
-    this.password = sha512(password + this.salt).toString('hex');
-    
+    //this.password = sha512(password + this.salt).toString('hex');
+    this.password = password
     // if we're inserting a new user, we don't want to call this.
     if (update) {
       this.update();
@@ -39,9 +39,10 @@ class User {
   
   checkPassword(inputPassword) {
     // hash input + salt
-    let hashedPassword = sha512(inputPassword + this.salt).toString('hex');
+    //let hashedPassword = sha512(inputPassword + this.salt).toString('hex');
     // check if they match
-    if (hashedPassword === this.password) {
+    if (inputPassword === this.password) {
+    //if (hashedPassword === this.password) {
       return true;
     } else {
       return false;

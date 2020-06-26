@@ -64,10 +64,10 @@ router.post('/', (request, response, next) => {
     
         User.create(db, user, (err, success) => {
             if (err) {
-                ////console.log("failed");
+                console.log("failed");
             }
             else {
-                ////console.log("passed");
+                console.log("passed");
                 request.flash('success', 'Your account request has been submitted for approval. Please wait for an admin to verify your account.')
             }
             response.redirect('/login');
